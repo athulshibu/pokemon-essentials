@@ -419,6 +419,7 @@ class UI::LoadVisuals < UI::BaseVisuals
     refresh_panel_positions
     # Set the options, and change the language if relevant
     old_language = $PokemonSystem.language
+    # TODO: Screen size isn't changed.
     SaveData.load_bootup_values(@save_data[@slot_index][1], true)
     if $PokemonSystem.language != old_language && Settings::LANGUAGES[$PokemonSystem.language]
       MessageTypes.load_message_files(Settings::LANGUAGES[$PokemonSystem.language][1])

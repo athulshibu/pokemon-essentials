@@ -11,6 +11,7 @@ module GameData
     attr_reader :icon_position   # Where this shape's icon is within icon_shapes.png
 
     DATA = {}
+    ICON_SIZE = [60, 60]
 
     extend ClassMethodsSymbols
     include InstanceMethods

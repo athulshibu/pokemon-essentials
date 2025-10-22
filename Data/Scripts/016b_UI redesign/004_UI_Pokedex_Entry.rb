@@ -629,19 +629,19 @@ class UI::PokedexEntryVisuals < UI::BaseVisuals
 
   def draw_height
     draw_text(_INTL("Height"), 314, 164)
-    value_x = (Translation.imperial_measurements?) ? 460 : 470
+    value_x = (Translation.imperial_measurements?) ? 464 : 470
     value_y = 164
     if owned_species?
       height = @species_data.height
       if Translation.imperial_measurements?
         inches = (height / 0.254).round
-        draw_text(_ISPRINTF("{1:d}'{2:02d}\"", inches / 12, inches % 12), value_x, value_y, align: :right)
+        draw_text(_ISPRINTF("{1:d}'{2:02d}''", inches / 12, inches % 12), value_x, value_y, align: :right)
       else
         draw_text(_ISPRINTF("{1:.1f} m", height / 10.0), value_x, value_y, align: :right)
       end
     else
       if Translation.imperial_measurements?
-        draw_text(_INTL("???'??\""), value_x, value_y, align: :right)
+        draw_text(_INTL("???'??''"), value_x, value_y, align: :right)
       else
         draw_text(_INTL("????.? m"), value_x, value_y, align: :right)
       end
@@ -1025,6 +1025,7 @@ class UI::PokedexEntryVisuals < UI::BaseVisuals
     @sprites[:form_down].visible = false
     $player.pokedex.set_last_form_seen(@species, @gender, @form, @shiny)
     @sub_mode = :nil
+    @species_data = GameData::Species.get_species_form(@species, @form)
     refresh_shown_form
   end
 end
@@ -1040,7 +1041,7 @@ class UI::PokedexEntry < UI::BaseScreen
   # dex is an array of [Pokémon species symbol] or [Dex number, Pokemon species symbol].
   # mode is :normal or :new_entry.
   def initialize(dex, initial_index = 0, region = -1, mode: :normal)
-    @dex           = (dex.is_a?(Array)) ? dex : [dex]
+    @dex           = (dex[0].is_a?(Array)) ? dex : [dex]
     @initial_index = initial_index
     @mode          = mode
     @region        = region

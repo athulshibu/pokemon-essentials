@@ -181,12 +181,7 @@ class UI::PokedexDexes < UI::BaseScreen
 
   ACTIONS.add(:open_dex, {
     :effect => proc { |screen|
-      $PokemonGlobal.pokedexDex = screen.dex_number
-      pbFadeOutIn do
-        dex_visuals = PokemonPokedex_Scene.new
-        dex_screen = PokemonPokedexScreen.new(dex_visuals)
-        dex_screen.pbStartScreen
-      end
+      pbFadeOutIn { UI::Pokedex.new(screen.dex_number).main }
     }
   })
 
@@ -195,11 +190,8 @@ class UI::PokedexDexes < UI::BaseScreen
   # This method is all that happens if this UI is skipped, i.e. the main Pokédex
   # screen should be shown immediately.
   def main_skipped
-    $PokemonGlobal.pokedexDex = dex_number
     # NOTE: There is intentionally no pbFadeOutIn here.
-    dex_visuals = PokemonPokedex_Scene.new
-    dex_screen = PokemonPokedexScreen.new(dex_visuals)
-    dex_screen.pbStartScreen
+    UI::Pokedex.new(dex_number).main
   end
 end
 
@@ -207,7 +199,5 @@ end
 # Method for opening the Pokédex.
 #===============================================================================
 def pbPokedexScreen(dex = -1)
-  pbFadeOutIn do
-    UI::PokedexDexes.new(dex).main
-  end
+  pbFadeOutIn { UI::PokedexDexes.new(dex).main }
 end
