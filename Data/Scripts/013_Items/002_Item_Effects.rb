@@ -1695,197 +1695,178 @@ ItemHandlers::UseOnPokemon.add(:ZYGARDECUBE, proc { |item, qty, pkmn, scene|
 #-------------------------------------------------------------------------------
 
 ItemHandlers::UsableOnPokemon.add(:DNASPLICERS, proc { |item, pkmn|
-  next pkmn.isSpecies?(:KYUREM) && pkmn.able? && pkmn.fused.nil?
+  next pkmn.isSpecies?(:KYUREM) && pkmn.able?
 })
 ItemHandlers::UseOnPokemon.add(:DNASPLICERS, proc { |item, qty, pkmn, scene|
-  if !pkmn.isSpecies?(:KYUREM) || !pkmn.fused.nil?
+  if !pkmn.isSpecies?(:KYUREM)
     scene.pbDisplay(_INTL("It had no effect."))
     next false
   elsif pkmn.fainted?
     scene.pbDisplay(_INTL("This can't be used on the fainted Pokémon."))
     next false
   end
-  # Fusing
-  chosen = scene.pbChoosePokemon(_INTL("Fuse with which Pokémon?"))
-  next false if chosen < 0
-  other_pkmn = $player.party[chosen]
-  if pkmn == other_pkmn
-    scene.pbDisplay(_INTL("It cannot be fused with itself."))
-    next false
-  elsif other_pkmn.egg?
-    scene.pbDisplay(_INTL("It cannot be fused with an Egg."))
-    next false
-  elsif other_pkmn.fainted?
-    scene.pbDisplay(_INTL("It cannot be fused with that fainted Pokémon."))
-    next false
-  elsif !other_pkmn.isSpecies?(:RESHIRAM) && !other_pkmn.isSpecies?(:ZEKROM)
-    scene.pbDisplay(_INTL("It cannot be fused with that Pokémon."))
-    next false
+  if pkmn.fused
+    # Unfusing
+    if $player.party_full?
+      scene.pbDisplay(_INTL("You have no room to separate the Pokémon."))
+      next false
+    end
+    pkmn.setForm(0) do
+      $player.party[$player.party.length] = pkmn.fused
+      pkmn.fused = nil
+      scene.pbHardRefresh
+      scene.pbDisplay(_INTL("{1} changed Forme!", pkmn.name))
+    end
+    $bag.replace_item(:DNASPLICERSUSED, :DNASPLICERS)
+  else
+    # Fusing
+    chosen = scene.pbChoosePokemon(_INTL("Fuse with which Pokémon?"))
+    next false if chosen < 0
+    other_pkmn = $player.party[chosen]
+    if pkmn == other_pkmn
+      scene.pbDisplay(_INTL("It cannot be fused with itself."))
+      next false
+    elsif other_pkmn.egg?
+      scene.pbDisplay(_INTL("It cannot be fused with an Egg."))
+      next false
+    elsif other_pkmn.fainted?
+      scene.pbDisplay(_INTL("It cannot be fused with that fainted Pokémon."))
+      next false
+    elsif !other_pkmn.isSpecies?(:RESHIRAM) && !other_pkmn.isSpecies?(:ZEKROM)
+      scene.pbDisplay(_INTL("It cannot be fused with that Pokémon."))
+      next false
+    end
+    newForm = 0
+    newForm = 1 if other_pkmn.isSpecies?(:RESHIRAM)
+    newForm = 2 if other_pkmn.isSpecies?(:ZEKROM)
+    pkmn.setForm(newForm) do
+      pkmn.fused = other_pkmn
+      $player.remove_pokemon_at_index(chosen)
+      scene.pbHardRefresh
+      scene.pbDisplay(_INTL("{1} changed Forme!", pkmn.name))
+    end
+    $bag.replace_item(:DNASPLICERS, :DNASPLICERSUSED)
   end
-  newForm = 0
-  newForm = 1 if other_pkmn.isSpecies?(:RESHIRAM)
-  newForm = 2 if other_pkmn.isSpecies?(:ZEKROM)
-  pkmn.setForm(newForm) do
-    pkmn.fused = other_pkmn
-    $player.remove_pokemon_at_index(chosen)
-    scene.pbHardRefresh
-    scene.pbDisplay(_INTL("{1} changed Forme!", pkmn.name))
-  end
-  $bag.replace_item(:DNASPLICERS, :DNASPLICERSUSED)
   next true
 })
 
-ItemHandlers::UsableOnPokemon.add(:DNASPLICERSUSED, proc { |item, pkmn|
-  next pkmn.isSpecies?(:KYUREM) && pkmn.able? && pkmn.fused && !$player.party_full?
-})
-ItemHandlers::UseOnPokemon.add(:DNASPLICERSUSED, proc { |item, qty, pkmn, scene|
-  if !pkmn.isSpecies?(:KYUREM) || pkmn.fused.nil?
-    scene.pbDisplay(_INTL("It had no effect."))
-    next false
-  elsif pkmn.fainted?
-    scene.pbDisplay(_INTL("This can't be used on the fainted Pokémon."))
-    next false
-  elsif $player.party_full?
-    scene.pbDisplay(_INTL("You have no room to separate the Pokémon."))
-    next false
-  end
-  # Unfusing
-  pkmn.setForm(0) do
-    $player.party[$player.party.length] = pkmn.fused
-    pkmn.fused = nil
-    scene.pbHardRefresh
-    scene.pbDisplay(_INTL("{1} changed Forme!", pkmn.name))
-  end
-  $bag.replace_item(:DNASPLICERSUSED, :DNASPLICERS)
-  next true
-})
+ItemHandlers::UsableOnPokemon.copy(:DNASPLICERS, :DNASPLICERSUSED)
+ItemHandlers::UseOnPokemon.copy(:DNASPLICERS, :DNASPLICERSUSED)
 
 ItemHandlers::UsableOnPokemon.add(:NSOLARIZER, proc { |item, pkmn|
-  next pkmn.isSpecies?(:NECROZMA) && pkmn.able? && pkmn.fused.nil?
+  next pkmn.isSpecies?(:NECROZMA) && pkmn.able? && [0, 1].include?(pkmn.form)
 })
 ItemHandlers::UseOnPokemon.add(:NSOLARIZER, proc { |item, qty, pkmn, scene|
-  if !pkmn.isSpecies?(:NECROZMA) || !pkmn.fused.nil?
+  if !pkmn.isSpecies?(:NECROZMA)
     scene.pbDisplay(_INTL("It had no effect."))
     next false
   elsif pkmn.fainted?
     scene.pbDisplay(_INTL("This can't be used on the fainted Pokémon."))
     next false
   end
-  # Fusing
-  chosen = scene.pbChoosePokemon(_INTL("Fuse with which Pokémon?"))
-  next false if chosen < 0
-  other_pkmn = $player.party[chosen]
-  if pkmn == other_pkmn
-    scene.pbDisplay(_INTL("It cannot be fused with itself."))
-    next false
-  elsif other_pkmn.egg?
-    scene.pbDisplay(_INTL("It cannot be fused with an Egg."))
-    next false
-  elsif other_pkmn.fainted?
-    scene.pbDisplay(_INTL("It cannot be fused with that fainted Pokémon."))
-    next false
-  elsif !other_pkmn.isSpecies?(:SOLGALEO)
-    scene.pbDisplay(_INTL("It cannot be fused with that Pokémon."))
-    next false
+  if pkmn.fused
+    # Unfusing
+    if $player.party_full?
+      scene.pbDisplay(_INTL("You have no room to separate the Pokémon."))
+      next false
+    end
+    pkmn.setForm(0) do
+      $player.party[$player.party.length] = pkmn.fused
+      pkmn.fused = nil
+      scene.pbHardRefresh
+      scene.pbDisplay(_INTL("{1} changed Forme!", pkmn.name))
+    end
+    $bag.replace_item(:NSOLARIZERUSED, :NSOLARIZER)
+  else
+    # Fusing
+    chosen = scene.pbChoosePokemon(_INTL("Fuse with which Pokémon?"))
+    next false if chosen < 0
+    other_pkmn = $player.party[chosen]
+    if pkmn == other_pkmn
+      scene.pbDisplay(_INTL("It cannot be fused with itself."))
+      next false
+    elsif other_pkmn.egg?
+      scene.pbDisplay(_INTL("It cannot be fused with an Egg."))
+      next false
+    elsif other_pkmn.fainted?
+      scene.pbDisplay(_INTL("It cannot be fused with that fainted Pokémon."))
+      next false
+    elsif !other_pkmn.isSpecies?(:SOLGALEO)
+      scene.pbDisplay(_INTL("It cannot be fused with that Pokémon."))
+      next false
+    end
+    pkmn.setForm(1) do
+      pkmn.fused = other_pkmn
+      $player.remove_pokemon_at_index(chosen)
+      scene.pbHardRefresh
+      scene.pbDisplay(_INTL("{1} changed Forme!", pkmn.name))
+    end
+    $bag.replace_item(:NSOLARIZER, :NSOLARIZERUSED)
   end
-  pkmn.setForm(1) do
-    pkmn.fused = other_pkmn
-    $player.remove_pokemon_at_index(chosen)
-    scene.pbHardRefresh
-    scene.pbDisplay(_INTL("{1} changed Forme!", pkmn.name))
-  end
-  $bag.replace_item(:NSOLARIZER, :NSOLARIZERUSED)
   next true
 })
 
-ItemHandlers::UsableOnPokemon.add(:NSOLARIZERUSED, proc { |item, pkmn|
-  next pkmn.isSpecies?(:NECROZMA) && pkmn.able? && pkmn.form == 1 && pkmn.fused && !$player.party_full?
-})
-ItemHandlers::UseOnPokemon.add(:NSOLARIZERUSED, proc { |item, qty, pkmn, scene|
-  if !pkmn.isSpecies?(:NECROZMA) || pkmn.form != 1 || pkmn.fused.nil?
-    scene.pbDisplay(_INTL("It had no effect."))
-    next false
-  elsif pkmn.fainted?
-    scene.pbDisplay(_INTL("This can't be used on the fainted Pokémon."))
-    next false
-  elsif $player.party_full?
-    scene.pbDisplay(_INTL("You have no room to separate the Pokémon."))
-    next false
-  end
-  # Unfusing
-  pkmn.setForm(0) do
-    $player.party[$player.party.length] = pkmn.fused
-    pkmn.fused = nil
-    scene.pbHardRefresh
-    scene.pbDisplay(_INTL("{1} changed Forme!", pkmn.name))
-  end
-  $bag.replace_item(:NSOLARIZERUSED, :NSOLARIZER)
-  next true
-})
+ItemHandlers::UsableOnPokemon.copy(:NSOLARIZER, :NSOLARIZERUSED)
+ItemHandlers::UseOnPokemon.copy(:NSOLARIZER, :NSOLARIZERUSED)
 
-ItemHandlers::UsableOnPokemon.copy(:NSOLARIZER, :NLUNARIZER)
+ItemHandlers::UsableOnPokemon.add(:NLUNARIZER, proc { |item, pkmn|
+  next pkmn.isSpecies?(:NECROZMA) && pkmn.able? && [0, 2].include?(pkmn.form)
+})
 ItemHandlers::UseOnPokemon.add(:NLUNARIZER, proc { |item, qty, pkmn, scene|
-  if !pkmn.isSpecies?(:NECROZMA) || !pkmn.fused.nil?
+  if !pkmn.isSpecies?(:NECROZMA)
     scene.pbDisplay(_INTL("It had no effect."))
     next false
   elsif pkmn.fainted?
     scene.pbDisplay(_INTL("This can't be used on the fainted Pokémon."))
     next false
   end
-  # Fusing
-  chosen = scene.pbChoosePokemon(_INTL("Fuse with which Pokémon?"))
-  next false if chosen < 0
-  other_pkmn = $player.party[chosen]
-  if pkmn == other_pkmn
-    scene.pbDisplay(_INTL("It cannot be fused with itself."))
-    next false
-  elsif other_pkmn.egg?
-    scene.pbDisplay(_INTL("It cannot be fused with an Egg."))
-    next false
-  elsif other_pkmn.fainted?
-    scene.pbDisplay(_INTL("It cannot be fused with that fainted Pokémon."))
-    next false
-  elsif !other_pkmn.isSpecies?(:LUNALA)
-    scene.pbDisplay(_INTL("It cannot be fused with that Pokémon."))
-    next false
+  if pkmn.fused
+    # Unfusing
+    if $player.party_full?
+      scene.pbDisplay(_INTL("You have no room to separate the Pokémon."))
+      next false
+    end
+    pkmn.setForm(0) do
+      $player.party[$player.party.length] = pkmn.fused
+      pkmn.fused = nil
+      scene.pbHardRefresh
+      scene.pbDisplay(_INTL("{1} changed Forme!", pkmn.name))
+    end
+    $bag.replace_item(:NLUNARIZERUSED, :NLUNARIZER)
+  else
+    # Fusing
+    chosen = scene.pbChoosePokemon(_INTL("Fuse with which Pokémon?"))
+    next false if chosen < 0
+    other_pkmn = $player.party[chosen]
+    if pkmn == other_pkmn
+      scene.pbDisplay(_INTL("It cannot be fused with itself."))
+      next false
+    elsif other_pkmn.egg?
+      scene.pbDisplay(_INTL("It cannot be fused with an Egg."))
+      next false
+    elsif other_pkmn.fainted?
+      scene.pbDisplay(_INTL("It cannot be fused with that fainted Pokémon."))
+      next false
+    elsif !other_pkmn.isSpecies?(:LUNALA)
+      scene.pbDisplay(_INTL("It cannot be fused with that Pokémon."))
+      next false
+    end
+    pkmn.setForm(2) do
+      pkmn.fused = other_pkmn
+      $player.remove_pokemon_at_index(chosen)
+      scene.pbHardRefresh
+      scene.pbDisplay(_INTL("{1} changed Forme!", pkmn.name))
+    end
+    $bag.replace_item(:NLUNARIZER, :NLUNARIZERUSED)
   end
-  pkmn.setForm(2) do
-    pkmn.fused = other_pkmn
-    $player.remove_pokemon_at_index(chosen)
-    scene.pbHardRefresh
-    scene.pbDisplay(_INTL("{1} changed Forme!", pkmn.name))
-  end
-  $bag.replace_item(:NLUNARIZER, :NLUNARIZERUSED)
   next true
 })
 
-ItemHandlers::UsableOnPokemon.add(:NLUNARIZERUSED, proc { |item, pkmn|
-  next pkmn.isSpecies?(:NECROZMA) && pkmn.able? && pkmn.form == 2 && pkmn.fused && !$player.party_full?
-})
-ItemHandlers::UseOnPokemon.add(:NLUNARIZERUSED, proc { |item, qty, pkmn, scene|
-  if !pkmn.isSpecies?(:NECROZMA) || pkmn.form != 2 || pkmn.fused.nil?
-    scene.pbDisplay(_INTL("It had no effect."))
-    next false
-  elsif pkmn.fainted?
-    scene.pbDisplay(_INTL("This can't be used on the fainted Pokémon."))
-    next false
-  elsif $player.party_full?
-    scene.pbDisplay(_INTL("You have no room to separate the Pokémon."))
-    next false
-  end
-  # Unfusing
-  pkmn.setForm(0) do
-    $player.party[$player.party.length] = pkmn.fused
-    pkmn.fused = nil
-    scene.pbHardRefresh
-    scene.pbDisplay(_INTL("{1} changed Forme!", pkmn.name))
-  end
-  $bag.replace_item(:NLUNARIZERUSED, :NLUNARIZER)
-  next true
-})
+ItemHandlers::UsableOnPokemon.copy(:NLUNARIZER, :NLUNARIZERUSED)
+ItemHandlers::UseOnPokemon.copy(:NLUNARIZER, :NLUNARIZERUSED)
 
 ItemHandlers::UsableOnPokemon.add(:REINSOFUNITY, proc { |item, pkmn|
-  next pkmn.isSpecies?(:CALYREX) && pkmn.able? && pkmn.fused.nil?
+  next pkmn.isSpecies?(:CALYREX) && pkmn.able?
 })
 ItemHandlers::UseOnPokemon.add(:REINSOFUNITY, proc { |item, qty, pkmn, scene|
   if !pkmn.isSpecies?(:CALYREX) || !pkmn.fused.nil?
@@ -1895,58 +1876,51 @@ ItemHandlers::UseOnPokemon.add(:REINSOFUNITY, proc { |item, qty, pkmn, scene|
     scene.pbDisplay(_INTL("This can't be used on the fainted Pokémon."))
     next false
   end
-  # Fusing
-  chosen = scene.pbChoosePokemon(_INTL("Fuse with which Pokémon?"))
-  next false if chosen < 0
-  other_pkmn = $player.party[chosen]
-  if pkmn == other_pkmn
-    scene.pbDisplay(_INTL("It cannot be fused with itself."))
-    next false
-  elsif other_pkmn.egg?
-    scene.pbDisplay(_INTL("It cannot be fused with an Egg."))
-    next false
-  elsif other_pkmn.fainted?
-    scene.pbDisplay(_INTL("It cannot be fused with that fainted Pokémon."))
-    next false
-  elsif !other_pkmn.isSpecies?(:GLASTRIER) &&
-        !other_pkmn.isSpecies?(:SPECTRIER)
-    scene.pbDisplay(_INTL("It cannot be fused with that Pokémon."))
-    next false
+  if pkmn.fused
+    # Unfusing
+    if $player.party_full?
+      scene.pbDisplay(_INTL("You have no room to separate the Pokémon."))
+      next false
+    end
+    pkmn.setForm(0) do
+      $player.party[$player.party.length] = pkmn.fused
+      pkmn.fused = nil
+      scene.pbHardRefresh
+      scene.pbDisplay(_INTL("{1} changed Forme!", pkmn.name))
+    end
+    $bag.replace_item(:REINSOFUNITYUSED, :REINSOFUNITY)
+  else
+    # Fusing
+    chosen = scene.pbChoosePokemon(_INTL("Fuse with which Pokémon?"))
+    next false if chosen < 0
+    other_pkmn = $player.party[chosen]
+    if pkmn == other_pkmn
+      scene.pbDisplay(_INTL("It cannot be fused with itself."))
+      next false
+    elsif other_pkmn.egg?
+      scene.pbDisplay(_INTL("It cannot be fused with an Egg."))
+      next false
+    elsif other_pkmn.fainted?
+      scene.pbDisplay(_INTL("It cannot be fused with that fainted Pokémon."))
+      next false
+    elsif !other_pkmn.isSpecies?(:GLASTRIER) &&
+          !other_pkmn.isSpecies?(:SPECTRIER)
+      scene.pbDisplay(_INTL("It cannot be fused with that Pokémon."))
+      next false
+    end
+    newForm = 0
+    newForm = 1 if other_pkmn.isSpecies?(:GLASTRIER)
+    newForm = 2 if other_pkmn.isSpecies?(:SPECTRIER)
+    pkmn.setForm(newForm) do
+      pkmn.fused = other_pkmn
+      $player.remove_pokemon_at_index(chosen)
+      scene.pbHardRefresh
+      scene.pbDisplay(_INTL("{1} changed Forme!", pkmn.name))
+    end
+    $bag.replace_item(:REINSOFUNITY, :REINSOFUNITYUSED)
   end
-  newForm = 0
-  newForm = 1 if other_pkmn.isSpecies?(:GLASTRIER)
-  newForm = 2 if other_pkmn.isSpecies?(:SPECTRIER)
-  pkmn.setForm(newForm) do
-    pkmn.fused = other_pkmn
-    $player.remove_pokemon_at_index(chosen)
-    scene.pbHardRefresh
-    scene.pbDisplay(_INTL("{1} changed Forme!", pkmn.name))
-  end
-  $bag.replace_item(:REINSOFUNITY, :REINSOFUNITYUSED)
   next true
 })
 
-ItemHandlers::UsableOnPokemon.add(:REINSOFUNITYUSED, proc { |item, pkmn|
-  next pkmn.isSpecies?(:CALYREX) && pkmn.able? && pkmn.fused && !$player.party_full?
-})
-ItemHandlers::UseOnPokemon.add(:REINSOFUNITYUSED, proc { |item, qty, pkmn, scene|
-  if !pkmn.isSpecies?(:CALYREX) || pkmn.fused.nil?
-    scene.pbDisplay(_INTL("It had no effect."))
-    next false
-  elsif pkmn.fainted?
-    scene.pbDisplay(_INTL("This can't be used on the fainted Pokémon."))
-    next false
-  elsif $player.party_full?
-    scene.pbDisplay(_INTL("You have no room to separate the Pokémon."))
-    next false
-  end
-  # Unfusing
-  pkmn.setForm(0) do
-    $player.party[$player.party.length] = pkmn.fused
-    pkmn.fused = nil
-    scene.pbHardRefresh
-    scene.pbDisplay(_INTL("{1} changed Forme!", pkmn.name))
-  end
-  $bag.replace_item(:REINSOFUNITYUSED, :REINSOFUNITY)
-  next true
-})
+ItemHandlers::UsableOnPokemon.copy(:REINSOFUNITY, :REINSOFUNITYUSED)
+ItemHandlers::UseOnPokemon.copy(:REINSOFUNITY, :REINSOFUNITYUSED)

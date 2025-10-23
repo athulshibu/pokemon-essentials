@@ -66,7 +66,7 @@ class BerryPlantData
   end
 
   def moisture_stage
-    return 0 if !@new_mechanics
+    return -1 if !@new_mechanics
     return 2 if @moisture_level > 50
     return 1 if @moisture_level > 0
     return 0
