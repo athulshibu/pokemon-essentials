@@ -389,8 +389,8 @@ class PokemonEntryScene2
       @bitmaps[@@Characters.length + i] = b
     end
     underline_bitmap = Bitmap.new(24, 6)
-    underline_bitmap.fill_rect(2, 2, 22, 4, Color.new(168, 184, 184))
-    underline_bitmap.fill_rect(0, 0, 22, 4, Color.new(16, 24, 32))
+    underline_bitmap.fill_rect(2, 2, 18, 4, Color.new(168, 184, 184))
+    underline_bitmap.fill_rect(0, 0, 18, 4, Color.new(16, 24, 32))
     @bitmaps.push(underline_bitmap)
     # Create sprites
     @sprites = {}
@@ -428,9 +428,9 @@ class PokemonEntryScene2
         pbSetSystemFont(@sprites["gender"].bitmap)
         textpos = []
         if pokemon.male?
-          textpos.push([_INTL("♂"), 0, 6, :left, Color.new(0, 128, 248), Color.new(168, 184, 184)])
+          textpos.push([_INTL("♂"), 0, 0, :left, Color.new(0, 128, 248), Color.new(168, 184, 184)])
         elsif pokemon.female?
-          textpos.push([_INTL("♀"), 0, 6, :left, Color.new(248, 24, 24), Color.new(168, 184, 184)])
+          textpos.push([_INTL("♀"), 0, 0, :left, Color.new(248, 24, 24), Color.new(168, 184, 184)])
         end
         pbDrawTextPositions(@sprites["gender"].bitmap, textpos)
       end
@@ -461,7 +461,7 @@ class PokemonEntryScene2
     @maxlength = maxlength
     @maxlength.times do |i|
       @sprites["blank#{i}"] = Sprite.new(@viewport)
-      @sprites["blank#{i}"].x = 160 + (24 * i)
+      @sprites["blank#{i}"].x = 138 + (20 * i)
       @sprites["blank#{i}"].bitmap = @bitmaps[@bitmaps.length - 1]
       @blanks[i] = 0
     end
@@ -504,13 +504,13 @@ class PokemonEntryScene2
     bgoverlay.clear
     pbSetSystemFont(bgoverlay)
     textPositions = [
-      [@helptext, 160, 18, :left, Color.new(16, 24, 32), Color.new(168, 184, 184)]
+      [@helptext, 138, 18, :left, Color.new(16, 24, 32), Color.new(168, 184, 184)]
     ]
     chars = @helper.textChars
-    x = 172
+    x = 148
     chars.each do |ch|
       textPositions.push([ch, x, 54, :center, Color.new(16, 24, 32), Color.new(168, 184, 184)])
-      x += 24
+      x += 20
     end
     pbDrawTextPositions(bgoverlay, textPositions)
   end
@@ -779,8 +779,6 @@ def pbEnterNPCName(helptext, minlength, maxlength, initialText = "", id = 0, nof
   return pbEnterText(helptext, minlength, maxlength, initialText, 3, id, nofadeout)
 end
 
-# TODO: maxlength for this is 16, so the entry screen should support showing 16
-#       characters.
 def pbEnterBoxName(helptext, minlength, maxlength, initialText = "", nofadeout = false)
   return pbEnterText(helptext, minlength, maxlength, initialText, 4, nil, nofadeout)
 end

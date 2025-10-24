@@ -474,8 +474,6 @@ class UI::Save < UI::BaseScreen
   #       0 which just produces "Game.rzdata". This is to support old save
   #       files which are that name.
   def save_game(file_number)
-    # TODO: I don't know about this "GUI save choice" being here.
-#    pbSEPlay("GUI save choice")
     if Game.save(file_number)
       # Refresh the panels to show the new save's data
       file = SaveData.filename_from_index(file_number)
@@ -492,6 +490,7 @@ class UI::Save < UI::BaseScreen
       }
       @result = true
     else
+      pbSEPlay("GUI save choice")
       show_message(_INTL("Save failed."))
       # TODO: Auto-close this message.
       @result = false

@@ -34,7 +34,7 @@ class UI::TownMapVisuals < UI::BaseVisuals
   end
 
   def initialize_bitmaps
-    @bitmaps[:input_icons]  = AnimatedBitmap.new(UI_FOLDER + "input_icons")
+    super
     @bitmaps[:map_markings] = AnimatedBitmap.new(graphics_folder + "map_markings")
     @bitmaps[:details_marking_bg] = AnimatedBitmap.new(graphics_folder + themed_filename("details_marking_bg"))
   end
@@ -575,17 +575,17 @@ class UI::TownMapVisuals < UI::BaseVisuals
       input_x += input_spacing
     end
     if @mode == :fly || @sub_mode == :fly
-      draw_input.call(1, _INTL("Cancel")) if @sub_mode == :fly
       draw_input.call(0, _INTL("Fly"))
+      draw_input.call(1, _INTL("Cancel")) if @sub_mode == :fly
       return
+    end
+    if can_mark?
+      draw_input.call(0, _INTL("Mark"))
     end
     if can_zoom?
       draw_input.call(0, _INTL("Zoom"))
     elsif zoomed?
       draw_input.call(1, _INTL("Zoom"))
-    end
-    if can_mark?
-      draw_input.call(0, _INTL("Mark"))
     end
     if can_access_screen_menu?
       options = screen_menu_options

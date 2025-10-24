@@ -36,8 +36,9 @@ class UI::PokemonStorageVisualsSidePane < UI::SpriteContainer
 
   def initialize_pokemon_sprite
     # TODO: The Pokémon sprite probably needs its own viewport, to avoid
-    #       spillover of overly large sprites. Also put it beneath the main
-    #       background sprite and put another sprite beneath it?
+    #       spillover of overly large sprites. Also put the side bar (except the
+    #       sprite's background) in a higher viewport to cover it and still
+    #       cover the moving boxes.
     @sprites[:pokemon] = UI::PokemonStorageVisualsMosaicPokemonSprite.new(@viewport)
     @sprites[:pokemon].setOffset(PictureOrigin::CENTER)
     @sprites[:pokemon].x = 90

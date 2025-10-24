@@ -227,16 +227,17 @@ class Game_Event < Game_Character
     @page = new_page
     clear_starting
     if @page.nil?
-      @tile_id        = 0
-      @character_name = ""
-      @character_hue  = 0
-      @move_type      = 0
-      @through        = true
-      @trigger        = nil
-      @list           = nil
-      @interpreter    = nil
-      # TODO: Should this erase @move_route and related things set in def
-      #       force_move_route?
+      @tile_id            = 0
+      @character_name     = ""
+      @character_hue      = 0
+      @move_type          = 0
+      @through            = true
+      @trigger            = nil
+      @list               = nil
+      @interpreter        = nil
+      @move_route         = nil
+      @move_route_index   = 0
+      @move_route_forcing = false
       return
     end
     @tile_id              = @page.graphic.tile_id

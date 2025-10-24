@@ -347,6 +347,7 @@ module UI
     end
 
     def initialize_bitmaps
+      @bitmaps[:input_icons] = AnimatedBitmap.new(self.class::UI_FOLDER + "input_icons")
     end
 
     def initialize_background
@@ -360,12 +361,12 @@ module UI
 
     def initialize_message_box
       # TODO: It looks like :message_box isn't used anywhere.
-      @sprites[:message_box] = Window_AdvancedTextPokemon.new("")
-      @sprites[:message_box].viewport       = @viewport
-      @sprites[:message_box].z              = 2000
-      @sprites[:message_box].visible        = false
-      @sprites[:message_box].letterbyletter = true
-      pbBottomLeftLines(@sprites[:message_box], 2)
+      # @sprites[:message_box] = Window_AdvancedTextPokemon.new("")
+      # @sprites[:message_box].viewport       = @viewport
+      # @sprites[:message_box].z              = 2000
+      # @sprites[:message_box].visible        = false
+      # @sprites[:message_box].letterbyletter = true
+      # pbBottomLeftLines(@sprites[:message_box], 2)
       @sprites[:speech_box] = Window_AdvancedTextPokemon.new("")
       @sprites[:speech_box].viewport       = @viewport
       @sprites[:speech_box].z              = 2001
@@ -829,17 +830,17 @@ module UI
     #-----------------------------------------------------------------------------
 
     def refresh
-      @visuals.refresh
+      @visuals.refresh if !@disposed
     end
 
     alias pbRefresh refresh
 
     def full_refresh
-      @visuals.full_refresh
+      @visuals.full_refresh if !@disposed
     end
 
     def update
-      @visuals.update
+      @visuals.update if !@disposed
     end
 
     alias pbUpdate update

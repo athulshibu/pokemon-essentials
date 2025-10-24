@@ -9,6 +9,7 @@ module ItemHandlers
   UsableOnPokemon     = ItemHandlerHash.new
   UseOnPokemon        = ItemHandlerHash.new
   UseOnPokemonMaximum = ItemHandlerHash.new
+  UseOpensScreen      = ItemHandlerHash.new
   CanUseInBattle      = ItemHandlerHash.new
   UseInBattle         = ItemHandlerHash.new
   BattleUseOnBattler  = ItemHandlerHash.new
@@ -40,6 +41,10 @@ module ItemHandlers
 
   def hasUseOnPokemonMaximum(item)
     return !UseOnPokemonMaximum[item].nil?
+  end
+
+  def useOpensScreen?(item)
+    return !UseOpensScreen[item].nil?
   end
 
   def hasUseInBattle(item)
@@ -231,13 +236,14 @@ def pbUseItem(bag, item, bag_screen = nil)
         end
         next false
       end
-      bag_screen&.pbRefresh
+      bag_screen&.refresh
     end
     return (ret) ? 1 : 0
   elsif useType == 2 || item_data.is_machine?   # Item is usable from Bag or teaches a move
     intret = ItemHandlers.triggerUseFromBag(item, bag_screen)
     if intret >= 0
       bag.remove(item) if intret == 1 && item_data.consumed_after_use?
+      bag_screen&.refresh
       return intret
     end
     pbMessage(_INTL("Can't use that here."))
@@ -248,7 +254,9 @@ def pbUseItem(bag, item, bag_screen = nil)
 end
 
 # Only called when in the party screen and having chosen an item to be used on
-# the selected Pokémon. screen is the party screen.
+# the selected Pokémon. screen is the party screen, or the Bag screen if the Bag
+# was opened from the party screen and the chosen item is an evolution stone
+# (i.e. has an ItemHandlers::UseOpensScreen).
 def pbUseItemOnPokemon(item, pkmn, screen)
   item_data = GameData::Item.get(item)
   # TM or HM
@@ -284,11 +292,13 @@ def pbUseItemOnPokemon(item, pkmn, screen)
   end
   return false if qty <= 0
   ret = ItemHandlers.triggerUseOnPokemon(item, qty, pkmn, screen)
-  screen.clear_annotations
-  screen.refresh
+  if screen.is_a?(UI::Party)
+    screen.clear_annotations
+    screen.refresh
+  end
   if ret && item_data.consumed_after_use?
     $bag.remove(item, qty)
-    if !$bag.has?(item)
+    if !$bag.has?(item) && screen.is_a?(UI::Party)
       screen.show_message(_INTL("You used your last {1}.", item_data.portion_name))
     end
   end

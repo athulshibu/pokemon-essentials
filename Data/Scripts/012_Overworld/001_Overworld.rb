@@ -338,7 +338,6 @@ EventHandlers.add(:on_map_or_spriteset_change, :show_location_sign,
     next if no_sign
     map_name = $game_map.name
     location_sign_graphic = $game_map.metadata&.location_sign || Settings::DEFAULT_LOCATION_SIGN_GRAPHIC
-    location_sign_graphic = Settings::DEFAULT_LOCATION_SIGN_GRAPHIC
     scene.spriteset.addUserSprite(LocationWindow.new(map_name, location_sign_graphic))
   }
 )

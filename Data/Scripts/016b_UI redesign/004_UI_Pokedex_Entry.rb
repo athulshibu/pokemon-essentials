@@ -80,7 +80,7 @@ class UI::PokedexEntryVisuals < UI::BaseVisuals
   end
 
   def initialize_bitmaps
-    @bitmaps[:input_icons]   = AnimatedBitmap.new(UI_FOLDER + "input_icons")
+    super
     @bitmaps[:page_arrows]   = AnimatedBitmap.new(graphics_folder + "entry_page_arrows")
     @bitmaps[:page_icons]    = AnimatedBitmap.new(graphics_folder + _INTL("entry_page_icons"))
     @bitmaps[:owned]         = AnimatedBitmap.new(graphics_folder + "icon_own")

@@ -78,9 +78,6 @@ EventHandlers.add(:on_player_step_taken, :repel_counter,
         new_item = bag_screen.choose_item
       end
     end
-    # TODO: Would be nice if this didn't call pbUseItem, so that pbUseItem would
-    #       be exclusively called from the Bag screen and could rely on that
-    #       screen existing.
     pbUseItem($bag, new_item) if new_item
   }
 )
@@ -384,7 +381,7 @@ ItemHandlers::UseFromBag.addIf(:move_machines,
     pbMessage(_INTL("You booted up the {1}.", item_data.portion_name) + "\1")
     next 0 if !pbConfirmMessage(_INTL("Do you want to teach {1} to a Pokémon?",
                                       GameData::Move.get(move).name))
-    next 1 if pbMoveTutorChoose(move, nil, true, item_data.is_TR?)
+    next 1 if pbMoveTutorChoose(move, nil, true, item_data.is_TR?, bag_screen)
     next 0
   }
 )
@@ -438,6 +435,10 @@ ItemHandlers::UseOnPokemon.addIf(:evolution_stones,
     next false
   }
 )
+ItemHandlers::UseOpensScreen.addIf(:evolution_stones,
+  proc { |item| GameData::Item.get(item).is_evolution_stone? },
+  proc { |item| next true }
+)
 
 ItemHandlers::UsableOnPokemon.add(:SCROLLOFWATERS, proc { |item, pkmn|
   next true if pkmn.check_evolution_on_use_item(item)
@@ -466,6 +467,9 @@ ItemHandlers::UseOnPokemon.add(:SCROLLOFWATERS, proc { |item, qty, pkmn, scene|
   scene.pbDisplay(_INTL("It won't have any effect."))
   next false
 })
+ItemHandlers::UseOpensScreen.add(:SCROLLOFWATERS,
+  proc { |item| next true }
+)
 
 ItemHandlers::UsableOnPokemon.copy(:SCROLLOFWATERS, :SCROLLOFDARKNESS)
 ItemHandlers::UseOnPokemon.add(:SCROLLOFDARKNESS, proc { |item, qty, pkmn, scene|
@@ -490,6 +494,7 @@ ItemHandlers::UseOnPokemon.add(:SCROLLOFDARKNESS, proc { |item, qty, pkmn, scene
   scene.pbDisplay(_INTL("It won't have any effect."))
   next false
 })
+ItemHandlers::UseOpensScreen.copy(:SCROLLOFWATERS, :SCROLLOFDARKNESS)
 
 #-------------------------------------------------------------------------------
 

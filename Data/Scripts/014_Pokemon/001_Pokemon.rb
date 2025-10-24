@@ -891,7 +891,13 @@ class Pokemon
 
   # @return [String] the name of this Pokémon
   def name
-    return (nicknamed?) ? @name : speciesName
+    return @name if nicknamed?
+    ret = speciesName.clone
+    if [:NIDORANfE, :NIDORANmA].include?(@species)
+      ret.gsub!(/♂$/, "")
+      ret.gsub!(/♀$/, "")
+    end
+    return ret
   end
 
   # @param value [String] the nickname of this Pokémon

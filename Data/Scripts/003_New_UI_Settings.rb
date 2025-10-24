@@ -63,8 +63,6 @@ module Settings
   #       sure which). Gen 9 feature.
   # TODO: Allow forgetting/remembering moves from the summary screen. Gen 9
   #       feature.
-  # TODO: Show usability party balls in the Bag. Maybe?
   # TODO: Replace Run with Call in battle; don't have this depend on the Shadow
   #       type existing?
-  # TODO: Whether new items go at the top or bottom of its Bag pocket?
 end

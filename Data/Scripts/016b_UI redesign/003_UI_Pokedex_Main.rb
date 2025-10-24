@@ -299,7 +299,7 @@ class UI::PokedexVisuals < UI::BaseVisuals
       :refresh_slider,
       :refresh_selected_species,
       :draw_dex_name,
-      :draw_input_indicators,
+      :draw_input_helpers,
       :draw_completion_info,
       :draw_search_results_info
     ]
@@ -369,7 +369,7 @@ class UI::PokedexVisuals < UI::BaseVisuals
   end
 
   def initialize_bitmaps
-    @bitmaps[:input_icons]    = AnimatedBitmap.new(UI_FOLDER + "input_icons")
+    super
     @bitmaps[:slider]         = AnimatedBitmap.new(graphics_folder + "icon_slider")
     @bitmaps[:types]          = AnimatedBitmap.new(graphics_folder + _INTL("icon_types"))
     @bitmaps[:height_weight]  = AnimatedBitmap.new(graphics_folder + _INTL("icon_height_weight"))
@@ -673,7 +673,7 @@ class UI::PokedexVisuals < UI::BaseVisuals
     draw_text(dex_name, Graphics.width / 2, 10, align: :center, theme: :dex_name)
   end
 
-  def draw_input_indicators
+  def draw_input_helpers
     search_text = _INTL("Search")
     text_x = Graphics.width - 4
     image_x = text_x - @sprites[:overlay].bitmap.text_size(search_text).width - 6

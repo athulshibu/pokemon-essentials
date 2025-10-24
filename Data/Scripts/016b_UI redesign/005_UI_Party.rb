@@ -327,6 +327,9 @@ class UI::PartyVisuals < UI::BaseVisuals
   attr_reader :index
 
   GRAPHICS_FOLDER = "Party/"   # Subfolder in Graphics/UI
+  TEXT_COLOR_THEMES = {   # Themes not in DEFAULT_TEXT_COLOR_THEMES
+    :input_helper => [Color.new(248, 248, 248), Color.black],
+  }
 
   def initialize(party, mode = :normal)
     @party = party
@@ -349,16 +352,6 @@ class UI::PartyVisuals < UI::BaseVisuals
   def initialize_sprites
     initialize_panels
     initialize_cancel_button
-    @sprites[:storage_text] = Window_UnformattedTextPokemon.new(
-      (can_access_screen_menu?) ? _INTL("[Action]: Menu") : ""
-    )
-    @sprites[:storage_text].x           = 32
-    @sprites[:storage_text].y           = Graphics.height - @sprites[:message_box].height - 16
-    @sprites[:storage_text].z           = 10
-    @sprites[:storage_text].viewport    = @viewport
-    @sprites[:storage_text].baseColor   = Color.new(248, 248, 248)
-    @sprites[:storage_text].shadowColor = Color.black
-    @sprites[:storage_text].windowskin  = nil
   end
 
   def initialize_panels
@@ -536,7 +529,9 @@ class UI::PartyVisuals < UI::BaseVisuals
   #-----------------------------------------------------------------------------
 
   def refresh
+    super
     ensure_valid_index
+    draw_input_helpers
     refresh_panels
   end
 
@@ -578,6 +573,14 @@ class UI::PartyVisuals < UI::BaseVisuals
       is_able = false if @able_proc2 && !@able_proc2.call(@party[i])
       @sprites["pokemon#{i}"].text = (is_able) ? _INTL("ABLE") : _INTL("NOT ABLE")
     end
+  end
+
+  def draw_input_helpers
+    return if !can_access_screen_menu?
+    draw_image(@bitmaps[:input_icons], 48, Graphics.height - 96,
+               2 * @bitmaps[:input_icons].height, 0,
+               @bitmaps[:input_icons].height, @bitmaps[:input_icons].height)
+    draw_text(_INTL("Menu"), 86, Graphics.height - 90, theme: :input_helper)
   end
 
   #-----------------------------------------------------------------------------
@@ -903,6 +906,7 @@ class UI::Party < UI::BaseScreen
     :effect => proc { |screen|
       pkmn = screen.pokemon
       used_item = nil
+      used = false
       pbFadeOutInWithUpdate(screen.sprites) do
         bag_screen = UI::Bag.new($bag, mode: :choose_item)
         bag_screen.set_filter_proc(proc { |itm|
@@ -916,8 +920,13 @@ class UI::Party < UI::BaseScreen
           next true
         })
         used_item = bag_screen.choose_item
+        if used_item && ItemHandlers.useOpensScreen?(used_item)
+          pbUseItemOnPokemon(used_item, pkmn, bag_screen)
+          screen.refresh
+          used = true
+        end
       end
-      if used_item
+      if used_item && !used
         pbUseItemOnPokemon(used_item, pkmn, screen)
         screen.refresh
       end
@@ -946,6 +955,7 @@ class UI::Party < UI::BaseScreen
   })
   # TODO: Switching Pokémon goes through the regular navigate, but switching items
   #       (here) has the whole switching process in this handler. Be consistent.
+  #       Have a def navigate_switching_items?
   ACTIONS.add(:item_move, {
     :effect => proc { |screen|
       pbPlayDecisionSE

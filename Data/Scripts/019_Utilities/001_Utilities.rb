@@ -450,10 +450,7 @@ def pbMoveTutorAnnotations(move, movelist = nil)
   return ret
 end
 
-# TODO: The Bag screen needs passing into this method (if using a machine). If
-#       it exists, refresh it before finishing pbFadeOutIn to update the party
-#       compatibility icons.
-def pbMoveTutorChoose(move, movelist = nil, by_machine = false, one_use_machine = false)
+def pbMoveTutorChoose(move, movelist = nil, by_machine = false, one_use_machine = false, bag_screen = nil)
   ret = false
   move = GameData::Move.get(move).id
   if movelist.is_a?(Array)
@@ -482,6 +479,7 @@ def pbMoveTutorChoose(move, movelist = nil, by_machine = false, one_use_machine 
       end
       next false
     end
+    bag_screen&.refresh
   end
   return ret   # Returns whether the move was learned by a Pokemon
 end

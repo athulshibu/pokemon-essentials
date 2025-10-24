@@ -1093,18 +1093,22 @@ class UI::PokemonSummaryVisuals < UI::BaseVisuals
   def update_input_move
     # Check for movement to a new move
     if Input.repeat?(Input::UP)
-      max_move_index = (@new_move) ? Pokemon::MAX_MOVES : Pokemon::MAX_MOVES - 1
+      max_move_index = (@new_move) ? Pokemon::MAX_MOVES : @pokemon.numMoves - 1
       @move_index -= 1
-      @move_index = max_move_index if @move_index < 0   # Wrap around
+      if @move_index < 0   # Wrap around
+        @move_index = (Input.trigger?(Input::UP)) ? max_move_index : 0
+      end
       if @move_index < Pokemon::MAX_MOVES && @move_index >= @pokemon.numMoves
-        @move_index = @pokemon.numMoves - 1   # Wrap around
+        @move_index = @pokemon.numMoves - 1   # Go to last move
       end
     elsif Input.repeat?(Input::DOWN)
-      max_move_index = (@new_move) ? Pokemon::MAX_MOVES : Pokemon::MAX_MOVES - 1
+      max_move_index = (@new_move) ? Pokemon::MAX_MOVES : @pokemon.numMoves - 1
       @move_index += 1
-      @move_index = 0 if @move_index > max_move_index   # Wrap around
+      if @move_index > max_move_index   # Wrap around
+        @move_index = (Input.trigger?(Input::DOWN)) ? 0 : max_move_index
+      end
       if @move_index < Pokemon::MAX_MOVES && @move_index >= @pokemon.numMoves
-        @move_index = (@new_move) ? max_move_index : 0   # Wrap around or go to new move
+        @move_index = max_move_index   # Go to new move
       end
     end
     # Check for interaction
@@ -1188,18 +1192,26 @@ class UI::PokemonSummaryVisuals < UI::BaseVisuals
     # Check for movement to a new ribbon
     if Input.repeat?(Input::UP)
       total_rows = [((@pokemon.ribbons.length + RIBBON_COLUMNS - 1) / RIBBON_COLUMNS).floor, RIBBON_ROWS].max
-      @ribbon_index -= RIBBON_COLUMNS
-      @ribbon_index += total_rows * RIBBON_COLUMNS if @ribbon_index < 0   # Wrap around
+      if @ribbon_index >= RIBBON_COLUMNS || Input.trigger?(Input::UP)
+        @ribbon_index -= RIBBON_COLUMNS
+        @ribbon_index += total_rows * RIBBON_COLUMNS if @ribbon_index < 0   # Wrap around
+      end
     elsif Input.repeat?(Input::DOWN)
       total_rows = [((@pokemon.ribbons.length + RIBBON_COLUMNS - 1) / RIBBON_COLUMNS).floor, RIBBON_ROWS].max
-      @ribbon_index += RIBBON_COLUMNS
-      @ribbon_index -= total_rows * RIBBON_COLUMNS if @ribbon_index >= total_rows * RIBBON_COLUMNS   # Wrap around
+      if @ribbon_index < (total_rows - 1) * RIBBON_COLUMNS || Input.trigger?(Input::DOWN)
+        @ribbon_index += RIBBON_COLUMNS
+        @ribbon_index -= total_rows * RIBBON_COLUMNS if @ribbon_index >= total_rows * RIBBON_COLUMNS   # Wrap around
+      end
     elsif Input.repeat?(Input::LEFT)
-      @ribbon_index -= 1
-      @ribbon_index += RIBBON_COLUMNS if (@ribbon_index % RIBBON_COLUMNS) == RIBBON_COLUMNS - 1
+      if (@ribbon_index % RIBBON_COLUMNS) > 0 || Input.trigger?(Input::LEFT)
+        @ribbon_index -= 1
+        @ribbon_index += RIBBON_COLUMNS if (@ribbon_index % RIBBON_COLUMNS) == RIBBON_COLUMNS - 1
+      end
     elsif Input.repeat?(Input::RIGHT)
-      @ribbon_index += 1
-      @ribbon_index -= RIBBON_COLUMNS if (@ribbon_index % RIBBON_COLUMNS) == 0
+      if (@ribbon_index % RIBBON_COLUMNS) < RIBBON_COLUMNS - 1 || Input.trigger?(Input::RIGHT)
+        @ribbon_index += 1
+        @ribbon_index -= RIBBON_COLUMNS if (@ribbon_index % RIBBON_COLUMNS) == 0
+      end
     end
     # Check for interaction
     if Input.trigger?(Input::USE)

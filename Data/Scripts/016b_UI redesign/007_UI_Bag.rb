@@ -185,7 +185,7 @@ class UI::BagVisuals < UI::BaseVisuals
   end
 
   def initialize_bitmaps
-    @bitmaps[:input_icons]  = AnimatedBitmap.new(UI_FOLDER + "input_icons")
+    super
     @bitmaps[:slider]       = AnimatedBitmap.new(graphics_folder + "icon_slider")
     @bitmaps[:pocket_icons] = AnimatedBitmap.new(graphics_folder + "icon_pocket")
     @bitmaps[:party_icons]  = AnimatedBitmap.new(graphics_folder + "icon_party")

@@ -1038,10 +1038,10 @@ MenuHandlers.add(:pokemon_debug_menu, :shadow_pkmn, {
   "name"   => _INTL("Shadow Pkmn..."),
   "parent" => :main,
   "effect" => proc { |pkmn, party_index, setting_up_battle, screen|
-    # TODO: Option to make not a Shadow Pokémon.
     commands = {
       :make_shadow     => _INTL("Make Shadow"),
-      :set_heart_gauge => _INTL("Set heart gauge")
+      :set_heart_gauge => _INTL("Set heart gauge"),
+      :purify          => _INTL("Purify")
     }
     cmd = commands.keys.first
     loop do
@@ -1067,6 +1067,13 @@ MenuHandlers.add(:pokemon_debug_menu, :shadow_pkmn, {
             pkmn.adjustHeart(new_val - pkmn.heart_gauge)
             pkmn.check_ready_to_purify
           end
+        else
+          screen.show_message(_INTL("{1} is not a Shadow Pokémon.", pkmn.name))
+        end
+      when :purify
+        if pkmn.shadowPokemon?
+          pkmn.adjustHeart(-pkmn.heart_gauge)
+          pbPurify(pkmn, screen)
         else
           screen.show_message(_INTL("{1} is not a Shadow Pokémon.", pkmn.name))
         end
