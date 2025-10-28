@@ -190,7 +190,7 @@ class UI::SavePanel < UI::SpriteContainer
     if save_time && save_time != 0
       save_time = Time.at(save_time)
       if Translation.month_day_date_format?
-        save_text = save_time.strftime("%-m/&-d/%Y")
+        save_text = save_time.strftime("%-m/%-d/%Y")
       else
         save_text = save_time.strftime("%-d/%-m/%Y")
       end
@@ -340,7 +340,7 @@ class UI::SaveVisuals < UI::BaseVisuals
     elsif $stats.save_count > 0 && $stats.real_time_saved && $stats.real_time_saved > 0
       save_time = Time.at($stats.real_time_saved)
       if Translation.month_day_date_format?
-        date_text = save_time.strftime("%-m/&-d/%Y")
+        date_text = save_time.strftime("%-m/%-d/%Y")
       else
         date_text = save_time.strftime("%-d/%-m/%Y")
       end

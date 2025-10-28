@@ -280,7 +280,7 @@ class UI::LoadContinuePanel < UI::LoadPanel
     if save_time
       save_time = Time.at(save_time)
       if Translation.month_day_date_format?
-        save_text = save_time.strftime("%-m/&-d/%Y")
+        save_text = save_time.strftime("%-m/%-d/%Y")
       else
         save_text = save_time.strftime("%-d/%-m/%Y")
       end
