@@ -417,16 +417,11 @@ class UI::LoadVisuals < UI::BaseVisuals
     # Determine whether the Mystery Gift option is visible
     @sprites[:mystery_gift].visible = @save_data[@slot_index][1][:player].mystery_gift_unlocked
     refresh_panel_positions
-    # Set the options, and change the language if relevant
+    # Set the options, and reapply all options
     old_language = $PokemonSystem.language
-    # TODO: Screen size isn't changed. Anything else that should be but isn't?
-    #       Should screen size actually change here, or only upon loading a save
-    #       file?
     SaveData.load_bootup_values(@save_data[@slot_index][1], true)
-    if $PokemonSystem.language != old_language && Settings::LANGUAGES[$PokemonSystem.language]
-      MessageTypes.load_message_files(Settings::LANGUAGES[$PokemonSystem.language][1])
-      full_refresh
-    end
+    $PokemonSystem.reapply_all_options
+    full_refresh if $PokemonSystem.language != old_language
     pbPlayCursorSE if !forced
   end
 
@@ -621,7 +616,7 @@ class UI::Load < UI::BaseScreen
       end
     end
     SaveData.load_bootup_values(@save_data[@default_slot_index][1], true) if !@save_data.empty?
-    MessageTypes.load_message_files(Settings::LANGUAGES[$PokemonSystem.language][1]) if Settings::LANGUAGES[$PokemonSystem.language]
+    $PokemonSystem.reapply_all_options
   end
 
   def prompt_save_deletion(filename)
@@ -661,9 +656,7 @@ class UI::Load < UI::BaseScreen
   ACTIONS.add(:options, {
     :effect => proc { |screen|
       pbFadeOutInWithUpdate(screen.sprites) do
-        options_scene = PokemonOption_Scene.new
-        options_screen = PokemonOptionScreen.new(options_scene)
-        options_screen.pbStartScreen(true)
+        UI::Options.new(true).main
         screen.full_refresh
       end
     }
@@ -672,7 +665,6 @@ class UI::Load < UI::BaseScreen
     :effect => proc { |screen|
       screen.end_screen
       $PokemonSystem.language = pbChooseLanguage
-      MessageTypes.load_message_files(Settings::LANGUAGES[$PokemonSystem.language][1])
       if screen.save_data[screen.slot_index]
         screen.save_data[screen.slot_index][1][:pokemon_system] = $PokemonSystem
         File.open(SaveData::DIRECTORY + screen.save_data[screen.slot_index][0], "wb") do |file|
