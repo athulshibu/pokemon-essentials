@@ -577,10 +577,7 @@ class UI::PartyVisuals < UI::BaseVisuals
 
   def draw_input_helpers
     return if !can_access_screen_menu?
-    draw_image(@bitmaps[:input_icons], 48, Graphics.height - 96,
-               2 * @bitmaps[:input_icons].height, 0,
-               @bitmaps[:input_icons].height, @bitmaps[:input_icons].height)
-    draw_text(_INTL("Menu"), 86, Graphics.height - 90, theme: :input_helper)
+    draw_input_icon(48, Graphics.height - 96, Input::ACTION, _INTL("Menu"), theme: :input_helper)
   end
 
   #-----------------------------------------------------------------------------

@@ -381,8 +381,12 @@ module UI
 
     #---------------------------------------------------------------------------
 
+    def highest_viewport
+      return @viewport
+    end
+
     def set_viewport_color(new_color)
-      @viewport.color = new_color
+      highest_viewport.color = new_color
     end
 
     def fade_in
@@ -696,6 +700,18 @@ module UI
     #---------------------------------------------------------------------------
 
     def refresh_on_index_changed(old_index)
+    end
+
+    def draw_input_icon(input_x, input_y, input, text = nil, text_spacing = 6, theme: :default, overlay: :overlay)
+      input_index = [Input::USE, Input::BACK, Input::ACTION].index(input) || 0
+      draw_image(@bitmaps[:input_icons], input_x, input_y,
+                input_index * @bitmaps[:input_icons].height, 0,
+                @bitmaps[:input_icons].height, @bitmaps[:input_icons].height,
+                overlay: overlay)
+      if text
+        draw_text(text, input_x + @bitmaps[:input_icons].height + text_spacing, input_y + 8,
+                  theme: theme, overlay: overlay)
+      end
     end
 
     #---------------------------------------------------------------------------

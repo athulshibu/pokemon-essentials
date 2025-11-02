@@ -565,21 +565,18 @@ class UI::PokedexEntryVisuals < UI::BaseVisuals
       # Navigate map
       if @sub_mode == :scroll_map || map_scrollable?
         draw_image(@bitmaps[:area_navigate], 0, 40)
-        input = (@sub_mode == :scroll_map) ? 1 : 0   # Cancel : Use
-        draw_image(@bitmaps[:input_icons], 2, 44,
-                   input * @bitmaps[:input_icons].height, 0, @bitmaps[:input_icons].height, @bitmaps[:input_icons].height)
+        input = (@sub_mode == :scroll_map) ? Input::BACK : Input::USE
+        draw_input_icon(2, 44, input)
       end
       # Change region
       if @unlocked_regions.length > 1
-        draw_image(@bitmaps[:input_icons], Graphics.width - 34, 44,
-                  @bitmaps[:input_icons].height * 2, 0, @bitmaps[:input_icons].height, @bitmaps[:input_icons].height)
+        draw_input_icon(Graphics.width - 34, 44, Input::ACTION)
       end
     when :forms
       # Choose form
       if @sub_mode == :forms || @viewable_forms.length > 1
-        input = (@sub_mode == :forms) ? 1 : 0   # Cancel : Use
-        draw_image(@bitmaps[:input_icons], Graphics.width - 78, Graphics.height - 46,
-                   input * @bitmaps[:input_icons].height, 0, @bitmaps[:input_icons].height, @bitmaps[:input_icons].height)
+        input = (@sub_mode == :forms) ? Input::BACK : Input::USE
+        draw_input_icon(Graphics.width - 78, Graphics.height - 46, input)
       end
     end
   end

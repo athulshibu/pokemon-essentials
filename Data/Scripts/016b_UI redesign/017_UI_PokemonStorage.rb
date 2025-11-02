@@ -11,6 +11,12 @@ class UI::PokemonStorageVisualsSidePane < UI::SpriteContainer
   MARK_WIDTH  = 16
   MARK_HEIGHT = 16
 
+  def initialize(viewport, pokemon_viewport, side_pane_viewport)
+    @pokemon_viewport = pokemon_viewport
+    @side_pane_viewport = side_pane_viewport
+    super(viewport)
+  end
+
   def initialize_bitmaps
     @bitmaps[:types]    = AnimatedBitmap.new(UI_FOLDER + _INTL("types"))
     @bitmaps[:markings] = AnimatedBitmap.new(graphics_folder + "markings")
@@ -19,36 +25,50 @@ class UI::PokemonStorageVisualsSidePane < UI::SpriteContainer
 
   def initialize_sprites
     initialize_pane_bg
-    initialize_overlay
     initialize_pokemon_sprite
+    initialize_overlay
   end
 
   def initialize_pane_bg
-    add_icon_sprite(:pane_bg, 0, 0, graphics_folder + "overlay_side_pane")
-    record_values(:pane_bg)
-  end
-
-  def initialize_overlay
-    add_overlay(:overlay, @sprites[:pane_bg].bitmap.width, @sprites[:pane_bg].bitmap.height)
-    @sprites[:overlay].z = 10
-    record_values(:overlay)
+    # Background of the side pane (the part behind the Pokémon sprite)
+    add_icon_sprite(:pane_rear_bg, 0, 0, graphics_folder + "overlay_side_pane_bg")
+    record_values(:pane_rear_bg)
   end
 
   def initialize_pokemon_sprite
-    # TODO: The Pokémon sprite probably needs its own viewport, to avoid
-    #       spillover of overly large sprites. Also put the side bar (except the
-    #       sprite's background) in a higher viewport to cover it and still
-    #       cover the moving boxes.
-    @sprites[:pokemon] = UI::PokemonStorageVisualsMosaicPokemonSprite.new(@viewport)
+    # Create a viewport just for the Pokémon sprite, so that large sprites are
+    # cropped and don't spill over onto the rest of the pane.
+    # Pokémon sprite
+    @sprites[:pokemon] = UI::PokemonStorageVisualsMosaicPokemonSprite.new(@pokemon_viewport)
     @sprites[:pokemon].setOffset(PictureOrigin::CENTER)
-    @sprites[:pokemon].x = 90
-    @sprites[:pokemon].y = 164
-    @sprites[:pokemon].z = 1
+    @sprites[:pokemon].x = @pokemon_viewport.rect.width / 2
+    @sprites[:pokemon].y = @pokemon_viewport.rect.height / 2
     record_values(:pokemon)
     mosaic_pokemon_sprite
   end
 
+  def initialize_overlay
+    # Side pane (the part in front of the Pokémon sprite, which is most of it)
+    add_icon_sprite(:pane_bg, 0, 0, graphics_folder + "overlay_side_pane")
+    @sprites[:pane_bg].viewport = @side_pane_viewport
+    record_values(:pane_bg)
+    # Overlay for the side pane text
+    add_overlay(:overlay, @sprites[:pane_bg].bitmap.width, @sprites[:pane_bg].bitmap.height)
+    @sprites[:overlay].z = 10
+    @sprites[:overlay].viewport = @side_pane_viewport
+    record_values(:overlay)
+  end
+
   #-----------------------------------------------------------------------------
+
+  def y=(value)
+    @y = value
+    @sprites.each_pair do |key, sprite|
+      next if key == :pokemon
+      sprite.y = @y + @sprites_values[key][:y]
+    end
+    @pokemon_viewport.rect.y = value + 80
+  end
 
   def width
     return @sprites[:pane_bg].width
@@ -706,6 +726,14 @@ class UI::PokemonStorageVisuals < UI::BaseVisuals
     set_index(@index)
   end
 
+  def initialize_viewport
+    super
+    @pokemon_viewport = Viewport.new(6, 80, 168, 168)   # Coords are relative to top left of side pane graphic
+    @pokemon_viewport.z = @viewport.z + 1
+    @side_pane_viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+    @side_pane_viewport.z = @viewport.z + 2
+  end
+
   def initialize_bitmaps
     @bitmaps[:markings] = AnimatedBitmap.new(graphics_folder + "markings")
   end
@@ -725,7 +753,7 @@ class UI::PokemonStorageVisuals < UI::BaseVisuals
   end
 
   def initialize_side_pane
-    @sprites[:side_pane] = UI::PokemonStorageVisualsSidePane.new(@viewport)
+    @sprites[:side_pane] = UI::PokemonStorageVisualsSidePane.new(@viewport, @pokemon_viewport, @side_pane_viewport)
     @sprites[:side_pane].y = 16
     @sprites[:side_pane].z = 100
   end
@@ -783,7 +811,17 @@ class UI::PokemonStorageVisuals < UI::BaseVisuals
     @sprites[:exit_button].visible = (@mode != :deposit)
   end
 
+  def dispose
+    super
+    @pokemon_viewport.dispose
+    @side_pane_viewport.dispose
+  end
+
   #-----------------------------------------------------------------------------
+
+  def highest_viewport
+    return @side_pane_viewport
+  end
 
   def can_access_screen_menu?
     return @mode == :organize

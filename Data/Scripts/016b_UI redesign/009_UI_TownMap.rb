@@ -27,9 +27,9 @@ class UI::TownMapVisuals < UI::BaseVisuals
   end
 
   def initialize_viewport
+    super
     @map_viewport = Viewport.new(*MAP_TOP_LEFT, *MAP_SIZE)
     @map_viewport.z = 99999
-    @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @viewport.z = @map_viewport.z + 1
   end
 
@@ -563,36 +563,31 @@ class UI::TownMapVisuals < UI::BaseVisuals
     input_x = 4
     action_icon_y = 4
     action_text_y = 12
-    draw_input = lambda do |number, action_text|
-      draw_image(@bitmaps[:input_icons], input_x, action_icon_y,
-                number * @bitmaps[:input_icons].height, 0,
-                @bitmaps[:input_icons].height, @bitmaps[:input_icons].height,
-                overlay: :input_helpers_overlay)
-      draw_text(action_text, input_x + @bitmaps[:input_icons].height + icon_text_spacing, action_text_y,
-                theme: :white, overlay: :input_helpers_overlay)
+    draw_input = lambda do |input, action_text|
+      draw_input_icon(input_x, action_icon_y, input, action_text, theme: :white, overlay: :input_helpers_overlay)
       input_x += @bitmaps[:input_icons].height + icon_text_spacing
       input_x += @sprites[:input_helpers_overlay].bitmap.text_size(action_text).width
       input_x += input_spacing
     end
     if @mode == :fly || @sub_mode == :fly
-      draw_input.call(0, _INTL("Fly"))
-      draw_input.call(1, _INTL("Cancel")) if @sub_mode == :fly
+      draw_input.call(Input::USE, _INTL("Fly"))
+      draw_input.call(Input::BACK, _INTL("Cancel")) if @sub_mode == :fly
       return
     end
     if can_mark?
-      draw_input.call(0, _INTL("Mark"))
+      draw_input.call(Input::USE, _INTL("Mark"))
     end
     if can_zoom?
-      draw_input.call(0, _INTL("Zoom"))
+      draw_input.call(Input::USE, _INTL("Zoom"))
     elsif zoomed?
-      draw_input.call(1, _INTL("Zoom"))
+      draw_input.call(Input::BACK, _INTL("Zoom"))
     end
     if can_access_screen_menu?
       options = screen_menu_options
       if options.length == 2 && options.include?(:fly_mode)   # Also contains :cancel
-        draw_input.call(2, _INTL("Fly"))
+        draw_input.call(Input::ACTION, _INTL("Fly"))
       else
-        draw_input.call(2, _INTL("Menu"))
+        draw_input.call(Input::ACTION, _INTL("Menu"))
       end
     end
   end

@@ -4,7 +4,6 @@
 class UI::PauseMenuVisuals < UI::BaseVisuals
   def initialize
     @info_text_visible = false
-#    @help_text_visible = false
     super
   end
 
@@ -19,9 +18,6 @@ class UI::PauseMenuVisuals < UI::BaseVisuals
     # Info text box
     @sprites[:info_text] = Window_UnformattedTextPokemon.newWithSize("", 0, 0, 32, 32, @viewport)
     @sprites[:info_text].visible = false
-    # Help text box
-#    @sprites[:help_text] = Window_UnformattedTextPokemon.newWithSize("", 0, 0, 32, 32, @viewport)
-#    @sprites[:help_text].visible = false
   end
 
   #-----------------------------------------------------------------------------
@@ -43,13 +39,11 @@ class UI::PauseMenuVisuals < UI::BaseVisuals
   def show_menu
     @sprites[:commands].visible = true
     @sprites[:info_text].visible = @info_text_visible
-#    @sprites[:help_text].visible = @help_text_visible
   end
 
   def hide_menu
     @sprites[:commands].visible = false
     @sprites[:info_text].visible = false
-#    @sprites[:help_text].visible = false
   end
 
   # Used in Safari Zone and Bug-Catching Contest to show extra information.
@@ -59,15 +53,6 @@ class UI::PauseMenuVisuals < UI::BaseVisuals
     @sprites[:info_text].visible = true
     @info_text_visible = true
   end
-
-  # Unused.
-#  def show_help(text)
-#    @sprites[:help_text].resizeToFit(text, Graphics.height)
-#    @sprites[:help_text].text    = text
-#    @sprites[:help_text].visible = true
-#    pbBottomLeft(@sprites[:help_text])
-#    @help_text_visible = true
-#  end
 
   #-----------------------------------------------------------------------------
 

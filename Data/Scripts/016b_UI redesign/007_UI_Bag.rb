@@ -3,6 +3,8 @@
 #===============================================================================
 class UI::BagVisualsList < Window_DrawableCommand
   attr_accessor :sorting
+  attr_writer   :disable_sorting
+  attr_writer   :switching_base_color, :switching_shadow_color
 
   def initialize(bag, x, y, width, height, viewport)
     @bag = bag
@@ -45,18 +47,6 @@ class UI::BagVisualsList < Window_DrawableCommand
   def sort_mode=(value)
     @sort_mode = value
     refresh
-  end
-
-  def disable_sorting=(value)
-    @disable_sorting = value
-  end
-
-  def switching_base_color=(value)
-    @switching_base_color = value
-  end
-
-  def switching_shadow_color=(value)
-    @switching_shadow_color = value
   end
 
   #-----------------------------------------------------------------------------
@@ -438,23 +428,17 @@ class UI::BagVisuals < UI::BaseVisuals
     return if item.nil?
     action_icon_x = 4
     action_icon_y = 244
-    action_text_x = 42
-    action_text_y = 250
     if @pocket == :Machines
       action_text = _INTL("Show details")
       if @show_move_details
         action_icon_y = 78
-        action_text_y = 84
         action_text = _INTL("Hide details")
       end
     elsif can_access_screen_menu?
       action_text = _INTL("Sort pocket")
     end
     if action_text
-      draw_image(@bitmaps[:input_icons], action_icon_x, action_icon_y,
-                 2 * @bitmaps[:input_icons].height, 0,
-                 @bitmaps[:input_icons].height, @bitmaps[:input_icons].height)
-      draw_text(action_text, action_text_x, action_text_y, theme: :white)
+      draw_input_icon(action_icon_x, action_icon_y, Input::ACTION, action_text, theme: :white)
     end
   end
 

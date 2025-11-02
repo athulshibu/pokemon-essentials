@@ -96,9 +96,9 @@ class UI::PokemonSummaryVisuals < UI::BaseVisuals
   MARKING_HEIGHT                 = 16
   MOVE_LIST_X                    = 230
   MOVE_LIST_X_DETAILED           = MOVE_LIST_X + 32
-  MOVE_LIST_Y                    = 98
+  MOVE_LIST_Y                    = 92
   MOVE_LIST_SPACING              = 64    # Y distance between top of two adjacent move areas
-  MOVE_LIST_OFFSET_WHEN_NEW_MOVE = -76   # Offset for y coordinate
+  MOVE_LIST_OFFSET_WHEN_NEW_MOVE = -70   # Offset for y coordinate
   MOVE_LIST_NEW_MOVE_SPACING     = 22    # New move is separated from known moves
   RIBBON_SIZE                    = [64, 64]   # [width, height]
   RIBBON_SPACING_X               = 4
@@ -123,7 +123,8 @@ class UI::PokemonSummaryVisuals < UI::BaseVisuals
       :draw_original_trainer_details,
       :draw_held_item,
       :draw_exp,
-      :draw_shadow_pokemon_info
+      :draw_shadow_pokemon_info,
+      :draw_input_helpers
     ]
   })
   PAGE_HANDLERS.add(:skills, {
@@ -133,7 +134,8 @@ class UI::PokemonSummaryVisuals < UI::BaseVisuals
     :draw       => [
       :draw_common_page_contents,
       :draw_stats,
-      :draw_ability
+      :draw_ability,
+      :draw_input_helpers
     ]
   })
   PAGE_HANDLERS.add(:moves, {
@@ -142,7 +144,8 @@ class UI::PokemonSummaryVisuals < UI::BaseVisuals
     :icon_index => 2,
     :draw       => [
       :draw_common_page_contents,
-      :draw_moves_list
+      :draw_moves_list,
+      :draw_input_helpers
     ]
   })
   PAGE_HANDLERS.add(:ribbons, {
@@ -154,7 +157,8 @@ class UI::PokemonSummaryVisuals < UI::BaseVisuals
       :draw_common_page_contents,
       :draw_ribbon_count,
       :draw_ribbons_in_grid,
-      :draw_ribbon_properties
+      :draw_ribbon_properties,
+      :draw_input_helpers
     ]
   })
   PAGE_HANDLERS.add(:memo, {
@@ -163,7 +167,8 @@ class UI::PokemonSummaryVisuals < UI::BaseVisuals
     :icon_index => 4,
     :draw       => [
       :draw_common_page_contents,
-      :draw_memo
+      :draw_memo,
+      :draw_input_helpers
     ]
   })
   PAGE_HANDLERS.add(:egg_memo, {
@@ -177,7 +182,8 @@ class UI::PokemonSummaryVisuals < UI::BaseVisuals
       :draw_pokemon_name,
       :draw_party_icons,
       :draw_markings,
-      :draw_egg_memo
+      :draw_egg_memo,
+      :draw_input_helpers
     ]
   })
   # Pseudo-page, only used to draw different contents for the detailed moves
@@ -190,7 +196,8 @@ class UI::PokemonSummaryVisuals < UI::BaseVisuals
       :draw_page_icons,
       :draw_pokemon_types_for_detailed_moves_page,
       :draw_moves_list,
-      :draw_move_properties
+      :draw_move_properties,
+      :draw_input_helpers
     ]
   })
 
@@ -217,6 +224,7 @@ class UI::PokemonSummaryVisuals < UI::BaseVisuals
   end
 
   def initialize_bitmaps
+    super
     @bitmaps[:types]       = AnimatedBitmap.new(UI_FOLDER + _INTL("types"))
     @bitmaps[:markings]    = AnimatedBitmap.new(graphics_folder + "markings")
     @bitmaps[:numbers]     = AnimatedBitmap.new(graphics_folder + "numbers")
@@ -592,6 +600,45 @@ class UI::PokemonSummaryVisuals < UI::BaseVisuals
     if status >= 0
       draw_image(UI_FOLDER + _INTL("statuses"), 12, 364,
                 0, status * GameData::Status::ICON_SIZE[1], *GameData::Status::ICON_SIZE)
+    end
+  end
+
+  def draw_input_helpers
+    case @page
+    when :info, :skills, :memo, :egg_memo
+      draw_input_icon(22, Graphics.height - 106, Input::USE)
+    when :moves
+      text = nil
+      helper_x = Graphics.width - 4
+      helper_y = Graphics.height - @bitmaps[:input_icons].height
+      if @move_index   # Viewing move details
+        text = _INTL("Rearrange") if ![:in_battle, :choose_move].include?(@mode)
+      else   # Viewing page generally
+        text = _INTL("Details")
+      end
+      if text
+        helper_x -= @sprites[:overlay].bitmap.text_size(text).width
+        helper_x -= 6
+        helper_x -= @bitmaps[:input_icons].height
+        draw_input_icon(helper_x, helper_y, Input::USE, text, theme: :white)
+      end
+    when :ribbons
+      text = nil
+      if @ribbon_index
+        text = _INTL("Rearrange") if @mode != :in_battle
+        helper_x = Graphics.width - 10
+        helper_y = Graphics.height - 100
+      else
+        text = _INTL("Details")
+        helper_x = Graphics.width - 4
+        helper_y = Graphics.height - 88
+      end
+      if text
+        helper_x -= @sprites[:overlay].bitmap.text_size(text).width
+        helper_x -= 6
+        helper_x -= @bitmaps[:input_icons].height
+        draw_input_icon(helper_x, helper_y, Input::USE, text, theme: :white)
+      end
     end
   end
 
@@ -1074,9 +1121,13 @@ class UI::PokemonSummaryVisuals < UI::BaseVisuals
         pbPlayDecisionSE
         return :navigate_moves
       when :ribbons
+        pbPlayDecisionSE
         return :navigate_ribbons
       else
-        return :interact_menu if @mode != :in_battle
+        if @mode != :in_battle
+          pbPlayDecisionSE
+          return :interact_menu
+        end
       end
     when Input::ACTION
       @pokemon.play_cry if !@pokemon.egg?
@@ -1455,9 +1506,7 @@ class UI::PokemonSummary < UI::BaseScreen
   })
   ACTIONS.add(:navigate_moves, {
     :returns_value => true,
-    :effect => proc { |screen|
-      # NOTE: Doesn't have pbPlayDecisionSE here because this is also called by
-      #       def choose_move, which plays its own SE at the same time.
+    :effect        => proc { |screen|
       move_index = screen.visuals.navigate_moves
       next move_index if screen.mode == :choose_move
       screen.refresh
@@ -1466,7 +1515,6 @@ class UI::PokemonSummary < UI::BaseScreen
   })
   ACTIONS.add(:navigate_ribbons, {
     :effect => proc { |screen|
-      pbPlayDecisionSE
       screen.visuals.navigate_ribbons
       screen.refresh
     }
