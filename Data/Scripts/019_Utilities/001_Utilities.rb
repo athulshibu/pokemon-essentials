@@ -423,8 +423,10 @@ end
 # Other utilities.
 #===============================================================================
 def pbTextEntry(helptext, minlength, maxlength, variableNumber)
-  $game_variables[variableNumber] = pbEnterText(helptext, minlength, maxlength)
-  $game_map.need_refresh = true if $game_map
+  pbFadeOutIn do
+    $game_variables[variableNumber] = pbEnterText(helptext, minlength, maxlength)
+    $game_map.need_refresh = true if $game_map
+  end
 end
 
 def pbMoveTutorAnnotations(move, movelist = nil)

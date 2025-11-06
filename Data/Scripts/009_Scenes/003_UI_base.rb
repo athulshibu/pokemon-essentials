@@ -330,6 +330,7 @@ module UI
 
     def initialize
       @sub_mode = :none
+      @viewports = []
       @bitmaps = {}
       @sprites = {}
       initialize_viewport
@@ -342,8 +343,14 @@ module UI
     end
 
     def initialize_viewport
-      @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-      @viewport.z = 99999
+      @viewport = new_viewport(0, 0, Graphics.width, Graphics.height)
+    end
+
+    def new_viewport(view_x, view_y, view_width, view_height)
+      ret = Viewport.new(view_x, view_y, view_width, view_height)
+      ret.z = 99999
+      @viewports.push(ret)
+      return ret
     end
 
     def initialize_bitmaps
@@ -381,15 +388,30 @@ module UI
 
     #---------------------------------------------------------------------------
 
-    def highest_viewport
-      return @viewport
+    # NOTE: The returned viewport should have the highest z of all viewports in
+    #       this UI, because its colour is changed in def fade_in and fade_out.
+    #       If you have a non-full screen viewport as your highest, you must
+    #       make an unused full screen viewport higher than it to ensure
+    #       everything in the UI fades in/out.
+    def highest_full_viewport
+      ret = @viewport
+      ret_z = ret.z
+      @viewports.each do |viewport|
+        next if viewport.z < ret_z
+        next if viewport.rect.x != 0 || viewport.rect.y != 0 ||
+                viewport.rect.width != Graphics.width || viewport.rect.height != Graphics.height
+        ret = viewport
+        ret_z = viewport.z
+      end
+      return ret
     end
 
     def set_viewport_color(new_color)
-      highest_viewport.color = new_color
+      highest_full_viewport.color = new_color
     end
 
     def fade_in
+      @viewports.each { |viewport| viewport.visible = true }
       duration = 0.4   # In seconds
       col = Color.new(0, 0, 0, 0)
       timer_start = System.uptime
@@ -415,11 +437,12 @@ module UI
         update_visuals
         break if col.alpha == 255
       end
+      @viewports.each { |viewport| viewport.visible = false }
     end
 
     def dispose
       super
-      @viewport.dispose
+      @viewports.each { |viewport| viewport.dispose }
     end
 
     #---------------------------------------------------------------------------

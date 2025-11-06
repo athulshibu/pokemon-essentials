@@ -276,7 +276,7 @@ class UI::PokemonStorageVisualsPokemonIcon < PokemonIconSprite
     (size + 2).times do |j|
       (size + 2).times do |i|
         if pixels[(j * (size + 2)) + i] == 3
-          @selected_bitmap.fill_rect(i * 2, j * 2, 2, 2, Color.new(255,255,0))
+          @selected_bitmap.fill_rect(i * 2, j * 2, 2, 2, Color.new(255, 255, 0))
         end
         next if pixels[(j * (size + 2)) + i] != 2
         @selected_bitmap.fill_rect(i * 2, j * 2, 2, 2, OUTLINE_COLOR)
@@ -728,10 +728,10 @@ class UI::PokemonStorageVisuals < UI::BaseVisuals
 
   def initialize_viewport
     super
-    @pokemon_viewport = Viewport.new(6, 80, 168, 168)   # Coords are relative to top left of side pane graphic
-    @pokemon_viewport.z = @viewport.z + 1
-    @side_pane_viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @side_pane_viewport.z = @viewport.z + 2
+    @pokemon_viewport = new_viewport(6, 80, 168, 168)   # Coords are relative to top left of side pane graphic
+    @pokemon_viewport.z += 1
+    @side_pane_viewport = new_viewport(0, 0, Graphics.width, Graphics.height)
+    @side_pane_viewport.z += 2
   end
 
   def initialize_bitmaps
@@ -811,17 +811,7 @@ class UI::PokemonStorageVisuals < UI::BaseVisuals
     @sprites[:exit_button].visible = (@mode != :deposit)
   end
 
-  def dispose
-    super
-    @pokemon_viewport.dispose
-    @side_pane_viewport.dispose
-  end
-
   #-----------------------------------------------------------------------------
-
-  def highest_viewport
-    return @side_pane_viewport
-  end
 
   def can_access_screen_menu?
     return @mode == :organize
@@ -861,8 +851,8 @@ class UI::PokemonStorageVisuals < UI::BaseVisuals
     return @box == -1
   end
 
-  def set_index(new_index)
-    mosaic_pokemon_sprite
+  def set_index(new_index, no_mosaic = false)
+    mosaic_pokemon_sprite if !no_mosaic
     @index = new_index
     refresh_on_index_changed(@index)
   end
@@ -1997,17 +1987,19 @@ class UI::PokemonStorage < UI::BaseScreen
       end
       # Give an item
       new_item = nil
-      pbFadeOutInWithUpdate(screen.sprites) do
-        bag_screen = UI::Bag.new($bag, mode: :choose_item)
-        bag_screen.set_filter_proc(proc { |itm| GameData::Item.get(itm).can_hold? })
-        new_item = bag_screen.choose_item
-        screen.deselect_pokemon if !new_item
-      end
+      screen.visuals.fade_out
+      bag_screen = UI::Bag.new($bag, mode: :choose_item)
+      bag_screen.set_filter_proc(proc { |itm| GameData::Item.get(itm).can_hold? })
+      new_item = bag_screen.choose_item
+      screen.deselect_pokemon if !new_item
       if new_item
         item_name = GameData::Item.get(new_item).name
         pkmn.item = new_item
         $bag.remove(new_item)
         screen.refresh
+      end
+      screen.visuals.fade_in
+      if new_item
         screen.show_message(_INTL("{1} is now being held.", item_name))
         screen.deselect_pokemon
       end
@@ -2033,13 +2025,13 @@ class UI::PokemonStorage < UI::BaseScreen
   })
   ACTIONS.add(:rename_box, {
     :effect => proc { |screen|
-      pbFadeOutInWithUpdate(screen.sprites) do
-        ret = pbEnterBoxName(_INTL("Box name?"), 0, 16)
-        if ret.length > 0
-          screen.storage[screen.storage.currentBox].name = ret
-          screen.refresh_box
-        end
+      screen.visuals.fade_out
+      ret = pbEnterBoxName(_INTL("Box name?"), 0, 16, screen.storage[screen.storage.currentBox].name)
+      if ret.length > 0
+        screen.storage[screen.storage.currentBox].name = ret
+        screen.refresh_box
       end
+      screen.visuals.fade_in
     }
   })
   ACTIONS.add(:change_box_wallpaper, {
@@ -2077,16 +2069,16 @@ class UI::PokemonStorage < UI::BaseScreen
 
   ACTIONS.add(:summary, {
     :effect => proc { |screen|
-      pbFadeOutInWithUpdate(screen.sprites) do
-        screen.deselect_pokemon
-        if screen.holding_pokemon?
-          UI::PokemonSummary.new(screen.pokemon, 0).main
-        else
-          party = (screen.box >= 0) ? screen.storage[screen.box].pokemon : screen.storage[screen.box]
-          new_index = UI::PokemonSummary.new(party, screen.index).main
-          screen.set_index(new_index)
-        end
+      screen.visuals.fade_out
+      screen.deselect_pokemon
+      if screen.holding_pokemon?
+        UI::PokemonSummary.new(screen.pokemon, 0).main
+      else
+        party = (screen.box >= 0) ? screen.storage[screen.box].pokemon : screen.storage[screen.box]
+        new_index = UI::PokemonSummary.new(party, screen.index).main
+        screen.set_index(new_index, true)
       end
+      screen.visuals.fade_in
     }
   })
   ACTIONS.add(:mark_pokemon, {
@@ -2122,8 +2114,8 @@ class UI::PokemonStorage < UI::BaseScreen
     return @visuals.choose_box(message, start_box)
   end
 
-  def set_index(new_index)
-    @visuals.set_index(new_index)
+  def set_index(new_index, no_mosaic = false)
+    @visuals.set_index(new_index, no_mosaic)
   end
 
   def party_able_count

@@ -751,36 +751,40 @@ end
 #===============================================================================
 #
 #===============================================================================
-def pbEnterText(helptext, minlength, maxlength, initialText = "", mode = 0, pokemon = nil, nofadeout = false)
-  ret = ""
+def pbEnterText(helptext, minlength, maxlength, initialText = "", mode = 0, pokemon = nil)
   if ($PokemonSystem.textinput == 1 rescue false)   # Keyboard
-    pbFadeOutIn(99999, nofadeout) do
-      sscene = PokemonEntryScene.new
-      sscreen = PokemonEntry.new(sscene)
-      ret = sscreen.pbStartScreen(helptext, minlength, maxlength, initialText, mode, pokemon)
-    end
+    sscene = PokemonEntryScene.new
   else   # Cursor
-    pbFadeOutIn(99999, nofadeout) do
-      sscene = PokemonEntryScene2.new
-      sscreen = PokemonEntry.new(sscene)
-      ret = sscreen.pbStartScreen(helptext, minlength, maxlength, initialText, mode, pokemon)
-    end
+    sscene = PokemonEntryScene2.new
+  end
+  sscreen = PokemonEntry.new(sscene)
+  return sscreen.pbStartScreen(helptext, minlength, maxlength, initialText, mode, pokemon)
+end
+
+def pbEnterPlayerName(helptext, minlength, maxlength, initialText = "", nofadeout = false)
+  ret = ""
+  pbFadeOutIn(99999, nofadeout) do
+    ret = pbEnterText(helptext, minlength, maxlength, initialText, 1, nil)
   end
   return ret
 end
 
-def pbEnterPlayerName(helptext, minlength, maxlength, initialText = "", nofadeout = false)
-  return pbEnterText(helptext, minlength, maxlength, initialText, 1, nil, nofadeout)
-end
-
 def pbEnterPokemonName(helptext, minlength, maxlength, initialText = "", pokemon = nil, nofadeout = false)
-  return pbEnterText(helptext, minlength, maxlength, initialText, 2, pokemon, nofadeout)
+  ret = ""
+  pbFadeOutIn(99999, nofadeout) do
+    ret = pbEnterText(helptext, minlength, maxlength, initialText, 2, pokemon)
+  end
+  return ret
 end
 
 def pbEnterNPCName(helptext, minlength, maxlength, initialText = "", id = 0, nofadeout = false)
-  return pbEnterText(helptext, minlength, maxlength, initialText, 3, id, nofadeout)
+  ret = ""
+  pbFadeOutIn(99999, nofadeout) do
+    ret = pbEnterText(helptext, minlength, maxlength, initialText, 3, id)
+  end
+  return ret
 end
 
-def pbEnterBoxName(helptext, minlength, maxlength, initialText = "", nofadeout = false)
-  return pbEnterText(helptext, minlength, maxlength, initialText, 4, nil, nofadeout)
+def pbEnterBoxName(helptext, minlength, maxlength, initialText = "")
+  return pbEnterText(helptext, minlength, maxlength, initialText, 4)
 end
