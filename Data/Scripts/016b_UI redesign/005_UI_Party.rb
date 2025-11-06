@@ -597,8 +597,6 @@ class UI::PartyVisuals < UI::BaseVisuals
       return update_interaction(Input::BACK)
     elsif Input.trigger?(Input::ACTION)
       return update_interaction(Input::ACTION)
-    elsif Input.trigger?(Input::SPECIAL)
-      return update_interaction(Input::SPECIAL)
     end
     return nil
   end

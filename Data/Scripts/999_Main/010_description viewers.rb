@@ -271,13 +271,13 @@ class DescriptionEditorMove
         change_move_index(-10)
       elsif Input.repeat?(Input::JUMPDOWN)
         change_move_index(10)
-      elsif Input.press?(Input::ACTION)
+      elsif Input.trigger?(Input::ACTION)
         pbPlayDecisionSE
         @move.real_description = @text_box.value.clone
-      elsif Input.press?(Input::SPECIAL)
+      elsif Input.trigger?(Input::SPECIAL)
         @text_box.value = @move.real_description.clone
         refresh_overlay
-      elsif Input.press?(Input::BACK)
+      elsif Input.trigger?(Input::BACK)
         pbPlayCancelSE
         dispose
       end
@@ -379,13 +379,13 @@ class DescriptionEditorPokedex
         change_species_index(-10)
       elsif Input.repeat?(Input::JUMPDOWN)
         change_species_index(10)
-      elsif Input.press?(Input::ACTION)
+      elsif Input.trigger?(Input::ACTION)
         pbPlayDecisionSE
         @species.real_pokedex_entry = @text_box.value.clone
-      elsif Input.press?(Input::SPECIAL)
+      elsif Input.trigger?(Input::SPECIAL)
         @text_box.value = @species.real_pokedex_entry.clone
         refresh_overlay
-      elsif Input.press?(Input::BACK)
+      elsif Input.trigger?(Input::BACK)
         pbPlayCancelSE
         dispose
       end

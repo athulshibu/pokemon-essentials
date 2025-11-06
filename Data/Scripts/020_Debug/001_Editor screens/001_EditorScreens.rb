@@ -994,7 +994,7 @@ def pbRegionalDexEditor(dex)
   viewport.z = 99999
   cmd_window = pbListWindow([])
   info = Window_AdvancedTextPokemon.newWithSize(
-    _INTL("Z+Up/Down: Rearrange entries\nZ+Right: Insert new entry\nZ+Left: Delete entry\nD: Clear entry"),
+    _INTL("Z+Up/Down: Rearrange entries\nZ+Right: Insert new entry\nZ+Left: Delete entry"),
     Graphics.width / 2, 64, Graphics.width / 2, Graphics.height - 64, viewport
   )
   info.z = 2
@@ -1040,11 +1040,6 @@ def pbRegionalDexEditor(dex)
     when 4   # Insert spot
       if cmd[1] < dex.length
         dex.insert(cmd[1], nil)
-        refresh_list = true
-      end
-    when 5   # Clear spot
-      if dex[cmd[1]]
-        dex[cmd[1]] = nil
         refresh_list = true
       end
     when 0

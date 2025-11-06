@@ -668,7 +668,9 @@ class PokemonEntryScene2
       Input.update
       pbUpdate
       next if pbMoveCursor
-      if Input.trigger?(Input::SPECIAL)
+      if Input.trigger?(Input::JUMPUP)
+        pbChangeTab(@mode - 1)
+      elsif Input.trigger?(Input::JUMPDOWN)
         pbChangeTab
       elsif Input.trigger?(Input::ACTION)
         @cursorpos = OK
