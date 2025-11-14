@@ -392,56 +392,50 @@ module UI
 
     #---------------------------------------------------------------------------
 
-    # NOTE: The returned viewport should have the highest z of all viewports in
-    #       this UI, because its colour is changed in def fade_in and fade_out.
-    #       If you have a non-full screen viewport as your highest, you must
-    #       make an unused full screen viewport higher than it to ensure
-    #       everything in the UI fades in/out.
-    def highest_full_viewport
-      ret = @viewport
-      ret_z = ret.z
-      @viewports.each do |viewport|
-        next if viewport.z < ret_z
-        next if viewport.rect.x != 0 || viewport.rect.y != 0 ||
-                viewport.rect.width != Graphics.width || viewport.rect.height != Graphics.height
-        ret = viewport
-        ret_z = viewport.z
-      end
+    def highest_viewport_z
+      ret = 0
+      @viewports.each { |viewport| ret = viewport.z if viewport.z > ret }
       return ret
-    end
-
-    def set_viewport_color(new_color)
-      highest_full_viewport.color = new_color
     end
 
     def fade_in
       @viewports.each { |viewport| viewport.visible = true }
+      temp_viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+      temp_viewport.z = highest_viewport_z + 1
+      # Animation
       duration = 0.4   # In seconds
       col = Color.new(0, 0, 0, 0)
       timer_start = System.uptime
       loop do
         col.set(0, 0, 0, lerp(255, 0, duration, timer_start, System.uptime))
-        set_viewport_color(col)
+        temp_viewport.color = col
         Graphics.update
         Input.update
         update_visuals
         break if col.alpha == 0
       end
+      # Clean up
+      temp_viewport.dispose
     end
 
     def fade_out
+      temp_viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+      temp_viewport.z = highest_viewport_z + 1
+      # Animation
       duration = 0.4   # In seconds
       col = Color.new(0, 0, 0, 0)
       timer_start = System.uptime
       loop do
         col.set(0, 0, 0, lerp(0, 255, duration, timer_start, System.uptime))
-        set_viewport_color(col)
+        temp_viewport.color = col
         Graphics.update
         Input.update
         update_visuals
         break if col.alpha == 255
       end
+      # Clean up
       @viewports.each { |viewport| viewport.visible = false }
+      temp_viewport.dispose
     end
 
     def dispose
@@ -730,7 +724,7 @@ module UI
     end
 
     def draw_input_icon(input_x, input_y, input, text = nil, text_spacing = 6, theme: :default, overlay: :overlay)
-      input_index = INPUT_ICONS.index(input) || 0
+      input_index = UI::BaseVisuals::INPUT_ICONS_ORDER.index(input) || 0
       draw_image(@bitmaps[:input_icons], input_x, input_y,
                 input_index * @bitmaps[:input_icons].height, 0,
                 @bitmaps[:input_icons].height, @bitmaps[:input_icons].height,

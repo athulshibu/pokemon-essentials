@@ -1089,7 +1089,7 @@ end
 #       change the last viewed info for its species to match the passed Pokémon?
 #       Would be done for :new_entry cases.
 #===============================================================================
-def pbShowPokedexEntry(species, unlocked = true)
+def pbShowPokedexEntry(species, unlocked = true, no_fade = false)
   # Determine the Pokédex number
   dex_number = 0
   if $player.pokedex.unlocked?(-1)   # National Dex is unlocked
@@ -1112,7 +1112,11 @@ def pbShowPokedexEntry(species, unlocked = true)
   end
   # Show the Pokédex entry
   mode = (unlocked) ? :new_entry : :normal
-  pbFadeOutIn do
+  if no_fade
     UI::PokedexEntry.new([[dex_number, species]], mode: mode).main
+  else
+    pbFadeOutIn do
+      UI::PokedexEntry.new([[dex_number, species]], mode: mode).main
+    end
   end
 end

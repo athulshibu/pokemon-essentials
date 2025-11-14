@@ -64,9 +64,7 @@ def pbAddPokemon(pkmn, level = 1, see_form = true)
      $player.has_pokedex && $player.pokedex.species_in_unlocked_dex?(pkmn.species)
     pbMessage(_INTL("{1}'s data was added to the Pokédex.", species_name))
     $player.pokedex.register_last_seen(pkmn)
-    pbFadeOutIn do
-      pbShowPokedexEntry(pkmn.species)
-    end
+    pbShowPokedexEntry(pkmn.species)
   end
   # Nickname and add the Pokémon
   pbNicknameAndStore(pkmn)
@@ -105,9 +103,7 @@ def pbAddToParty(pkmn, level = 1, see_form = true)
      $player.has_pokedex && $player.pokedex.species_in_unlocked_dex?(pkmn.species)
     pbMessage(_INTL("{1}'s data was added to the Pokédex.", species_name))
     $player.pokedex.register_last_seen(pkmn)
-    pbFadeOutIn do
-      pbShowPokedexEntry(pkmn.species)
-    end
+    pbShowPokedexEntry(pkmn.species)
   end
   # Nickname and add the Pokémon
   pbNicknameAndStore(pkmn)
@@ -144,9 +140,7 @@ def pbAddForeignPokemon(pkmn, level = 1, owner_name = nil, nickname = nil, owner
      $player.has_pokedex && $player.pokedex.species_in_unlocked_dex?(pkmn.species)
     pbMessage(_INTL("The Pokémon's data was added to the Pokédex."))
     $player.pokedex.register_last_seen(pkmn)
-    pbFadeOutIn do
-      pbShowPokedexEntry(pkmn.species)
-    end
+    pbShowPokedexEntry(pkmn.species)
   end
   # Add the Pokémon
   pbStorePokemon(pkmn)

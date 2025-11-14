@@ -1531,9 +1531,9 @@ class UI::PokemonSummary < UI::BaseScreen
   ACTIONS.add(:pokedex, {
     :effect => proc { |screen|
       $player.pokedex.register_last_seen(screen.pokemon)
-      pbFadeOutInWithUpdate(screen.sprites) do
-        pbShowPokedexEntry(screen.pokemon.species, false)
-      end
+      screen.visuals.fade_out
+      pbShowPokedexEntry(screen.pokemon.species, false, true)
+      screen.visuals.fade_in
     }
   })
   ACTIONS.add(:give_item, {

@@ -248,7 +248,7 @@ module Battle::CatchAndStoreMixin
     mod_catch_rate = mod_catch_rate.floor
     mod_catch_rate = 1 if mod_catch_rate < 1
     # Definite capture, no need to perform randomness checks
-    return 4 if mod_catch_rate >= 255
+    return 4 if mod_catch_rate >= 255 * 4096
     # Second half of the shakes calculation (from Gen 6)
     shake_chance = (65_536 * ((mod_catch_rate.to_f / (255 * 4096))**0.1875)).floor
     # Critical capture check

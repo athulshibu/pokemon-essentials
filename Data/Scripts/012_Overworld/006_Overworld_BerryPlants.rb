@@ -228,7 +228,7 @@ class BerryPlantSprite
     return if !berry_plant
     @old_stage = berry_plant.growth_stage
     @event.character_name = ""
-    update_plant(berry_plant)
+    update_plant(berry_plant, true)
     set_event_graphic(berry_plant, true)   # Set the event's graphic
   end
 
