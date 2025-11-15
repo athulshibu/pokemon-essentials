@@ -661,19 +661,6 @@ class UI::Load < UI::BaseScreen
       end
     }
   })
-  ACTIONS.add(:language, {
-    :effect => proc { |screen|
-      screen.end_screen
-      $PokemonSystem.language = pbChooseLanguage
-      if screen.save_data[screen.slot_index]
-        screen.save_data[screen.slot_index][1][:pokemon_system] = $PokemonSystem
-        File.open(SaveData::DIRECTORY + screen.save_data[screen.slot_index][0], "wb") do |file|
-          Marshal.dump(screen.save_data[screen.slot_index][1], file)
-        end
-      end
-      $scene = pbCallTitle
-    }
-  })
   ACTIONS.add(:debug, {
     :effect => proc { |screen|
       pbFadeOutInWithUpdate(screen.sprites) do
@@ -727,16 +714,9 @@ MenuHandlers.add(:load_screen, :options, {
   "order"     => 40
 })
 
-# TODO: Put language in the options screen?
-MenuHandlers.add(:load_screen, :language, {
-  "name"      => _INTL("Language"),
-  "order"     => 50,
-  "condition" => proc { |screen| next Settings::LANGUAGES.length >= 2 }
-})
-
 MenuHandlers.add(:load_screen, :debug, {
   "name"      => _INTL("Debug"),
-  "order"     => 60,
+  "order"     => 900,
   "condition" => proc { |screen| next $DEBUG }
 })
 

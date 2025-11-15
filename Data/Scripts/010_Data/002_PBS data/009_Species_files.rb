@@ -205,7 +205,7 @@ module GameData
     def self.play_cry_from_species(species, form = 0, volume = 90, pitch = 100)
       filename = self.cry_filename(species, form)
       return if !filename
-      pbSEPlay(RPG::AudioFile.new(filename, volume, pitch)) rescue nil
+      pbPokemonCryPlay(RPG::AudioFile.new(filename, volume, pitch)) rescue nil
     end
 
     def self.play_cry_from_pokemon(pkmn, volume = 90, pitch = 100)
@@ -213,7 +213,7 @@ module GameData
       filename = self.cry_filename_from_pokemon(pkmn)
       return if !filename
       pitch ||= 100
-      pbSEPlay(RPG::AudioFile.new(filename, volume, pitch)) rescue nil
+      pbPokemonCryPlay(RPG::AudioFile.new(filename, volume, pitch)) rescue nil
     end
 
     def self.play_cry(pkmn, volume = 90, pitch = 100)

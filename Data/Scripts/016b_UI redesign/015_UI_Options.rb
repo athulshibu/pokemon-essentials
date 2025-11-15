@@ -9,6 +9,7 @@ class PokemonSystem
   attr_accessor :textinput
   attr_reader   :bgmvolume
   attr_reader   :sevolume
+  attr_writer   :pokemon_cry_volume
   attr_reader   :textspeed
   attr_accessor :battlescene
   attr_reader   :textskin
@@ -18,19 +19,50 @@ class PokemonSystem
   attr_writer   :controls
 
   def initialize
-    @battlestyle   = 0     # Battle style (0=switch, 1=set)
-    @runstyle      = 0     # Default movement speed (0=walk, 1=run)
-    @sendtoboxes   = 0     # Send to Boxes (0=manual, 1=automatic)
-    @givenicknames = 0     # Give nicknames (0=give, 1=don't give)
-    @textinput     = 0     # Text input mode (0=cursor, 1=keyboard)
-    @bgmvolume     = 80    # Volume of background music and ME
-    @sevolume      = 100   # Volume of sound effects
-    @textspeed     = 1     # Text speed (0=slow, 1=medium, 2=fast, 3=instant)
-    @battlescene   = 0     # Battle effects (animations) (0=on, 1=off)
-    @textskin      = 0     # Speech frame
-    @frame         = 0     # Default window frame (see also Settings::MENU_WINDOWSKINS)
-    @screensize    = (Settings::SCREEN_SCALE * 2).floor - 1   # 0=half size, 1=full size, 2=full-and-a-half size, 3=double size
-    @language      = 0     # Language (see also Settings::LANGUAGES in script PokemonSystem)
+    @battlestyle        = 0     # Battle style (0=switch, 1=set)
+    @runstyle           = 0     # Default movement speed (0=walk, 1=run)
+    @sendtoboxes        = 0     # Send to Boxes (0=manual, 1=automatic)
+    @givenicknames      = 0     # Give nicknames (0=give, 1=don't give)
+    @textinput          = 0     # Text input mode (0=cursor, 1=keyboard)
+    @language           = 0     # Language (see also Settings::LANGUAGES)
+    @main_volume        = 100
+    @bgmvolume          = 80    # Volume of background music and ME
+    @sevolume           = 100   # Volume of sound effects (except cries)
+    @pokemon_cry_volume = 100
+    @textspeed          = 1     # Text speed (0=slow, 1=medium, 2=fast, 3=instant)
+    @battlescene        = 0     # Battle effects (animations) (0=on, 1=off)
+    @textskin           = 0     # Speech frame
+    @frame              = 0     # Default window frame (see also Settings::MENU_WINDOWSKINS)
+    @screensize         = (Settings::SCREEN_SCALE * 2).floor - 1   # 0=half size, 1=full size, 2=full-and-a-half size, 3=double size
+  end
+
+  def language=(value)
+    return if @language == value && !@force_set_options
+    @language = value
+    if Settings::LANGUAGES[@language]
+      MessageTypes.load_message_files(Settings::LANGUAGES[@language][1])
+    end
+  end
+
+  def main_volume
+    return @main_volume || 100
+  end
+
+  def main_volume=(value)
+    return if @main_volume == value && !@force_set_options
+    @main_volume = value
+    return if !$game_system
+    if $game_system.playing_bgm.nil?
+      playingBGM = $game_system.getPlayingBGM
+      $game_system.bgm_pause
+      $game_system.bgm_resume(playingBGM)
+    end
+    if $game_system.playing_bgs
+      $game_system.playing_bgs.volume = @sevolume
+      playingBGS = $game_system.getPlayingBGS
+      $game_system.bgs_pause
+      $game_system.bgs_resume(playingBGS)
+    end
   end
 
   def bgmvolume=(value)
@@ -50,6 +82,10 @@ class PokemonSystem
     playingBGS = $game_system.getPlayingBGS
     $game_system.bgs_pause
     $game_system.bgs_resume(playingBGS)
+  end
+
+  def pokemon_cry_volume
+    return @pokemon_cry_volume || 100
   end
 
   def textspeed=(value)
@@ -74,14 +110,6 @@ class PokemonSystem
     return if @screensize == value && !@force_set_options
     @screensize = value
     pbSetResizeFactor(@screensize)
-  end
-
-  def language=(value)
-    return if @language == value && !@force_set_options
-    @language = value
-    if Settings::LANGUAGES[@language]
-      MessageTypes.load_message_files(Settings::LANGUAGES[@language][1])
-    end
   end
 
   def controls
@@ -202,7 +230,7 @@ class UI::OptionsVisualsList < Window_DrawableCommand
     return @values[this_index] if @values[this_index] == 0
     option = @options[this_index]
     case option[:type]
-    when :array
+    when :array, :array_one
       return @values[this_index] - 1
     when :number_type
       case option[:parameters]
@@ -238,7 +266,7 @@ class UI::OptionsVisualsList < Window_DrawableCommand
   def next_value(this_index)
     option = @options[this_index]
     case option[:type]
-    when :array
+    when :array, :array_one
       return @values[this_index] + 1 if @values[this_index] < option[:parameters].length - 1
     when :number_type
       case option[:parameters]
@@ -380,7 +408,7 @@ class UI::OptionsVisualsList < Window_DrawableCommand
     else
       value = option[:parameters][@values[this_index]]
       pbDrawShadowText(self.contents, option_start_x, rect.y, option_width, rect.height,
-                       value, self.selectedColor, self.selectedShadowColor)
+                       value, self.baseColor, self.shadowColor)
     end
   end
 
@@ -400,7 +428,7 @@ class UI::OptionsVisualsList < Window_DrawableCommand
     super
     need_refresh = (self.index != old_index)
     if self.index < @options.length &&
-       [:array, :number_type, :number_slider].include?(@options[self.index][:type])
+       [:array, :array_one, :number_type, :number_slider].include?(@options[self.index][:type])
       old_value = @values[self.index]
       if Input.repeat?(Input::LEFT)
         @values[self.index] = previous_value(self.index)
@@ -824,18 +852,41 @@ MenuHandlers.add(:options_menu, :text_input_style, {
   "name"        => _INTL("Text Entry"),
   "order"       => 50,
   "type"        => :array,
-  "parameters"  => [_INTL("Cursor"), _INTL("Keyboard")],
+  "parameters"  => [_INTL("Cursor"), _INTL("Free type")],
   "description" => _INTL("Choose how you want to enter text."),
   "get_proc"    => proc { next $PokemonSystem.textinput },
   "set_proc"    => proc { |value, _screen| $PokemonSystem.textinput = value }
 })
 
+MenuHandlers.add(:options_menu, :language, {
+  "page"        => :gameplay,
+  "name"        => _INTL("Language"),
+  "order"       => 60,
+  "type"        => (Settings::LANGUAGES.length == 2) ? :array : :array_one,
+  "parameters"  => Settings::LANGUAGES.map { |lang| lang[0] },
+  "description" => _INTL("Choose the game's language."),
+  "condition"   => proc { next Settings::LANGUAGES.length >= 2 },
+  "get_proc"    => proc { next $PokemonSystem.language },
+  "set_proc"    => proc { |value, _screen| $PokemonSystem.language = value }
+})
+
 #-------------------------------------------------------------------------------
+
+MenuHandlers.add(:options_menu, :main_volume, {
+  "page"        => :audio,
+  "name"        => _INTL("Main Volume"),
+  "order"       => 10,
+  "type"        => :number_slider,
+  "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
+  "description" => _INTL("Adjust the volume of all audio in the game."),
+  "get_proc"    => proc { next $PokemonSystem.main_volume },
+  "set_proc"    => proc { |value, screen| $PokemonSystem.main_volume = value }
+})
 
 MenuHandlers.add(:options_menu, :bgm_volume, {
   "page"        => :audio,
-  "name"        => _INTL("Music Volume"),
-  "order"       => 10,
+  "name"        => _INTL("Background Music"),
+  "order"       => 20,
   "type"        => :number_slider,
   "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
   "description" => _INTL("Adjust the volume of the background music."),
@@ -845,8 +896,8 @@ MenuHandlers.add(:options_menu, :bgm_volume, {
 
 MenuHandlers.add(:options_menu, :se_volume, {
   "page"        => :audio,
-  "name"        => _INTL("SE Volume"),
-  "order"       => 20,
+  "name"        => _INTL("Sound Effects"),
+  "order"       => 30,
   "type"        => :number_slider,
   "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
   "description" => _INTL("Adjust the volume of sound effects."),
@@ -854,6 +905,21 @@ MenuHandlers.add(:options_menu, :se_volume, {
   "set_proc"    => proc { |value, _screen|
     next if $PokemonSystem.sevolume == value
     $PokemonSystem.sevolume = value
+    pbPlayCursorSE
+  }
+})
+
+MenuHandlers.add(:options_menu, :pokemon_cry_volume, {
+  "page"        => :audio,
+  "name"        => _INTL("Pokémon Cries"),
+  "order"       => 40,
+  "type"        => :number_slider,
+  "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
+  "description" => _INTL("Adjust the volume of Pokémon cries."),
+  "get_proc"    => proc { next $PokemonSystem.pokemon_cry_volume },
+  "set_proc"    => proc { |value, _screen|
+    next if $PokemonSystem.pokemon_cry_volume == value
+    $PokemonSystem.pokemon_cry_volume = value
     pbPlayCursorSE
   }
 })

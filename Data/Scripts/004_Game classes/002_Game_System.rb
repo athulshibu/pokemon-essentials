@@ -80,6 +80,7 @@ class Game_System
 
   def bgm_play_internal2(name, volume, pitch, position, track = nil) # :nodoc:
     vol = volume
+    vol *= $PokemonSystem.main_volume / 100.0
     vol *= $PokemonSystem.bgmvolume / 100.0
     vol = vol.to_i
     begin
@@ -185,6 +186,7 @@ class Game_System
     if me && me.name != ""
       if FileTest.audio_exist?("Audio/ME/" + me.name)
         vol = me.volume
+        vol *= $PokemonSystem.main_volume / 100.0
         vol *= $PokemonSystem.bgmvolume / 100.0
         vol = vol.to_i
         Audio.me_play("Audio/ME/" + me.name, vol, me.pitch)
@@ -202,6 +204,7 @@ class Game_System
     if bgs && bgs.name != ""
       if FileTest.audio_exist?("Audio/BGS/" + bgs.name)
         vol = bgs.volume
+        vol *= $PokemonSystem.main_volume / 100.0
         vol *= $PokemonSystem.sevolume / 100.0
         vol = vol.to_i
         Audio.bgs_play("Audio/BGS/" + bgs.name, vol, bgs.pitch)
@@ -268,7 +271,19 @@ class Game_System
     se = RPG::AudioFile.new(se) if se.is_a?(String)
     if se && se.name != "" && FileTest.audio_exist?("Audio/SE/" + se.name)
       vol = se.volume
+      vol *= $PokemonSystem.main_volume / 100.0
       vol *= $PokemonSystem.sevolume / 100.0
+      vol = vol.to_i
+      Audio.se_play("Audio/SE/" + se.name, vol, se.pitch)
+    end
+  end
+
+  def pokemon_cry_play(se)
+    se = RPG::AudioFile.new(se) if se.is_a?(String)
+    if se && se.name != "" && FileTest.audio_exist?("Audio/SE/" + se.name)
+      vol = se.volume
+      vol *= $PokemonSystem.main_volume / 100.0
+      vol *= $PokemonSystem.pokemon_cry_volume / 100.0
       vol = vol.to_i
       Audio.se_play("Audio/SE/" + se.name, vol, se.pitch)
     end
