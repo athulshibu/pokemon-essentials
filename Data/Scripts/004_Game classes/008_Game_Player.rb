@@ -425,7 +425,7 @@ class Game_Player < Game_Character
   end
 
   def update_command_new
-    dir = Input.dir4
+    dir = Input.dir4(@moved_last_frame)
     if $PokemonGlobal.forced_movement?
       move_forward
       @last_input_time = nil

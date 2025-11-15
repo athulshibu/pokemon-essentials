@@ -229,25 +229,31 @@ module Input
 
   #-----------------------------------------------------------------------------
 
-  # TODO: def self.count
-  # TODO: def self.time?
-  # TODO: def self.timeex?
-  # TODO: def self.repeatcount
+  @@previous_dir4 = 0
 
-  def dir4
-    up = press?(UP)
-    down = press?(DOWN)
-    return 0 if up && down
-    left = press?(LEFT)
-    right = press?(RIGHT)
-    return 0 if left && right
-    # TODO: If dir4's value in the previous frame wasn't 0, check the other 3
-    #       directions and return that if it's pressed.
-    return 2 if down
-    return 4 if left
-    return 6 if right
-    return 8 if up
-    return 0
+  def self.dir4(moved_last_frame = false)
+    # Get all direction inputs
+    up = self.press?(UP)
+    down = self.press?(DOWN)
+    left = self.press?(LEFT)
+    right = self.press?(RIGHT)
+    # Cancel out opposing directions
+    up = down = false if up && down
+    left = right = false if left && right
+    # Determine the return value
+    ret = (down) ? DOWN : (up) ? UP : 0
+    ret = (left) ? LEFT : (right) ? RIGHT : ret
+    # Zigzag while moving
+    if moved_last_frame
+      case @@previous_dir4
+      when UP, DOWN
+        ret = (left) ? LEFT : (right) ? RIGHT : ret
+      when LEFT, RIGHT
+        ret = (down) ? DOWN : (up) ? UP : ret
+      end
+    end
+    @@previous_dir4 = ret
+    return ret
   end
 
   # In the order for DOWN, LEFT, RIGHT, UP.
@@ -267,7 +273,7 @@ module Input
     [7, 9, 0]    # UP + [LEFT, RIGHT, DOWN]
   ]
 
-  def dir8
+  def self.dir8
     [DOWN, LEFT, RIGHT, UP].each_with_index do |dir, i|
       next if !press?(dir)
       OTHER_DIRS[i].each_with_index do |other_dir, j|
