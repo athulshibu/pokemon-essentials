@@ -953,6 +953,12 @@ Battle::AbilityEffects::PriorityBracketChange.add(:STALL,
   }
 )
 
+Battle::AbilityEffects::PriorityBracketChange.add(:MYCELIUMMIGHT,
+  proc { |ability, battler, battle|
+    next -1 if battle.choices[battler.index][2].statusMove?
+  }
+)
+
 #===============================================================================
 # PriorityBracketUse handlers
 #===============================================================================

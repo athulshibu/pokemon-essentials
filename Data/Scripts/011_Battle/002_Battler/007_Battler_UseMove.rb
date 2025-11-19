@@ -234,6 +234,7 @@ class Battle::Battler
     move.calcType = move.pbCalcType(self)
     # Start effect of Mold Breaker
     @battle.moldBreaker = hasMoldBreaker?
+    @battle.moldBreaker ||= hasActiveAbility?(:MYCELIUMMIGHT) && move.statusMove?
     # Remember that user chose a two-turn move
     if move.pbIsChargingTurn?(self)
       # Beginning the use of a two-turn attack
