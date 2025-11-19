@@ -3001,6 +3001,46 @@ Battle::AbilityEffects::OnSwitchIn.add(:ELECTRICSURGE,
   }
 )
 
+Battle::AbilityEffects::OnSwitchIn.add(:EMBODYASPECTATTACK,
+  proc { |ability, battler, battle, switch_in|
+    next if battler.abilityUsedOnce?
+    next if !battler.isSpecies?(:OGERPON)
+    battle.pbDisplay(_INTL("The {1} worn by {2} shone brilliantly!", battler.itemName, battler.pbThis(true)))
+    battler.pbRaiseStatStageByAbility(:ATTACK, 1, battler)
+    battler.markAbilityUsedOnce if Settings::MECHANICS_GENERATION >= 9
+  }
+)
+
+Battle::AbilityEffects::OnSwitchIn.add(:EMBODYASPECTDEFENSE,
+  proc { |ability, battler, battle, switch_in|
+    next if battler.abilityUsedOnce?
+    next if !battler.isSpecies?(:OGERPON)
+    battle.pbDisplay(_INTL("The {1} worn by {2} shone brilliantly!", battler.itemName, battler.pbThis(true)))
+    battler.pbRaiseStatStageByAbility(:DEFENSE, 1, battler)
+    battler.markAbilityUsedOnce if Settings::MECHANICS_GENERATION >= 9
+  }
+)
+
+Battle::AbilityEffects::OnSwitchIn.add(:EMBODYASPECTSPDEF,
+  proc { |ability, battler, battle, switch_in|
+    next if battler.abilityUsedOnce?
+    next if !battler.isSpecies?(:OGERPON)
+    battle.pbDisplay(_INTL("The {1} worn by {2} shone brilliantly!", battler.itemName, battler.pbThis(true)))
+    battler.pbRaiseStatStageByAbility(:SPECIAL_DEFENSE, 1, battler)
+    battler.markAbilityUsedOnce if Settings::MECHANICS_GENERATION >= 9
+  }
+)
+
+Battle::AbilityEffects::OnSwitchIn.add(:EMBODYASPECTSPEED,
+  proc { |ability, battler, battle, switch_in|
+    next if battler.abilityUsedOnce?
+    next if !battler.isSpecies?(:OGERPON)
+    battle.pbDisplay(_INTL("The {1} worn by {2} shone brilliantly!", battler.itemName, battler.pbThis(true)))
+    battler.pbRaiseStatStageByAbility(:SPEED, 1, battler)
+    battler.markAbilityUsedOnce if Settings::MECHANICS_GENERATION >= 9
+  }
+)
+
 Battle::AbilityEffects::OnSwitchIn.add(:FAIRYAURA,
   proc { |ability, battler, battle, switch_in|
     battle.pbShowAbilitySplash(battler)
