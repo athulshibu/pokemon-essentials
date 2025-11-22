@@ -294,7 +294,7 @@ Battle::AI::Handlers::MoveEffectScore.copy("RaiseUserEvasion1",
 #===============================================================================
 Battle::AI::Handlers::MoveFailureCheck.add("RaiseUserCriticalHitRate2",
   proc { |move, user, ai, battle|
-    next user.effects[PBEffects::FocusEnergy] >= 2
+    next user.criticalHitRate > 0
   }
 )
 Battle::AI::Handlers::MoveEffectScore.add("RaiseUserCriticalHitRate2",
@@ -1296,9 +1296,9 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("UserCopyTargetStatStages
     score = ai.get_score_for_target_stat_raise(score, user, raises, false, true) if raises.length > 0
     score = ai.get_score_for_target_stat_drop(score, user, drops, false, true) if drops.length > 0
     if Settings::NEW_CRITICAL_HIT_RATE_MECHANICS
-      if user.effects[PBEffects::FocusEnergy] > 0 && target.effects[PBEffects::FocusEnergy] == 0
+      if user.criticalHitRate > 0 && target.criticalHitRate == 0
         score -= 5
-      elsif user.effects[PBEffects::FocusEnergy] == 0 && target.effects[PBEffects::FocusEnergy] > 0
+      elsif user.criticalHitRate == 0 && target.criticalHitRate > 0
         score += 5
       end
       if user.effects[PBEffects::LaserFocus] > 0 && target.effects[PBEffects::LaserFocus] == 0

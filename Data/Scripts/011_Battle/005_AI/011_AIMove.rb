@@ -533,7 +533,7 @@ class Battle::AI::AIMove
     return 99 if crit_stage > 50   # Merciless
     return 99 if user_battler.effects[PBEffects::LaserFocus] > 0
     crit_stage += 1 if @move.highCriticalRate?
-    crit_stage += user_battler.effects[PBEffects::FocusEnergy]
+    crit_stage += user_battler.criticalHitRate
     crit_stage += 1 if user_battler.inHyperMode? && @move.type == :SHADOW
     crit_stage = [crit_stage, Battle::Move::CRITICAL_HIT_RATIOS.length - 1].min
     return crit_stage

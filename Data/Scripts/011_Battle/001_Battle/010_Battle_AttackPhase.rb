@@ -50,6 +50,7 @@ class Battle
   end
 
   def pbAttackPhaseSwitch
+    clearStagesChangeRecords
     pbPriority.each do |b|
       next unless @choices[b.index][0] == :SwitchOut && !b.fainted?
       idxNewPkmn = @choices[b.index][1]   # Party index of Pokémon to switch to
@@ -71,6 +72,7 @@ class Battle
   end
 
   def pbAttackPhaseItems
+    clearStagesChangeRecords
     pbPriority.each do |b|
       next unless @choices[b.index][0] == :UseItem && !b.fainted?
       b.lastMoveFailed = false   # Counts as a successful move for Stomping Tantrum
@@ -90,10 +92,12 @@ class Battle
       end
       return if decided?
     end
+    checkStatChangeResponses
     pbCalculatePriority if Settings::RECALCULATE_TURN_ORDER_AFTER_SPEED_CHANGES
   end
 
   def pbAttackPhaseMegaEvolution
+    clearStagesChangeRecords
     pbPriority.each do |b|
       next if b.wild?
       next unless @choices[b.index][0] == :UseMove && !b.fainted?
@@ -101,6 +105,7 @@ class Battle
       next if @megaEvolution[b.idxOwnSide][owner] != b.index
       pbMegaEvolve(b.index)
     end
+    checkStatChangeResponses
   end
 
   def pbAttackPhaseMoves

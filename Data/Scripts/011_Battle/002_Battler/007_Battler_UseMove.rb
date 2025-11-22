@@ -52,7 +52,9 @@ class Battle::Battler
     end
     # Use the move
     PBDebug.log("[Use move] #{pbThis} (#{@index}) used #{choice[2].name}")
+    @battle.clearStagesChangeRecords
     PBDebug.logonerr { pbUseMove(choice, choice[2] == @battle.struggle) }
+    @battle.checkStatChangeResponses
     @battle.pbJudge
     # Update priority order
     @battle.pbCalculatePriority if Settings::RECALCULATE_TURN_ORDER_AFTER_SPEED_CHANGES
@@ -530,6 +532,7 @@ class Battle::Battler
         b.statsDropped = false
       end
     end
+    @battle.checkStatChangeResponses
     # End effect of Mold Breaker
     @battle.moldBreaker = false
     # Gain Exp
@@ -552,7 +555,9 @@ class Battle::Battler
       b.effects[PBEffects::Instructed] = true
       if b.pbCanChooseMove?(b.moves[idxMove], false)
         PBDebug.logonerr do
+          @battle.clearStagesChangeRecords
           b.pbUseMoveSimple(b.lastMoveUsed, b.lastRegularMoveTarget, idxMove, false)
+          @battle.checkStatChangeResponses
         end
         b.lastRoundMoved = oldLastRoundMoved
         @battle.pbJudge
@@ -587,7 +592,9 @@ class Battle::Battler
         end
         nextUser.effects[PBEffects::Dancer] = true
         if nextUser.pbCanChooseMove?(move, false)
+          @battle.clearStagesChangeRecords
           PBDebug.logonerr { nextUser.pbUseMoveSimple(move.id, preTarget) }
+          @battle.checkStatChangeResponses
           nextUser.lastRoundMoved = oldLastRoundMoved
           nextUser.effects[PBEffects::Outrage] = oldOutrage
           nextUser.currentMove = oldCurrentMove

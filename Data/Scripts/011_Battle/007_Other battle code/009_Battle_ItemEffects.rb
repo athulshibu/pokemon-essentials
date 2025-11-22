@@ -4,13 +4,14 @@
 module Battle::ItemEffects
   SpeedCalc                       = ItemHandlerHash.new
   WeightCalc                      = ItemHandlerHash.new   # Float Stone
-  # Battler's HP/stat changed
+  # Battler's HP changed
   HPHeal                          = ItemHandlerHash.new
-  OnStatLoss                      = ItemHandlerHash.new
-  # Battler's status problem
+  # Battler's status condition
   StatusCure                      = ItemHandlerHash.new
   # Battler's stat stages
   StatLossImmunity                = ItemHandlerHash.new
+  OnStatLoss                      = ItemHandlerHash.new
+  CopyStatChanges                 = ItemHandlerHash.new
   # Priority and turn order
   PriorityChange                  = ItemHandlerHash.new
   PriorityBracketChange           = ItemHandlerHash.new
@@ -75,10 +76,6 @@ module Battle::ItemEffects
     return trigger(HPHeal, item, battler, battle, forced)
   end
 
-  def self.triggerOnStatLoss(item, user, move_user, battle)
-    return trigger(OnStatLoss, item, user, move_user, battle)
-  end
-
   #-----------------------------------------------------------------------------
 
   def self.triggerStatusCure(item, battler, battle, forced)
@@ -89,6 +86,14 @@ module Battle::ItemEffects
 
   def self.triggerStatLossImmunity(item, battler, stat, battle, show_messages)
     return trigger(StatLossImmunity, item, battler, stat, battle, show_messages)
+  end
+
+  def self.triggerOnStatLoss(item, user, move_user, battle)
+    return trigger(OnStatLoss, item, user, move_user, battle)
+  end
+
+  def self.triggerCopyStatChanges(item, battler, battle)
+    CopyStatChanges.trigger(item, battler, battle)
   end
 
   #-----------------------------------------------------------------------------
@@ -334,9 +339,9 @@ Battle::ItemEffects::HPHeal.add(:IAPAPABERRY,
 Battle::ItemEffects::HPHeal.add(:LANSATBERRY,
   proc { |item, battler, battle, forced|
     next false if !forced && !battler.canConsumePinchBerry?
-    next false if battler.effects[PBEffects::FocusEnergy] >= 2
+    next false if battler.criticalHitRate >= 2
     battle.pbCommonAnimation("EatBerry", battler) if !forced
-    battler.effects[PBEffects::FocusEnergy] = 2
+    battler.setCriticalHitRate(2)
     battle.pbCommonAnimation("CriticalHitRateUp", battler)
     itemName = GameData::Item.get(item).name
     if forced
@@ -457,35 +462,6 @@ Battle::ItemEffects::HPHeal.add(:WIKIBERRY,
     next battler.pbConfusionBerry(item, forced, :SPECIAL_ATTACK,
        _INTL("For {1}, the {2} was too dry!", battler.pbThis(true), GameData::Item.get(item).name)
     )
-  }
-)
-
-#===============================================================================
-# OnStatLoss handlers
-#===============================================================================
-Battle::ItemEffects::OnStatLoss.add(:EJECTPACK,
-  proc { |item, battler, move_user, battle|
-    next false if battler.effects[PBEffects::SkyDrop] >= 0 ||
-                  battler.inTwoTurnAttack?("TwoTurnAttackInvulnerableInSkyTargetCannotAct")   # Sky Drop
-    next false if battle.pbAllFainted?(battler.idxOpposingSide)
-    next false if battler.wild?   # Wild Pokémon can't eject
-    next false if !battle.pbCanSwitchOut?(battler.index)   # Battler can't switch out
-    next false if !battle.pbCanChooseNonActive?(battler.index)   # No Pokémon can switch in
-    battle.pbCommonAnimation("UseItem", battler)
-    battle.pbDisplay(_INTL("{1} is switched out by the {2}!", battler.pbThis, battler.itemName))
-    battler.pbConsumeItem(true, false)
-    if battle.endOfRound   # Just switch out
-      battle.scene.pbRecall(battler.index) if !battler.fainted?
-      battler.pbAbilitiesOnSwitchOut   # Inc. primordial weather check
-      next true
-    end
-    newPkmn = battle.pbGetReplacementPokemonIndex(battler.index)   # Owner chooses
-    next false if newPkmn < 0   # Shouldn't ever do this
-    battle.pbRecallAndReplace(battler.index, newPkmn)
-    battle.pbClearChoice(battler.index)   # Replacement Pokémon does nothing this round
-    battle.moldBreaker = false if move_user && battler.index == move_user.index
-    battle.pbOnBattlerEnteringBattle(battler.index)
-    next true
   }
 )
 
@@ -655,6 +631,66 @@ Battle::ItemEffects::StatLossImmunity.add(:CLEARAMULET,
     battle.pbDisplay(_INTL("The effects of {1}'s {2} prevent its stats from being lowered!",
                            battler.pbThis, GameData::Item.get(item).name)) if showMessages
     next true
+  }
+)
+
+#===============================================================================
+# OnStatLoss handlers
+#===============================================================================
+Battle::ItemEffects::OnStatLoss.add(:EJECTPACK,
+  proc { |item, battler, move_user, battle|
+    next false if battler.effects[PBEffects::SkyDrop] >= 0 ||
+                  battler.inTwoTurnAttack?("TwoTurnAttackInvulnerableInSkyTargetCannotAct")   # Sky Drop
+    next false if battle.pbAllFainted?(battler.idxOpposingSide)
+    next false if battler.wild?   # Wild Pokémon can't eject
+    next false if !battle.pbCanSwitchOut?(battler.index)   # Battler can't switch out
+    next false if !battle.pbCanChooseNonActive?(battler.index)   # No Pokémon can switch in
+    battle.pbCommonAnimation("UseItem", battler)
+    battle.pbDisplay(_INTL("{1} is switched out by the {2}!", battler.pbThis, battler.itemName))
+    battler.pbConsumeItem(true, false)
+    if battle.endOfRound   # Just switch out
+      battle.scene.pbRecall(battler.index) if !battler.fainted?
+      battler.pbAbilitiesOnSwitchOut   # Inc. primordial weather check
+      next true
+    end
+    newPkmn = battle.pbGetReplacementPokemonIndex(battler.index)   # Owner chooses
+    next false if newPkmn < 0   # Shouldn't ever do this
+    battle.pbRecallAndReplace(battler.index, newPkmn)
+    battle.pbClearChoice(battler.index)   # Replacement Pokémon does nothing this round
+    battle.moldBreaker = false if move_user && battler.index == move_user.index
+    battle.pbOnBattlerEnteringBattle(battler.index)
+    next true
+  }
+)
+
+#===============================================================================
+# CopyStatChanges handlers
+#===============================================================================
+
+Battle::ItemEffects::CopyStatChanges.add(:MIRROHERB,
+  proc { |item, battler, battle|
+    raises = {}
+    GameData::Stat.each_battle { |stat| raises[stat.id] = 0 }
+    raises[:CRITICAL_HIT] = 0
+    battler.allOpposing.each do |b|
+      b.stagesChangeRecord[0].each_pair { |stat, increment| raises[stat] += increment }
+    end
+    next if raises.none? { |stat, increment| increment > 0 }
+    battle.pbCommonAnimation("UseItem", battler)
+    battle.pbDisplay(_INTL("{1} used its {2} to mirror its opponent's stat changes!",
+                            battler.pbThis, battler.itemName))
+    raises.each_pair do |stat, increment|
+      next if increment <= 0
+      if stat == :CRITICAL_HIT
+        battler.setCriticalHitRate(increment)
+        battle.pbCommonAnimation("CriticalHitRateUp", battler)
+        battle.pbDisplay(_INTL("{1} is getting pumped!", battler.pbThis))
+      else
+        battler.pbRaiseStatStage(stat, increment, battler)
+      end
+    end
+    battle.pbDisplay(_INTL("The {1} was used up...", battler.itemName))
+    battler.pbHeldItemTriggered(item)
   }
 )
 
@@ -1332,6 +1368,7 @@ Battle::ItemEffects::OnBeingHit.add(:ABSORBBULB,
     next if !target.pbCanRaiseStatStage?(:SPECIAL_ATTACK, target)
     battle.pbCommonAnimation("UseItem", target)
     target.pbRaiseStatStageByCause(:SPECIAL_ATTACK, 1, target, target.itemName)
+    battle.pbDisplay(_INTL("The {1} was used up...", target.itemName))
     target.pbHeldItemTriggered(item)
   }
 )
@@ -1339,8 +1376,7 @@ Battle::ItemEffects::OnBeingHit.add(:ABSORBBULB,
 Battle::ItemEffects::OnBeingHit.add(:AIRBALLOON,
   proc { |item, user, target, move, battle|
     battle.pbDisplay(_INTL("{1}'s {2} popped!", target.pbThis, target.itemName))
-    target.pbConsumeItem(false, true)
-    target.pbSymbiosis
+    target.pbConsumeItem(false)
   }
 )
 
@@ -1350,6 +1386,7 @@ Battle::ItemEffects::OnBeingHit.add(:CELLBATTERY,
     next if !target.pbCanRaiseStatStage?(:ATTACK, target)
     battle.pbCommonAnimation("UseItem", target)
     target.pbRaiseStatStageByCause(:ATTACK, 1, target, target.itemName)
+    battle.pbDisplay(_INTL("The {1} was used up...", target.itemName))
     target.pbHeldItemTriggered(item)
   }
 )
@@ -1360,6 +1397,7 @@ Battle::ItemEffects::OnBeingHit.add(:ENIGMABERRY,
             target.damageState.disguise || target.damageState.iceFace
     next if !Effectiveness.super_effective?(target.damageState.typeMod)
     if Battle::ItemEffects.triggerOnBeingHitPositiveBerry(item, target, battle, false)
+      battle.pbDisplay(_INTL("The {1} was used up...", target.itemName))
       target.pbHeldItemTriggered(item)
     end
   }
@@ -1381,8 +1419,8 @@ Battle::ItemEffects::OnBeingHit.add(:JABOCABERRY,
     battle.pbHideAbilitySplash(target) if ripening
     battle.scene.pbDamageAnimation(user)
     user.pbReduceHP(amt, false)
-    battle.pbDisplay(_INTL("{1} consumed its {2} and hurt {3}!", target.pbThis,
-       target.itemName, user.pbThis(true)))
+    battle.pbDisplay(_INTL("{1} consumed its {2} and hurt {3}!",
+                           target.pbThis, target.itemName, user.pbThis(true)))
     target.pbHeldItemTriggered(item)
   }
 )
@@ -1396,6 +1434,7 @@ Battle::ItemEffects::OnBeingHit.add(:KEEBERRY,
   proc { |item, user, target, move, battle|
     next if !move.physicalMove?
     if Battle::ItemEffects.triggerOnBeingHitPositiveBerry(item, target, battle, false)
+      battle.pbDisplay(_INTL("The {1} was used up...", target.itemName))
       target.pbHeldItemTriggered(item)
     end
   }
@@ -1407,6 +1446,7 @@ Battle::ItemEffects::OnBeingHit.add(:LUMINOUSMOSS,
     next if !target.pbCanRaiseStatStage?(:SPECIAL_DEFENSE, target)
     battle.pbCommonAnimation("UseItem", target)
     target.pbRaiseStatStageByCause(:SPECIAL_DEFENSE, 1, target, target.itemName)
+    battle.pbDisplay(_INTL("The {1} was used up...", target.itemName))
     target.pbHeldItemTriggered(item)
   }
 )
@@ -1420,6 +1460,7 @@ Battle::ItemEffects::OnBeingHit.add(:MARANGABERRY,
   proc { |item, user, target, move, battle|
     next if !move.specialMove?
     if Battle::ItemEffects.triggerOnBeingHitPositiveBerry(item, target, battle, false)
+      battle.pbDisplay(_INTL("The {1} was used up...", target.itemName))
       target.pbHeldItemTriggered(item)
     end
   }
@@ -1451,8 +1492,8 @@ Battle::ItemEffects::OnBeingHit.add(:ROWAPBERRY,
     battle.pbHideAbilitySplash(target) if ripening
     battle.scene.pbDamageAnimation(user)
     user.pbReduceHP(amt, false)
-    battle.pbDisplay(_INTL("{1} consumed its {2} and hurt {3}!", target.pbThis,
-       target.itemName, user.pbThis(true)))
+    battle.pbDisplay(_INTL("{1} consumed its {2} and hurt {3}!",
+                           target.pbThis, target.itemName, user.pbThis(true)))
     target.pbHeldItemTriggered(item)
   }
 )
@@ -1463,6 +1504,7 @@ Battle::ItemEffects::OnBeingHit.add(:SNOWBALL,
     next if !target.pbCanRaiseStatStage?(:ATTACK, target)
     battle.pbCommonAnimation("UseItem", target)
     target.pbRaiseStatStageByCause(:ATTACK, 1, target, target.itemName)
+    battle.pbDisplay(_INTL("The {1} was used up...", target.itemName))
     target.pbHeldItemTriggered(item)
   }
 )
@@ -1715,8 +1757,10 @@ Battle::ItemEffects::OnEndOfUsingMoveStatRestore.add(:WHITEHERB,
     reducedStats = false
     GameData::Stat.each_battle do |s|
       next if battler.stages[s.id] >= 0
-      battler.stages[s.id] = 0
+      battler.stagesChangeRecord[0][s.id] ||= 0
+      battler.stagesChangeRecord[0][s.id] -= battler.stages[s.id]
       battler.statsRaisedThisRound = true
+      battler.stages[s.id] = 0
       reducedStats = true
     end
     next false if !reducedStats
@@ -1846,12 +1890,13 @@ Battle::ItemEffects::OnWeatherChange.add(:BOOSTERENERGY,
     battler.effects[PBEffects::ProtosynthesisStat] = best[0]
     battler.effects[PBEffects::BoosterEnergy] = true
     battle.pbCommonAnimation("UseItem", battler)
+    battle.pbDisplay(_INTL("The {1} was used up...", GameData::Item.get(item).name))
     battle.pbShowAbilitySplash(battler)
     battle.pbDisplay(_INTL("{1} used its {2} to activate {3}!",
                            battler.pbThis, GameData::Item.get(item).name, battler.abilityName))
     battle.pbDisplay(_INTL("{1}'s {2} was heightened!", battler.pbThis, GameData::Stat.get(best[0]).name))
     battle.pbHideAbilitySplash(battler)
-    battler.pbConsumeItem
+    battler.pbHeldItemTriggered(item)
     next true
   }
 )
@@ -1875,12 +1920,13 @@ Battle::ItemEffects::OnTerrainChange.add(:BOOSTERENERGY,
     battler.effects[PBEffects::ProtosynthesisStat] = best[0]
     battler.effects[PBEffects::BoosterEnergy] = true
     battle.pbCommonAnimation("UseItem", battler)
+    battle.pbDisplay(_INTL("The {1} was used up...", GameData::Item.get(item).name))
     battle.pbShowAbilitySplash(battler)
     battle.pbDisplay(_INTL("{1} used its {2} to activate {3}!",
                            battler.pbThis, GameData::Item.get(item).name, battler.abilityName))
     battle.pbDisplay(_INTL("{1}'s {2} was heightened!", battler.pbThis, GameData::Stat.get(best[0]).name))
     battle.pbHideAbilitySplash(battler)
-    battler.pbConsumeItem
+    battler.pbHeldItemTriggered(item)
     next true
   }
 )

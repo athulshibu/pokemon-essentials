@@ -210,7 +210,7 @@ class Battle::Move
     return true if c > 50   # Merciless
     return true if user.effects[PBEffects::LaserFocus] > 0
     c += 1 if highCriticalRate?
-    c += user.effects[PBEffects::FocusEnergy]
+    c += user.criticalHitRate
     c += 1 if user.inHyperMode? && @type == :SHADOW
     # Set up the critical hit ratios
     ratios = CRITICAL_HIT_RATIOS

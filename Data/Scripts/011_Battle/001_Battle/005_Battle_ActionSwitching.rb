@@ -321,6 +321,7 @@ class Battle
   # entry hazards, form changes and items/abilities that trigger upon switching
   # in.
   def pbOnBattlerEnteringBattle(battler_index, skip_event_reset = false)
+    clearStagesChangeRecords
     battler_index = [battler_index] if !battler_index.is_a?(Array)
     battler_index.flatten!
     # NOTE: This isn't done for switch commands, because they previously call
@@ -368,12 +369,14 @@ class Battle
       b.pbHeldItemTriggerCheck
       b.pbAbilityStatusCureCheck
     end
+    checkStatChangeResponses
     # Check for triggering of Emergency Exit/Wimp Out/Eject Pack (only one will
     # be triggered)
     pbPriority(true).each do |b|
       break if b.pbItemOnStatDropped
       break if b.pbAbilitiesOnDamageTaken
     end
+    checkStatChangeResponses
     allBattlers.each do |b|
       b.droppedBelowHalfHP = false
       b.statsDropped = false

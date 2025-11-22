@@ -640,6 +640,7 @@ class Battle
     PBDebug.log("[End of round #{@turnCount + 1}]")
     @endOfRound = true
     @scene.pbBeginEndOfRoundPhase
+    clearStagesChangeRecords
     pbCalculatePriority           # recalculate speeds
     priority = pbPriority(true)   # in order of fastest -> slowest speeds only
     # Weather
@@ -732,6 +733,7 @@ class Battle
         Battle::AbilityEffects.triggerEndOfRoundGainItem(battler.ability, battler, self)
       end
     end
+    checkStatChangeResponses
     pbGainExp
     return if decided?
     # Form checks
@@ -744,6 +746,7 @@ class Battle
     pbEORShiftDistantBattlers
     # Try to make Trace work, check for end of primordial weather
     priority.each { |battler| battler.pbContinualAbilityChecks }
+    checkStatChangeResponses
     # Reset/count down battler-specific effects (no messages)
     allBattlers.each do |battler|
       battler.effects[PBEffects::BanefulBunker]    = false

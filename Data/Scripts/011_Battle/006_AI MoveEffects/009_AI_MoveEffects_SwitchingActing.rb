@@ -132,7 +132,7 @@ Battle::AI::Handlers::MoveEffectScore.add("SwitchOutUserPassOnEffects",
     score -= 20 if user.effects[PBEffects::PerishSong] > 0
     # Prefer if the user will pass on a positive effect
     score += 10 if user.effects[PBEffects::AquaRing]
-    score += 10 if user.effects[PBEffects::FocusEnergy] > 0
+    score += 10 if user.criticalHitRate > 0
     score += 10 if user.effects[PBEffects::Ingrain]
     score += 8 if user.effects[PBEffects::MagnetRise] > 1
     score += 10 if user.effects[PBEffects::Substitute] > 0

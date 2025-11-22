@@ -455,7 +455,7 @@ Battle::AI::Handlers::MoveEffectScore.add("EnsureNextCriticalHit",
          user.battler, user.battler, move.move, crit_stage)
     end
     if crit_stage >= 0 && crit_stage < 50
-      crit_stage += user.effects[PBEffects::FocusEnergy]
+      crit_stage += user.criticalHitRate
       crit_stage = [crit_stage, Battle::Move::CRITICAL_HIT_RATIOS.length - 1].min
     end
     if crit_stage < 0 ||
@@ -514,7 +514,7 @@ Battle::AI::Handlers::MoveEffectScore.add("StartPreventCriticalHitsAgainstUserSi
         next if crit_stage < 0
       end
       if crit_stage >= 0 && crit_stage < 50
-        crit_stage += b.effects[PBEffects::FocusEnergy]
+        crit_stage += b.criticalHitRate
         crit_stage += 1 if b.check_for_move { |m| m.highCriticalRate? }
         crit_stage = 99 if b.check_for_move { |m| m.pbCritialOverride(b.battler, user.battler) > 0 }
         crit_stage = [crit_stage, Battle::Move::CRITICAL_HIT_RATIOS.length - 1].min

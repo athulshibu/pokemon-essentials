@@ -41,9 +41,7 @@ class Battle
   end
 
   def pbCall(idxBattler)
-    # Debug ending the battle
-    return if pbDebugRun != 0
-    # Call the battler
+    clearStagesChangeRecords
     battler = @battlers[idxBattler]
     trainerName = pbGetOwnerName(idxBattler)
     pbDisplay(_INTL("{1} called {2}!", trainerName, battler.pbThis(true)))
@@ -64,6 +62,7 @@ class Battle
     else
       pbDisplay(_INTL("But nothing happened!"))
     end
+    checkStatChangeResponses
   end
 
   #-----------------------------------------------------------------------------

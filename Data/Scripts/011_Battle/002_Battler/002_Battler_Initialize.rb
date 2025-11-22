@@ -19,21 +19,22 @@ class Battle::Battler
   end
 
   def pbInitBlank
-    @name           = ""
-    @species        = 0
-    @form           = 0
-    @level          = 0
-    @hp = @totalhp  = 0
-    @types          = []
-    @ability_id     = nil
-    @item_id        = nil
+    @name               = ""
+    @species            = 0
+    @form               = 0
+    @level              = 0
+    @hp = @totalhp      = 0
+    @types              = []
+    @ability_id         = nil
+    @item_id            = nil
     @attack = @defense = @spatk = @spdef = @speed = 0
-    @status         = :NONE
-    @statusCount    = 0
-    @pokemon        = nil
-    @pokemonIndex   = -1
-    @participants   = []
-    @moves          = []
+    @stagesChangeRecord = [{}, {}]   # Raises, drops
+    @status             = :NONE
+    @statusCount        = 0
+    @pokemon            = nil
+    @pokemonIndex       = -1
+    @participants       = []
+    @moves              = []
   end
 
   # Used by Future Sight only, when Future Sight's user is no longer in battle.
@@ -110,11 +111,11 @@ class Battle::Battler
     else
       # These effects are passed on if Baton Pass is used
       GameData::Stat.each_battle { |stat| @stages[stat.id] = 0 }
+      setCriticalHitRate(0)
       @effects[PBEffects::AquaRing]          = false
       @effects[PBEffects::Confusion]         = 0
       @effects[PBEffects::Curse]             = false
       @effects[PBEffects::Embargo]           = 0
-      @effects[PBEffects::FocusEnergy]       = 0
       @effects[PBEffects::GastroAcid]        = false
       @effects[PBEffects::HealBlock]         = 0
       @effects[PBEffects::Ingrain]           = false
@@ -136,6 +137,7 @@ class Battle::Battler
     @lastHPLostFromFoe       = 0
     @droppedBelowHalfHP      = false
     @statsDropped            = false
+    clearStagesChangeRecord
     @tookMoveDamageThisRound = false
     @tookDamageThisRound     = false
     @tookPhysicalHit         = false

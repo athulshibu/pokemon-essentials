@@ -18,20 +18,21 @@ class Battle::AI::AIBattler
     @party_index = battler.pokemonIndex
   end
 
-  def pokemon;     return battler.pokemon;     end
-  def level;       return battler.level;       end
-  def hp;          return battler.hp;          end
-  def totalhp;     return battler.totalhp;     end
-  def fainted?;    return battler.fainted?;    end
-  def status;      return battler.status;      end
-  def statusCount; return battler.statusCount; end
-  def gender;      return battler.gender;      end
-  def turnCount;   return battler.turnCount;   end
-  def effects;     return battler.effects;     end
-  def stages;      return battler.stages;      end
+  def pokemon;         return battler.pokemon;         end
+  def level;           return battler.level;           end
+  def hp;              return battler.hp;              end
+  def totalhp;         return battler.totalhp;         end
+  def fainted?;        return battler.fainted?;        end
+  def status;          return battler.status;          end
+  def statusCount;     return battler.statusCount;     end
+  def gender;          return battler.gender;          end
+  def turnCount;       return battler.turnCount;       end
+  def effects;         return battler.effects;         end
+  def stages;          return battler.stages;          end
   def statStageAtMax?(stat); return battler.statStageAtMax?(stat); end
   def statStageAtMin?(stat); return battler.statStageAtMin?(stat); end
-  def moves;       return battler.moves;       end
+  def criticalHitRate; return battler.criticalHitRate; end
+  def moves;           return battler.moves;           end
 
   def wild?
     return @ai.battle.wildBattle? && opposes?
@@ -554,7 +555,7 @@ class Battle::AI::AIBattler
       ret += (@ai.stat_raise_worthwhile?(self, :ACCURACY, true)) ? 6 : -6
     when :LANSATBERRY
       # Focus energy
-      ret += (self.effects[PBEffects::FocusEnergy] < 2) ? 6 : -6
+      ret += (self.criticalHitRate < 2) ? 6 : -6
     when :LEPPABERRY
       # Restore PP
       ret += 6

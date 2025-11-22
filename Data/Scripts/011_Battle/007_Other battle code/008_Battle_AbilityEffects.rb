@@ -4,9 +4,9 @@
 module Battle::AbilityEffects
   SpeedCalc                        = AbilityHandlerHash.new
   WeightCalc                       = AbilityHandlerHash.new
-  # Battler's HP/stat changed
+  # Battler's HP changed
   OnHPDroppedBelowHalf             = AbilityHandlerHash.new
-  # Battler's status problem
+  # Battler's status condition
   StatusCheckNonIgnorable          = AbilityHandlerHash.new   # Comatose
   StatusImmunity                   = AbilityHandlerHash.new
   StatusImmunityNonIgnorable       = AbilityHandlerHash.new
@@ -20,6 +20,7 @@ module Battle::AbilityEffects
   StatLossImmunityFromAlly         = AbilityHandlerHash.new   # Flower Veil
   OnStatGain                       = AbilityHandlerHash.new   # None!
   OnStatLoss                       = AbilityHandlerHash.new
+  CopyStatChanges                  = AbilityHandlerHash.new
   # Priority and turn order
   PriorityChange                   = AbilityHandlerHash.new
   PriorityBracketChange            = AbilityHandlerHash.new   # Stall
@@ -140,6 +141,10 @@ module Battle::AbilityEffects
 
   def self.triggerOnStatLoss(ability, battler, stat, user)
     OnStatLoss.trigger(ability, battler, stat, user)
+  end
+
+  def self.triggerCopyStatChanges(ability, battler, battle)
+    CopyStatChanges.trigger(ability, battler, battle)
   end
 
   #-----------------------------------------------------------------------------
@@ -922,6 +927,38 @@ Battle::AbilityEffects::OnStatLoss.add(:DEFIANT,
   proc { |ability, battler, stat, user|
     next if user && !user.opposes?(battler)
     battler.pbRaiseStatStageByAbility(:ATTACK, 2, battler)
+  }
+)
+
+#===============================================================================
+# CopyStatChanges handlers
+#===============================================================================
+
+Battle::AbilityEffects::CopyStatChanges.add(:OPPORTUNIST,
+  proc { |ability, battler, battle|
+    raises = {}
+    GameData::Stat.each_battle { |stat| raises[stat.id] = 0 }
+    raises[:CRITICAL_HIT] = 0
+    battler.allOpposing.each do |b|
+      b.stagesChangeRecord[0].each_pair { |stat, increment| raises[stat] += increment }
+    end
+    next if raises.none? { |stat, increment| increment > 0 }
+    battle.pbShowAbilitySplash(battler)
+    raises.each_pair do |stat, increment|
+      next if increment <= 0
+      if stat == :CRITICAL_HIT
+        battler.setCriticalHitRate(increment)
+        battle.pbCommonAnimation("CriticalHitRateUp", battler)
+        battle.pbDisplay(_INTL("{1} is getting pumped!", battler.pbThis))
+      else
+        if Battle::Scene::USE_ABILITY_SPLASH
+          battler.pbRaiseStatStage(stat, increment, battler)
+        else
+          battler.pbRaiseStatStageByCause(stat, increment, battler, battler.abilityName)
+        end
+      end
+    end
+    battle.pbHideAbilitySplash(battler)
   }
 )
 
@@ -1943,8 +1980,10 @@ Battle::AbilityEffects::OnBeingHit.add(:ANGERPOINT,
     next if !target.damageState.critical
     next if !target.pbCanRaiseStatStage?(:ATTACK, target)
     battle.pbShowAbilitySplash(target)
-    target.stages[:ATTACK] = Battle::Battler::STAT_STAGE_MAXIMUM
+    target.stagesChangeRecord[0][:ATTACK] ||= 0
+    target.stagesChangeRecord[0][:ATTACK] += Battle::Battler::STAT_STAGE_MAXIMUM - target.stages[:ATTACK]
     target.statsRaisedThisRound = true
+    target.stages[:ATTACK] = Battle::Battler::STAT_STAGE_MAXIMUM
     battle.pbCommonAnimation("StatUp", target)
     if Battle::Scene::USE_ABILITY_SPLASH
       battle.pbDisplay(_INTL("{1} maxed its {2}!", target.pbThis, GameData::Stat.get(:ATTACK).name))
@@ -2954,11 +2993,11 @@ Battle::AbilityEffects::OnSwitchIn.add(:COSTAR,
         if target.nil?
           target = ally
           GameData::Stat.each_battle { |s| target_stages += ally.stages[s.id] }
-          target_stages += ally.effects[PBEffects::FocusEnergy]
+          target_stages += ally.criticalHitRate
         else
           stages = 0
           GameData::Stat.each_battle { |s| stages += ally.stages[s.id] }
-          stages += ally.effects[PBEffects::FocusEnergy]
+          stages += ally.criticalHitRate
           next if stages < target_stages
           target = ally
           target_stages = stages
@@ -2970,7 +3009,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:COSTAR,
     # Copy the stats
     battle.pbShowAbilitySplash(battler)
     GameData::Stat.each_battle { |s| battler.stages[s.id] = target.stages[s.id] }
-    battler.effects[PBEffects::FocusEnergy] = target.effects[PBEffects::FocusEnergy]
+    battler.setCriticalHitRate(target.criticalHitRate)
     battle.pbDisplay(_INTL("{1} copied {2}'s stat changes!", battler.pbThis, target.pbThis(true)))
     battle.pbHideAbilitySplash(battler)
   }
