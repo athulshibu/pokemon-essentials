@@ -31,7 +31,7 @@ module Battle::CatchAndStoreMixin
         when 0   # Add to your party
           pbDisplay(_INTL("Choose a Pokémon in your party to send to your Boxes."))
           party_index = -1
-          @scene.pbPartyScreen(0, (@sendToBoxes != 2), 1) do |idxParty, _partyScene|
+          @scene.pbPartyScreen(0, (@sendToBoxes != 2), 1) do |idxParty, _party_screen|
             party_index = idxParty
             next true
           end

@@ -50,8 +50,8 @@ class BattleArenaBattle < Battle
     @battleAI.battleArena = true
   end
 
-  def pbCanSwitchIn?(idxBattler, _idxParty, partyScene = nil)
-    partyScene&.pbDisplay(_INTL("{1} can't be switched out!", @battlers[idxBattler].pbThis))
+  def pbCanSwitchIn?(idxBattler, _idxParty, party_screen = nil)
+    party_screen&.show_message(_INTL("{1} can't be switched out!", @battlers[idxBattler].pbThis))
     return false
   end
 

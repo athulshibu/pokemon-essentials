@@ -324,8 +324,8 @@ class Battle::Battler
     return ret
   end
 
-  def isSpecies?(species)
-    return @pokemon&.isSpecies?(species)
+  def isSpecies?(*check_species)
+    return @pokemon&.isSpecies?(*check_species)
   end
 
   # Returns the active types of this Pokémon. The array should not include the

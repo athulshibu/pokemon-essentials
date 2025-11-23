@@ -696,3 +696,40 @@ class Battle::Move::SetAttackerMovePPTo0IfUserFaints < Battle::Move
     @battle.pbDisplay(_INTL("{1} wants its target to bear a grudge!", user.pbThis))
   end
 end
+
+#===============================================================================
+# User revives a fainted Pokémon in their party to 50% HP. (Revival Blessing)
+#===============================================================================
+class Battle::Move::RevivePokemonToHalfHP < Battle::Move
+  def pbMoveFailed?(user, targets)
+    failed = true
+    @battle.eachInTeamFromBattlerIndex(user.index) do |pkmn, party_index|
+      failed = false if pkmn.fainted?
+      break if !failed
+    end
+    if failed
+      @battle.pbDisplay(_INTL("But it failed!"))
+      return true
+    end
+    return false
+  end
+
+  def pbEffectGeneral(user)
+    pkmn = nil
+    @battle.scene.pbPartyScreen(user.index, false, 3) do |idxParty, party_screen|
+      pkmn = @battle.pbParty(user.idxOwnSide)[idxParty]
+      if pkmn.egg?
+        party_screen.show_message(_INTL("You can't revive an egg!"))
+        next false
+      elsif !pkmn.fainted?
+        party_screen.show_message(_INTL("This Pokémon cannot be revived."))
+        next false
+      end
+      next true
+    end
+    pkmn.hp = (pkmn.totalhp / 2).floor
+    pkmn.hp = 1 if pkmn.hp <= 0
+    pkmn.heal_status
+    @battle.pbDisplay(_INTL("{1} was revived and is ready to fight again!", pkmn.name))
+  end
+end

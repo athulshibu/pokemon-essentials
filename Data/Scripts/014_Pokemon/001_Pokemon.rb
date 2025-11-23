@@ -147,9 +147,13 @@ class Pokemon
 
   # @param check_species [Symbol, String, GameData::Species] ID of the species to check for
   # @return [Boolean] whether this Pokémon is of the specified species
-  def isSpecies?(check_species)
-    return @species == check_species || (GameData::Species.exists?(check_species) &&
-                                        @species == GameData::Species.get(check_species).species)
+  def isSpecies?(*check_species)
+    return true if check_species.include?(@species)
+    check_species.each do |check_sp|
+      return true if GameData::Species.exists?(check_sp) &&
+                     @species == GameData::Species.get(check_sp).species
+    end
+    return false
   end
 
   def form

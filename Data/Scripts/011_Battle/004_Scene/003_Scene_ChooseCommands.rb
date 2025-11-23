@@ -112,7 +112,7 @@ class Battle::Scene
   # Opens the party screen to choose a Pokémon to switch in (or just view its
   # summary screens).
   # mode: 0=Pokémon command, 1=choose a Pokémon to send to the Boxes, 2=view
-  #       summaries only
+  #       summaries only, 3=select a Pokémon
   #-----------------------------------------------------------------------------
 
   def pbPartyScreen(idxBattler, canCancel = false, mode = 0)
@@ -123,7 +123,9 @@ class Battle::Scene
     partyStart, _partyEnd = @battle.pbTeamIndexRangeFromBattlerIndex(idxBattler)
     modParty = @battle.pbPlayerDisplayParty(idxBattler)
     # Start party screen
-    party_mode = (mode == 1) ? :battle_choose_to_box : :battle_choose_pokemon
+    party_mode = :battle_choose_pokemon
+    party_mode = :battle_choose_to_box if mode == 1
+    party_mode = :battle_choose_to_revive if mode == 3
     screen = UI::Party.new(modParty, mode: party_mode)
     screen.choose_pokemon do |pkmn, party_index|
       next canCancel if party_index < 0
@@ -132,12 +134,13 @@ class Battle::Scene
       commands[:switch_in]     = _INTL("Switch In") if mode == 0 && pkmn.able? &&
                                                        (!@battle.rules[:cannot_switch] || !canCancel)
       commands[:send_to_boxes] = _INTL("Send to Boxes") if mode == 1
+      commands[:select]        = _INTL("Select") if mode == 3
       commands[:summary]       = _INTL("Summary")
       commands[:cancel]        = _INTL("Cancel")
       choice = screen.show_menu(_INTL("Do what with {1}?", pkmn.name), commands)
       next canCancel if choice.nil?
       case choice
-      when :switch_in, :send_to_boxes
+      when :select, :switch_in, :send_to_boxes
         real_party_index = -1
         partyPos.each_with_index do |pos, i|
           next if pos != party_index + partyStart

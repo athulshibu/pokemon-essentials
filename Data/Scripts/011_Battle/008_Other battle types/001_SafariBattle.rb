@@ -25,8 +25,8 @@ class Battle::FakeBattler
   def shiny?;         return @pokemon.shiny?;       end
   def super_shiny?;   return @pokemon.super_shiny?; end
 
-  def isSpecies?(check_species)
-    return @pokemon&.isSpecies?(check_species)
+  def isSpecies?(*check_species)
+    return @pokemon&.isSpecies?(*check_species)
   end
 
   def fainted?;       return false; end

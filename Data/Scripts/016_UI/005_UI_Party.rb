@@ -736,6 +736,7 @@ class UI::Party < UI::BaseScreen
   #                            wants this to yield when chosen.
   #   :battle_choose_pokemon   For battle.
   #   :battle_choose_to_box    For battle. Like :choose_pokemon but with a different help text.
+  #   :battle_choose_to_revive For battle (Revival Blessing). Like :choose_pokemon but with a different help text.
   #   :battle_use_item         For battle.
   #   :use_item                Like :choose_pokemon but with a different help text.
   #   :teach_pokemon           Like :choose_pokemon but with a different help text.
@@ -812,7 +813,10 @@ class UI::Party < UI::BaseScreen
 
   ACTIONS.add(:summary, {
     :effect => proc { |screen|
-      summary_mode = [:battle_choose_pokemon, :battle_choose_to_box, :battle_use_item].include?(screen.mode) ? :in_battle : :normal
+      summary_mode = [
+        :battle_choose_pokemon, :battle_choose_to_box,
+        :battle_choose_to_revive, :battle_use_item
+      ].include?(screen.mode) ? :in_battle : :normal
       pbFadeOutInWithUpdate(screen.sprites) do
         new_index = UI::PokemonSummary.new(screen.party, screen.index, mode: summary_mode).main
         screen.set_index(new_index)
@@ -1149,6 +1153,8 @@ class UI::Party < UI::BaseScreen
       set_help_text(_INTL("Teach which Pokémon?"))
     when :battle_choose_to_box
       set_help_text(_INTL("Send which Pokémon to Boxes?"))
+    when :battle_choose_to_revive
+      set_help_text(_INTL("Choose Pokémon to revive."))
     when :choose_entry_order
       set_help_text(_INTL("Choose Pokémon and confirm."))
     end

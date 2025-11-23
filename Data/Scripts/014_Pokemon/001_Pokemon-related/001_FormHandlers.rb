@@ -574,7 +574,7 @@ MultipleForms.register(:MINIOR, {
 
 MultipleForms.register(:MIMIKYU, {
   "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
-    next 0 if pkmn.fainted? || endBattle
+    next 0 if (pkmn.fainted? && Settings::MECHANICS_GENERATION == 7) || endBattle
   }
 })
 
@@ -653,7 +653,7 @@ MultipleForms.register(:ALCREMIE, {
 
 MultipleForms.register(:EISCUE, {
   "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
-    next 0 if pkmn.fainted? || endBattle
+    next 0 if (pkmn.fainted? && Settings::MECHANICS_GENERATION == 7) || endBattle
   }
 })
 
