@@ -374,7 +374,7 @@ class Battle
       b.pbAbilityStatusCureCheck
     end
     # Ending primordial weather, checking Trace
-    b.pbContinualAbilityChecks(true)
+    pbPriority(true).each { |b| b.pbContinualAbilityChecks(true) }
     checkStatChangeResponses
     # Check for triggering of Emergency Exit/Wimp Out/Eject Pack (only one will
     # be triggered)
