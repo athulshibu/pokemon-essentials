@@ -639,6 +639,7 @@ Battle::ItemEffects::StatLossImmunity.add(:CLEARAMULET,
 #===============================================================================
 Battle::ItemEffects::OnStatLoss.add(:EJECTPACK,
   proc { |item, battler, move_user, battle|
+    next false if battler.effects[PBEffects::Commanding] >= 0
     next false if battler.effects[PBEffects::SkyDrop] >= 0 ||
                   battler.inTwoTurnAttack?("TwoTurnAttackInvulnerableInSkyTargetCannotAct")   # Sky Drop
     next false if battle.pbAllFainted?(battler.idxOpposingSide)
@@ -1626,6 +1627,8 @@ Battle::ItemEffects::AfterMoveUseFromTarget.add(:EJECTBUTTON,
     next if !switched_battlers.empty?
     next if battle.pbAllFainted?(battler.idxOpposingSide)
     next if !battle.pbCanChooseNonActive?(battler.index)
+    next if battler.effects[PBEffects::Commanding] >= 0 ||
+            battler.effects[PBEffects::CommandedBy] >= 0
     battle.pbCommonAnimation("UseItem", battler)
     battle.pbDisplay(_INTL("{1} is switched out with the {2}!", battler.pbThis, battler.itemName))
     battler.pbConsumeItem(true, false)
@@ -1646,7 +1649,7 @@ Battle::ItemEffects::AfterMoveUseFromTarget.add(:REDCARD,
     next if newPkmn < 0
     battle.pbCommonAnimation("UseItem", battler)
     battle.pbDisplay(_INTL("{1} held up its {2} against {3}!",
-       battler.pbThis, battler.itemName, user.pbThis(true)))
+                           battler.pbThis, battler.itemName, user.pbThis(true)))
     battler.pbConsumeItem
     next if !user.canBeForcedOutOfBattle?
     battle.pbRecallAndReplace(user.index, newPkmn, true)

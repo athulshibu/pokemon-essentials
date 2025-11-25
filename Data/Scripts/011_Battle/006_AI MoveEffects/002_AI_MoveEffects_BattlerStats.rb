@@ -1388,12 +1388,12 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("ResetTargetStatStages",
 #===============================================================================
 Battle::AI::Handlers::MoveFailureCheck.add("ResetAllBattlersStatStages",
   proc { |move, user, ai, battle|
-    next battle.allBattlers.none? { |b| b.hasAlteredStatStages? }
+    next battle.allBattlers(true).none? { |b| b.hasAlteredStatStages? }
   }
 )
 Battle::AI::Handlers::MoveEffectScore.add("ResetAllBattlersStatStages",
   proc { |score, move, user, ai, battle|
-    ai.each_battler do |b|
+    ai.each_battler(true) do |b|
       raises = []
       drops = []
       GameData::Stat.each_battle do |s|

@@ -27,7 +27,8 @@ class Battle::Move::SwitchOutUserStatusMove < Battle::Move
         @battle.pbDisplay(_INTL("But it failed!"))
         return true
       end
-    elsif !@battle.pbCanChooseNonActive?(user.index)
+    elsif !@battle.pbCanChooseNonActive?(user.index) ||
+          user.effects[PBEffects::Commanding] >= 0 || user.effects[PBEffects::CommandedBy] >= 0
       @battle.pbDisplay(_INTL("But it failed!"))
       return true
     end
@@ -70,6 +71,7 @@ class Battle::Move::SwitchOutUserDamagingMove < Battle::Move
     end
     return if targetSwitched
     return if !@battle.pbCanChooseNonActive?(user.index)
+    return if user.effects[PBEffects::Commanding] >= 0 || user.effects[PBEffects::CommandedBy] >= 0
     @battle.pbDisplay(_INTL("{1} went back to {2}!", user.pbThis,
                             @battle.pbGetOwnerName(user.index)))
     @battle.pbPursuit(user.index)
@@ -102,6 +104,7 @@ class Battle::Move::LowerTargetAtkSpAtk1SwitchOutUser < Battle::Move::TargetMult
     end
     return if switcher.fainted? || numHits == 0
     return if !@battle.pbCanChooseNonActive?(switcher.index)
+    return if user.effects[PBEffects::Commanding] >= 0 || user.effects[PBEffects::CommandedBy] >= 0
     @battle.pbDisplay(_INTL("{1} went back to {2}!", switcher.pbThis,
                             @battle.pbGetOwnerName(switcher.index)))
     @battle.pbPursuit(switcher.index)
@@ -122,7 +125,8 @@ end
 #===============================================================================
 class Battle::Move::SwitchOutUserPassOnEffects < Battle::Move
   def pbMoveFailed?(user, targets)
-    if !@battle.pbCanChooseNonActive?(user.index)
+    if !@battle.pbCanChooseNonActive?(user.index) ||
+       user.effects[PBEffects::Commanding] >= 0 || user.effects[PBEffects::CommandedBy] >= 0
       @battle.pbDisplay(_INTL("But it failed!"))
       return true
     end
@@ -159,7 +163,8 @@ class Battle::Move::UserMakeSubstituteSwitchOutUser < Battle::Move
       @battle.pbDisplay(_INTL("But it failed!"))
       return true
     end
-    if user.wild? || !@battle.pbCanChooseNonActive?(user.index)
+    if user.wild? || !@battle.pbCanChooseNonActive?(user.index) ||
+       user.effects[PBEffects::Commanding] >= 0 || user.effects[PBEffects::CommandedBy] >= 0
       @battle.pbDisplay(_INTL("But it failed!"))
       return true
     end
@@ -219,6 +224,7 @@ class Battle::Move::StartSnowstormWeatherSwitchOutUser < Battle::Move
 
   def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers)
     return if user.wild? || !@battle.pbCanChooseNonActive?(user.index)
+    return if user.effects[PBEffects::Commanding] >= 0 || user.effects[PBEffects::CommandedBy] >= 0
     @battle.pbDisplay(_INTL("{1} went back to {2}!", user.pbThis,
                             @battle.pbGetOwnerName(user.index)))
     @battle.pbPursuit(user.index)
@@ -246,15 +252,17 @@ class Battle::Move::SwitchOutTargetStatusMove < Battle::Move
 
   def pbFailsAgainstTarget?(user, target, show_message)
     return true if !target.canBeForcedOutOfBattle?(show_message)
-    if user.allAllies.length == 0 && target.allAllies.length == 0 &&
+    if user.allAllies(true).length == 0 && target.allAllies(true).length == 0 &&
        @battle.wildBattle? && !@battle.rules[:cannot_run]
       # End the battle
       if target.level > user.level
         @battle.pbDisplay(_INTL("But it failed!")) if show_message
         return true
       end
-    elsif !target.wild?
-      # Switch target out
+    elsif target.wild?
+      @battle.pbDisplay(_INTL("But it failed!")) if show_message
+      return true
+    else
       canSwitch = false
       @battle.eachInTeamFromBattlerIndex(target.index) do |_pkmn, i|
         canSwitch = @battle.pbCanSwitchIn?(target.index, i)
@@ -264,15 +272,12 @@ class Battle::Move::SwitchOutTargetStatusMove < Battle::Move
         @battle.pbDisplay(_INTL("But it failed!")) if show_message
         return true
       end
-    else
-      @battle.pbDisplay(_INTL("But it failed!")) if show_message
-      return true
     end
     return false
   end
 
   def pbEffectAgainstTarget(user, target)
-    if user.allAllies.length == 0 && target.allAllies.length == 0 &&
+    if user.allAllies(true).length == 0 && target.allAllies(true).length == 0 &&
        @battle.wildBattle? && !@battle.rules[:cannot_run]
       @battle.decision = Battle::Outcome::FLEE
     end
@@ -306,7 +311,7 @@ end
 #===============================================================================
 class Battle::Move::SwitchOutTargetDamagingMove < Battle::Move
   def pbEffectAgainstTarget(user, target)
-    if user.allAllies.length == 0 && target.allAllies.length == 0 &&
+    if user.allAllies(true).length == 0 && target.allAllies(true).length == 0 &&
        @battle.wildBattle? && !@battle.rules[:cannot_run] &&
        target.level <= user.level &&
        (target.effects[PBEffects::Substitute] == 0 || ignoresSubstitute?(user))

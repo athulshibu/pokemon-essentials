@@ -272,7 +272,7 @@ class Battle
     end
   end
 
-  def pbPriority(onlySpeedSort = false)
+  def pbPriority(onlySpeedSort = false, with_commanders = false)
     ret = []
     if onlySpeedSort
       # Sort battlers by their speed stats and tie-breaker order only.
@@ -284,6 +284,9 @@ class Battle
       # Sort battlers by priority, sub-priority and their speed. Ties are
       # resolved in the same way each time this method is called in a round.
       @priority.each { |pArray| ret.push(pArray[0]) if !pArray[0].fainted? }
+    end
+    if !with_commanders
+      ret.delete_if { |b| b.effects[PBEffects::Commanding] >= 0 }
     end
     return ret
   end

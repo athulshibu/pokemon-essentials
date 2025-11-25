@@ -738,7 +738,7 @@ class Battle::Move::UserSwapsPositionsWithAlly < Battle::Move
     numTargets = 0
     @idxAlly = -1
     idxUserOwner = @battle.pbGetOwnerIndexFromBattlerIndex(user.index)
-    user.allAllies.each do |b|
+    user.allAllies(true).each do |b|
       next if @battle.pbGetOwnerIndexFromBattlerIndex(b.index) != idxUserOwner
       next if !b.near?(user)
       numTargets += 1
@@ -765,8 +765,12 @@ class Battle::Move::UserSwapsPositionsWithAlly < Battle::Move
     idxA = user.index
     idxB = @idxAlly
     if @battle.pbSwapBattlers(idxA, idxB)
-      @battle.pbDisplay(_INTL("{1} and {2} switched places!",
-                              @battle.battlers[idxB].pbThis, @battle.battlers[idxA].pbThis(true)))
+      if @battler.battlers[idxB].effects[PBEffects::Commanding] >= 0
+        @battle.pbDisplay(_INTL("{1} moved across!", @battle.battlers[idxA].pbThis))
+      else
+        @battle.pbDisplay(_INTL("{1} and {2} switched places!",
+                                @battle.battlers[idxB].pbThis, @battle.battlers[idxA].pbThis(true)))
+      end
       [idxA, idxB].each { |idx| @battle.pbEffectsOnBattlerEnteringPosition(@battle.battlers[idx]) }
     end
   end

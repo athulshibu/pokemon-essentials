@@ -160,7 +160,7 @@ class BattlePalaceBattle < Battle
   def pbEndOfRoundPhase
     super
     return if decided?
-    allBattlers.each { |b| pbPinchChange(b) }
+    allBattlers(true).each { |b| pbPinchChange(b) }
   end
 end
 

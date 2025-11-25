@@ -76,9 +76,10 @@ class Battle
     return if !position || position.effects[PBEffects::FutureSightCounter] == 0
     position.effects[PBEffects::FutureSightCounter] -= 1
     return if position.effects[PBEffects::FutureSightCounter] > 0
-    return if !@battlers[position_index] || @battlers[position_index].fainted?   # No target
+    return if !@battlers[position_index] || @battlers[position_index].fainted? ||
+              @battlers[position_index].effects[PBEffects::Commanding] >= 0   # No target
     moveUser = nil
-    allBattlers.each do |battler|
+    allBattlers(true).each do |battler|
       next if battler.opposes?(position.effects[PBEffects::FutureSightUserIndex])
       next if battler.pokemonIndex != position.effects[PBEffects::FutureSightUserPartyIndex]
       moveUser = battler
@@ -489,7 +490,7 @@ class Battle
     return if @field.effects[effect] > 0
     pbDisplay(msg)
     if effect == PBEffects::MagicRoom
-      pbPriority(true).each do |battler|
+      pbPriority(true, true).each do |battler|
         battler.pbItemOnWeatherChange(@field.weather)
         battler.pbItemOnTerrainChange(@field.terrain)
       end
@@ -641,8 +642,8 @@ class Battle
     @endOfRound = true
     @scene.pbBeginEndOfRoundPhase
     clearStagesChangeRecords
-    pbCalculatePriority           # recalculate speeds
-    priority = pbPriority(true)   # in order of fastest -> slowest speeds only
+    pbCalculatePriority                 # recalculate speeds
+    priority = pbPriority(true, true)   # in order of fastest -> slowest speeds only
     # Weather
     pbEOREndWeather(priority)
     # Future Sight/Doom Desire
@@ -748,7 +749,7 @@ class Battle
     priority.each { |battler| battler.pbContinualAbilityChecks }
     checkStatChangeResponses
     # Reset/count down battler-specific effects (no messages)
-    allBattlers.each do |battler|
+    allBattlers(true).each do |battler|
       battler.effects[PBEffects::BanefulBunker]    = false
       battler.effects[PBEffects::BurningBulwark]   = false
       if Settings::MECHANICS_GENERATION >= 9

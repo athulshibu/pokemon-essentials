@@ -330,7 +330,7 @@ Battle::AI::Handlers::ShouldSwitch.add(:yawning,
     next false if battler.has_active_item?([:CHESTOBERRY, :LUMBERRY]) && battler.battler.canConsumeBerry?
     # Ally can't cure sleep
     ally_can_heal = false
-    ai.each_ally(battler.index) do |b, i|
+    ai.each_ally(battler.index, true) do |b, i|
       ally_can_heal = b.has_active_ability?(:HEALER)
       break if ally_can_heal
     end

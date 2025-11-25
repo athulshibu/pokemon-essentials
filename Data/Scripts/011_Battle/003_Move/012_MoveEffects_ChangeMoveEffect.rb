@@ -507,7 +507,7 @@ class Battle::Move::CounterDamagePlusHalf < Battle::Move::FixedDamageMove
     return if user.lastFoeAttacker.length == 0
     user.lastFoeAttacker.reverse_each do |party_index|
       battler = @battle.pbFindBattler(party_index, user.index + 1)
-      next if !battler
+      next if !battler || battler.effects[PBEffects::Commanding] >= 0
       user.pbAddTarget(targets, user, battler, self, false)
       break
     end

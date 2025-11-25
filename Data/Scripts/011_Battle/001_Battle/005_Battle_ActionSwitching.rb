@@ -42,6 +42,7 @@ class Battle
   def pbCanSwitchOut?(idxBattler, party_screen = nil)
     battler = @battlers[idxBattler]
     return true if battler.fainted?
+    return false if battler.effects[PBEffects::Commanding] >= 0 || battler.effects[PBEffects::CommandedBy] >= 0
     # Ability/item effects that allow switching no matter what
     if battler.abilityActive? && Battle::AbilityEffects.triggerCertainSwitching(battler.ability, battler, self)
       return true
@@ -312,11 +313,11 @@ class Battle
   def pbOnAllBattlersEnteringBattle
     pbCalculatePriority(true)
     battler_indices = []
-    allBattlers.each { |b| battler_indices.push(b.index) }
+    allBattlers(true).each { |b| battler_indices.push(b.index) }
     pbOnBattlerEnteringBattle(battler_indices)
     pbCalculatePriority
     # Check forms are correct
-    allBattlers.each { |b| b.pbCheckForm }
+    allBattlers(true).each { |b| b.pbCheckForm }
   end
 
   # Called when one or more Pokémon switch in. Does a lot of things, including
@@ -333,7 +334,7 @@ class Battle
     #       this resetting would prevent that from happening, so it is skipped
     #       and instead done earlier in def pbAttackPhaseSwitch.
     if !skip_event_reset
-      allBattlers.each do |b|
+      allBattlers(true).each do |b|
         b.droppedBelowHalfHP = false
         b.statsDropped = false
       end
@@ -356,13 +357,14 @@ class Battle
       b.pbCheckForm
       # Primal Revert upon entering battle
       pbPrimalReversion(b.index)
-      # Ending primordial weather, checking Trace
-      b.pbContinualAbilityChecks(true)
+      # Check for end of primordial weather
+      pbEndPrimordialWeather
       # Abilities that trigger upon switching in
       if (!b.fainted? && b.unstoppableAbility?) || b.abilityActive?
         Battle::AbilityEffects.triggerOnSwitchIn(b.ability, b, self, true)
       end
-      pbEndPrimordialWeather   # Checking this again just in case
+      # Check for end of primordial weather
+      pbEndPrimordialWeather
       # Items that trigger upon switching in (Air Balloon message)
       if b.itemActive?
         Battle::ItemEffects.triggerOnSwitchIn(b.item, b, self)
@@ -371,15 +373,17 @@ class Battle
       b.pbHeldItemTriggerCheck
       b.pbAbilityStatusCureCheck
     end
+    # Ending primordial weather, checking Trace
+    b.pbContinualAbilityChecks(true)
     checkStatChangeResponses
     # Check for triggering of Emergency Exit/Wimp Out/Eject Pack (only one will
     # be triggered)
-    pbPriority(true).each do |b|
+    pbPriority(true, true).each do |b|
       break if b.pbItemOnStatDropped
       break if b.pbAbilitiesOnDamageTaken
     end
     checkStatChangeResponses
-    allBattlers.each do |b|
+    allBattlers(true).each do |b|
       b.droppedBelowHalfHP = false
       b.statsDropped = false
     end
@@ -391,7 +395,7 @@ class Battle
       @field.effects[PBEffects::AmuletCoin] = true
     end
     # Update battlers' participants (who will gain Exp/EVs when a battler faints)
-    allBattlers.each { |b| b.pbUpdateParticipants }
+    allBattlers(true).each { |b| b.pbUpdateParticipants }
   end
 
   def pbMessagesOnBattlerEnteringBattle(battler)

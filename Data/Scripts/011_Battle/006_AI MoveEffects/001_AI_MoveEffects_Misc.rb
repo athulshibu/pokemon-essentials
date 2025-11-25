@@ -389,7 +389,7 @@ Battle::AI::Handlers::MoveFailureCheck.add("AddSpikesToFoeSide",
 )
 Battle::AI::Handlers::MoveEffectScore.add("AddSpikesToFoeSide",
   proc { |score, move, user, ai, battle|
-    inBattleIndices = battle.allSameSideBattlers(user.idxOpposingSide).map { |b| b.pokemonIndex }
+    inBattleIndices = battle.allSameSideBattlers(user.idxOpposingSide, true).map { |b| b.pokemonIndex }
     foe_reserves = []
     battle.pbParty(user.idxOpposingSide).each_with_index do |pkmn, idxParty|
       next if !pkmn || !pkmn.able? || inBattleIndices.include?(idxParty)
@@ -417,7 +417,7 @@ Battle::AI::Handlers::MoveFailureCheck.add("AddToxicSpikesToFoeSide",
 )
 Battle::AI::Handlers::MoveEffectScore.add("AddToxicSpikesToFoeSide",
   proc { |score, move, user, ai, battle|
-    inBattleIndices = battle.allSameSideBattlers(user.idxOpposingSide).map { |b| b.pokemonIndex }
+    inBattleIndices = battle.allSameSideBattlers(user.idxOpposingSide, true).map { |b| b.pokemonIndex }
     foe_reserves = []
     battle.pbParty(user.idxOpposingSide).each_with_index do |pkmn, idxParty|
       next if !pkmn || !pkmn.able? || inBattleIndices.include?(idxParty)
@@ -445,7 +445,7 @@ Battle::AI::Handlers::MoveFailureCheck.add("AddStealthRocksToFoeSide",
 )
 Battle::AI::Handlers::MoveEffectScore.add("AddStealthRocksToFoeSide",
   proc { |score, move, user, ai, battle|
-    inBattleIndices = battle.allSameSideBattlers(user.idxOpposingSide).map { |b| b.pokemonIndex }
+    inBattleIndices = battle.allSameSideBattlers(user.idxOpposingSide, true).map { |b| b.pokemonIndex }
     foe_reserves = []
     battle.pbParty(user.idxOpposingSide).each_with_index do |pkmn, idxParty|
       next if !pkmn || !pkmn.able? || inBattleIndices.include?(idxParty)
@@ -471,7 +471,7 @@ Battle::AI::Handlers::MoveFailureCheck.add("AddStickyWebToFoeSide",
 )
 Battle::AI::Handlers::MoveEffectScore.add("AddStickyWebToFoeSide",
   proc { |score, move, user, ai, battle|
-    inBattleIndices = battle.allSameSideBattlers(user.idxOpposingSide).map { |b| b.pokemonIndex }
+    inBattleIndices = battle.allSameSideBattlers(user.idxOpposingSide, true).map { |b| b.pokemonIndex }
     foe_reserves = []
     battle.pbParty(user.idxOpposingSide).each_with_index do |pkmn, idxParty|
       next if !pkmn || !pkmn.able? || inBattleIndices.include?(idxParty)
@@ -604,7 +604,7 @@ Battle::AI::Handlers::MoveFailureCheck.add("UserSwapsPositionsWithAlly",
   proc { |move, user, ai, battle|
     num_targets = 0
     idxUserOwner = battle.pbGetOwnerIndexFromBattlerIndex(user.index)
-    ai.each_ally(user.side) do |b, i|
+    ai.each_ally(user.index, true) do |b, i|
       next if battle.pbGetOwnerIndexFromBattlerIndex(b.index) != idxUserOwner
       next if !b.battler.near?(user.battler)
       num_targets += 1

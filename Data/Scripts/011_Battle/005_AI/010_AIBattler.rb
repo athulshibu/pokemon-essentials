@@ -126,7 +126,7 @@ class Battle::AI::AIBattler
         ret += [self.totalhp / 8, 1].max if battler.takesIndirectDamage?
       end
     else
-      @ai.each_battler do |b, i|
+      @ai.each_battler(true) do |b, i|
         next if i == @index || b.effects[PBEffects::LeechSeed] != @index
         amt = [[b.totalhp / 8, b.hp].min, 1].max
         amt = (amt * 1.3).floor if has_active_item?(:BIGROOT)
@@ -171,7 +171,7 @@ class Battle::AI::AIBattler
     return 999_999 if self.effects[PBEffects::PerishSong] == 1
     # Bad Dreams
     if battler.asleep? && self.statusCount > 1 && battler.takesIndirectDamage?
-      @ai.each_battler do |b, i|
+      @ai.each_battler(true) do |b, i|
         next if i == @index || !b.battler.near?(battler) || !b.has_active_ability?(:BADDREAMS)
         ret += [self.totalhp / 8, 1].max
       end

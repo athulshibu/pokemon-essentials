@@ -62,7 +62,7 @@ class Battle
       pbPursuit(b.index)
       return if decided?
       # Switch Pokémon
-      allBattlers.each do |b2|
+      allBattlers(true).each do |b2|
         b2.droppedBelowHalfHP = false
         b2.statsDropped = false
       end
@@ -188,9 +188,9 @@ class Battle
     # Reset certain effects
     @battlers.each_with_index do |b, i|
       next if !b
-      b.turnCount += 1 if !b.fainted?
+      b.turnCount += 1 if !b.fainted? && b.effects[PBEffects::Commanding] < 0
       @successStates[i].clear
-      if @choices[i][0] != :UseMove && @choices[i][0] != :Shift && @choices[i][0] != :SwitchOut
+      if ![:UseMove, :Shift, :SwitchOut].include?(@choices[i][0])
         b.effects[PBEffects::DestinyBond] = false
         b.effects[PBEffects::Grudge]      = false
       end

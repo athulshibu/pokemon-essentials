@@ -454,7 +454,7 @@ Battle::AbilityEffects::OnHPDroppedBelowHalf.add(:EMERGENCYEXIT,
                   battler.inTwoTurnAttack?("TwoTurnAttackInvulnerableInSkyTargetCannotAct")   # Sky Drop
     # In wild battles
     if battle.wildBattle?
-      next false if battler.opposes? && battle.pbSideBattlerCount(battler.index) > 1
+      next false if battler.opposes? && battle.pbSideBattlerCount(battler.index, true) > 1
       next false if !battle.pbCanRun?(battler.index)
       battle.pbShowAbilitySplash(battler, true)
       battle.pbHideAbilitySplash(battler)
@@ -2666,7 +2666,7 @@ Battle::AbilityEffects::EndOfRoundHealing.add(:HEALER,
   proc { |ability, battler, battle|
     next if battle.pbRandom(100) >= 30
     showing_splash = false
-    battler.allAllies.each do |ally|
+    battler.allAllies(true).each do |ally|
       next if ally.status == :NONE
       battle.pbShowAbilitySplash(battler) if !showing_splash
       showing_splash = true
@@ -2748,7 +2748,7 @@ Battle::AbilityEffects::EndOfRoundHealing.add(:SHEDSKIN,
 Battle::AbilityEffects::EndOfRoundEffect.add(:BADDREAMS,
   proc { |ability, battler, battle|
     showing_splash = false
-    battle.allOtherSideBattlers(battler.index).each do |b|
+    battle.allOtherSideBattlers(battler.index, true).each do |b|
       next if !b.near?(battler) || !b.asleep?
       next if !b.takesIndirectDamage?
       battle.pbShowAbilitySplash(battler) if !showing_splash
@@ -2849,7 +2849,7 @@ Battle::AbilityEffects::EndOfRoundGainItem.add(:PICKUP,
     foundItem = nil
     fromBattler = nil
     use = 0
-    battle.allBattlers.each do |b|
+    battle.allBattlers(true).each do |b|
       next if b.index == battler.index
       next if b.effects[PBEffects::PickupUse] <= use
       foundItem   = b.effects[PBEffects::PickupItem]
@@ -3017,9 +3017,9 @@ Battle::AbilityEffects::OnSwitchIn.add(:COSTAR,
 
 Battle::AbilityEffects::OnSwitchIn.add(:CURIOUSMEDICINE,
   proc { |ability, battler, battle, switch_in|
-    next if battler.allAllies.none? { |b| b.hasAlteredStatStages? }
+    next if battler.allAllies(true).none? { |b| b.hasAlteredStatStages? }
     battle.pbShowAbilitySplash(battler)
-    battler.allAllies.each do |b|
+    battler.allAllies(true).each do |b|
       next if !b.hasAlteredStatStages?
       b.pbResetStatStages
       if Battle::Scene::USE_ABILITY_SPLASH
@@ -3278,7 +3278,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:IMPOSTER,
 Battle::AbilityEffects::OnSwitchIn.add(:INTIMIDATE,
   proc { |ability, battler, battle, switch_in|
     battle.pbShowAbilitySplash(battler)
-    battle.allOtherSideBattlers(battler.index).each do |b|
+    battle.allOtherSideBattlers(battler.index, true).each do |b|
       next if !b.near?(battler)
       check_item = true
       if b.hasActiveAbility?(:CONTRARY)
@@ -3331,7 +3331,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:NEUTRALIZINGGAS,
     battle.pbShowAbilitySplash(battler, true)
     battle.pbHideAbilitySplash(battler)
     battle.pbDisplay(_INTL("Neutralizing gas filled the area!"))
-    battle.allBattlers.each do |b|
+    battle.allBattlers(true).each do |b|
       # Slow Start - end all turn counts
       b.effects[PBEffects::SlowStart] = 0
       # Truant - let b move on its first turn after Neutralizing Gas disappears
@@ -3355,7 +3355,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:NEUTRALIZINGGAS,
     had_unnerve = battle.pbCheckGlobalAbility([:UNNERVE, :ASONECHILLINGNEIGH, :ASONEGRIMNEIGH])
     battler.ability_id = :NEUTRALIZINGGAS
     if had_unnerve && !battle.pbCheckGlobalAbility([:UNNERVE, :ASONECHILLINGNEIGH, :ASONEGRIMNEIGH])
-      battle.allBattlers.each { |b| b.pbItemsOnUnnerveEnding }
+      battle.allBattlers(true).each { |b| b.pbItemsOnUnnerveEnding }
     end
   }
 )

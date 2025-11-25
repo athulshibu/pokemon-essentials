@@ -6,30 +6,30 @@ class Battle::AI
 
   #-----------------------------------------------------------------------------
 
-  def each_battler
+  def each_battler(with_commanders = false)
     @battlers.each_with_index do |battler, i|
-      next if !battler || battler.fainted?
+      next if !battler || battler.fainted? || (!with_commanders && battler.effects[PBEffects::Commanding] >= 0)
       yield battler, i
     end
   end
 
-  def each_foe_battler(side)
+  def each_foe_battler(side, with_commanders = false)
     @battlers.each_with_index do |battler, i|
-      next if !battler || battler.fainted?
+      next if !battler || battler.fainted? || (!with_commanders && battler.effects[PBEffects::Commanding] >= 0)
       yield battler, i if i.even? != side.even?
     end
   end
 
-  def each_same_side_battler(side)
+  def each_same_side_battler(side, with_commanders = false)
     @battlers.each_with_index do |battler, i|
-      next if !battler || battler.fainted?
+      next if !battler || battler.fainted? || (!with_commanders && battler.effects[PBEffects::Commanding] >= 0)
       yield battler, i if i.even? == side.even?
     end
   end
 
-  def each_ally(index)
+  def each_ally(index, with_commanders = false)
     @battlers.each_with_index do |battler, i|
-      next if !battler || battler.fainted?
+      next if !battler || battler.fainted? || (!with_commanders && battler.effects[PBEffects::Commanding] >= 0)
       yield battler, i if i != index && i.even? == index.even?
     end
   end

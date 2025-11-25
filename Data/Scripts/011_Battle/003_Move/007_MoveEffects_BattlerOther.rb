@@ -504,11 +504,7 @@ class Battle::Move::CureUserPartyStatus < Battle::Move
   def worksWithNoTargets?; return true; end
 
   def pbMoveFailed?(user, targets)
-    has_effect = @battle.allSameSideBattlers(user).any? { |b| b.status != :NONE }
-    if !has_effect
-      has_effect = @battle.pbParty(user.index).any? { |pkmn| pkmn&.able? && pkmn.status != :NONE }
-    end
-    if !has_effect
+    if @battle.pbParty(user.index).none? { |pkmn| pkmn&.able? && pkmn.status != :NONE }
       @battle.pbDisplay(_INTL("But it failed!"))
       return true
     end
@@ -551,7 +547,7 @@ class Battle::Move::CureUserPartyStatus < Battle::Move
     # Cure all Pokémon in battle on the user's side. For the benefit of the Gen
     # 5 version of this move, to make Pokémon out in battle get cured first.
     if pbTarget(user) == :UserSide
-      @battle.allSameSideBattlers(user).each do |b|
+      @battle.allSameSideBattlers(user, true).each do |b|
         pbAromatherapyHeal(b.pokemon, b) if b.status != :NONE
       end
     end
@@ -1528,7 +1524,7 @@ class Battle::Move::StartGravity < Battle::Move
   def pbEffectGeneral(user)
     @battle.field.effects[PBEffects::Gravity] = 5
     @battle.pbDisplay(_INTL("Gravity intensified!"))
-    @battle.allBattlers.each do |b|
+    @battle.allBattlers(true).each do |b|
       showMessage = false
       if b.inTwoTurnAttack?("TwoTurnAttackInvulnerableInSky",
                             "TwoTurnAttackInvulnerableInSkyParalyzeTarget",

@@ -41,6 +41,7 @@ class Battle
   def pbCanShowCommands?(idxBattler)
     battler = @battlers[idxBattler]
     return false if !battler || battler.fainted?
+    return false if battler.effects[PBEffects::Commanding] >= 0
     return false if battler.usingMultiTurnAttack?
     return true
   end
@@ -166,12 +167,12 @@ class Battle
   def pbDebugMenu
     pbBattleDebug(self)
     @scene.pbRefreshEverything
-    allBattlers.each { |b| b.pbCheckFormOnWeatherChange }
-    allBattlers.each { |b| b.pbCheckFormOnTerrainChange }
+    allBattlers(true).each { |b| b.pbCheckFormOnWeatherChange }
+    allBattlers(true).each { |b| b.pbCheckFormOnTerrainChange }
     pbEndPrimordialWeather
-    allBattlers.each { |b| b.pbAbilityOnWeatherChange(@field.weather) }
-    allBattlers.each { |b| b.pbAbilityOnTerrainChange(@field.terrain) }
-    allBattlers.each do |b|
+    allBattlers(true).each { |b| b.pbAbilityOnWeatherChange(@field.weather) }
+    allBattlers(true).each { |b| b.pbAbilityOnTerrainChange(@field.terrain) }
+    allBattlers(true).each do |b|
       b.pbCheckFormOnMovesetChange
       b.pbCheckFormOnStatusChange
     end
@@ -215,6 +216,7 @@ class Battle
       idxBattler += 1
       break if idxBattler >= @battlers.length
       next if !@battlers[idxBattler] || pbOwnedByPlayer?(idxBattler) != isPlayer
+      next if @battlers[idxBattler].effects[PBEffects::Commanding] >= 0
       if @choices[idxBattler][0] != :None || !pbCanShowCommands?(idxBattler)
         # Action is forced, can't choose one
         PBDebug.log("[Command phase] #{@battlers[idxBattler].pbThis} (#{idxBattler}) is forced to use a multi-turn move")

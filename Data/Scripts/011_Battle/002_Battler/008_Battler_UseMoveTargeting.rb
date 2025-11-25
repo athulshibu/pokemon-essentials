@@ -181,6 +181,7 @@ class Battle::Battler
     return false if !target || (target.fainted? && !move.targetsPosition?)
     return false if !allowUser && target == user
     return false if nearOnly && !user.near?(target) && target != user
+    return false if target.effects[PBEffects::Commanding] >= 0
     targets.each { |b| return true if b.index == target.index }   # Already added
     targets.push(target)
     return true

@@ -164,8 +164,8 @@ class Battle
     ]
     @recycleItems      = [Array.new(@party1.length, nil),   Array.new(@party2.length, nil)]
     @belch             = [Array.new(@party1.length, false), Array.new(@party2.length, false)]
-    @abilitiesUsedPerSwitchIn = [Array.new(@party1.length) { |i| [] },   Array.new(@party2.length) { |i| [] }]
-    @abilitiesUsedOnce        = [Array.new(@party1.length) { |i| [] },   Array.new(@party2.length) { |i| [] }]
+    @abilitiesUsedPerSwitchIn = [Array.new(@party1.length) { |i| [] }, Array.new(@party2.length) { |i| [] }]
+    @abilitiesUsedOnce        = [Array.new(@party1.length) { |i| [] }, Array.new(@party2.length) { |i| [] }]
     @corrosiveGas      = [Array.new(@party1.length, false), Array.new(@party2.length, false)]
     @usedInBattle      = [Array.new(@party1.length, false), Array.new(@party2.length, false)]
     @hitsTakenCounts   = [Array.new(@party1.length, 0),     Array.new(@party2.length, 0)]
@@ -355,7 +355,7 @@ class Battle
 
   def pbAbleNonActiveCount(idxBattler = 0)
     party = pbParty(idxBattler)
-    inBattleIndices = allSameSideBattlers(idxBattler).map { |b| b.pokemonIndex }
+    inBattleIndices = allSameSideBattlers(idxBattler, true).map { |b| b.pokemonIndex }
     count = 0
     party.each_with_index do |pkmn, idxParty|
       next if !pkmn || !pkmn.able?
@@ -370,7 +370,7 @@ class Battle
   end
 
   def pbTeamAbleNonActiveCount(idxBattler = 0)
-    inBattleIndices = allSameSideBattlers(idxBattler).map { |b| b.pokemonIndex }
+    inBattleIndices = allSameSideBattlers(idxBattler, true).map { |b| b.pokemonIndex }
     count = 0
     eachInTeamFromBattlerIndex(idxBattler) do |pkmn, i|
       next if !pkmn || !pkmn.able?
@@ -462,48 +462,48 @@ class Battle
   # Iterate through battlers.
   #-----------------------------------------------------------------------------
 
-  # Unused
-  def eachBattler
-    @battlers.each { |b| yield b if b && !b.fainted? }
-  end
-
-  def allBattlers
-    return @battlers.select { |b| b && !b.fainted? }
+  def allBattlers(with_commanders = false)
+    return @battlers.select { |b| b && !b.fainted? && (with_commanders || b.effects[PBEffects::Commanding] < 0) }
   end
 
   # Unused
-  def eachSameSideBattler(idxBattler = 0)
-    idxBattler = idxBattler.index if idxBattler.respond_to?("index")
-    @battlers.each { |b| yield b if b && !b.fainted? && !b.opposes?(idxBattler) }
+  def eachBattler(with_commanders = false)
+    allBattlers(with_commanders).each { |b| yield b }
   end
 
-  def allSameSideBattlers(idxBattler = 0)
+  def allSameSideBattlers(idxBattler = 0, with_commanders = false)
     idxBattler = idxBattler.index if idxBattler.respond_to?("index")
-    return @battlers.select { |b| b && !b.fainted? && !b.opposes?(idxBattler) }
+    return @battlers.select { |b| b && !b.fainted? && !b.opposes?(idxBattler) &&
+                                  (with_commanders || b.effects[PBEffects::Commanding] < 0) }
   end
 
   # Unused
-  def eachOtherSideBattler(idxBattler = 0)
+  def eachSameSideBattler(idxBattler = 0, with_commanders = false)
+    allSameSideBattlers(idxBattler, with_commanders).each { |b| yield b }
+  end
+
+  def allOtherSideBattlers(idxBattler = 0, with_commanders = false)
     idxBattler = idxBattler.index if idxBattler.respond_to?("index")
-    @battlers.each { |b| yield b if b && !b.fainted? && b.opposes?(idxBattler) }
+    return @battlers.select { |b| b && !b.fainted? && b.opposes?(idxBattler) &&
+                                  (with_commanders || b.effects[PBEffects::Commanding] < 0) }
   end
 
-  def allOtherSideBattlers(idxBattler = 0)
-    idxBattler = idxBattler.index if idxBattler.respond_to?("index")
-    return @battlers.select { |b| b && !b.fainted? && b.opposes?(idxBattler) }
+  # Unused
+  def eachOtherSideBattler(idxBattler = 0, with_commanders = false)
+    allOtherSideBattlers(idxBattler).each { |b| yield b }
   end
 
-  def pbSideBattlerCount(idxBattler = 0)
-    return allSameSideBattlers(idxBattler).length
+  def pbSideBattlerCount(idxBattler = 0, with_commanders = false)
+    return allSameSideBattlers(idxBattler, with_commanders).length
   end
 
-  def pbOpposingBattlerCount(idxBattler = 0)
-    return allOtherSideBattlers(idxBattler).length
+  def pbOpposingBattlerCount(idxBattler = 0, with_commanders = false)
+    return allOtherSideBattlers(idxBattler, with_commanders).length
   end
 
   # This method only counts the player's Pokémon, not a partner trainer's.
   def pbPlayerBattlerCount
-    return allSameSideBattlers.select { |b| b.pbOwnedByPlayer? }.length
+    return allSameSideBattlers(0, true).select { |b| b.pbOwnedByPlayer? }.length
   end
 
   def pbCheckGlobalAbility(abil, check_mold_breaker = false)
@@ -650,6 +650,8 @@ class Battle
     #       can't change sides.
     effectsToSwap = [PBEffects::Attract,
                      PBEffects::BideTarget,
+                     PBEffects::CommandedBy,
+                     PBEffects::Commanding,
                      PBEffects::CounterTarget,
                      PBEffects::JawLock,
                      PBEffects::LockOnPos,
@@ -659,7 +661,7 @@ class Battle
                      PBEffects::SkyDrop,
                      PBEffects::SyrupBombUser,
                      PBEffects::TrappingUser]
-    allBattlers.each do |b|
+    allBattlers(true).each do |b|
       effectsToSwap.each do |i|
         next if b.effects[i] != idxA && b.effects[i] != idxB
         b.effects[i] = (b.effects[i] == idxA) ? idxB : idxA
@@ -675,7 +677,7 @@ class Battle
   # Returns the battler representing the Pokémon at index idxParty in its party,
   # on the same side as a battler with battler index of idxBattlerOther.
   def pbFindBattler(idxParty, idxBattlerOther = 0)
-    allSameSideBattlers(idxBattlerOther).each { |b| return b if b.pokemonIndex == idxParty }
+    allSameSideBattlers(idxBattlerOther, true).each { |b| return b if b.pokemonIndex == idxParty }
     return nil
   end
 
@@ -719,12 +721,12 @@ class Battle
   end
 
   def clearStagesChangeRecords
-    allBattlers.each { |b| b.clearStagesChangeRecord }
+    allBattlers(true).each { |b| b.clearStagesChangeRecord }
   end
 
   # For Opportunist/Mirror Herb to copy stat raises.
   def checkStatChangeResponses
-    allBattlers.each do |b|
+    allBattlers(true).each do |b|
       if b.abilityActive?
         Battle::AbilityEffects.triggerCopyStatChanges(b.ability, b, self)
       end
@@ -786,9 +788,9 @@ class Battle
       end
     end
     # Check for end of primordial weather, and weather-triggered form changes
-    allBattlers.each { |b| b.pbCheckFormOnWeatherChange }
-    allBattlers.each { |b| b.pbAbilityOnWeatherChange(old_weather) }
-    allBattlers.each { |b| b.pbItemOnWeatherChange(old_weather) }
+    allBattlers(true).each { |b| b.pbCheckFormOnWeatherChange }
+    allBattlers(true).each { |b| b.pbAbilityOnWeatherChange(old_weather) }
+    allBattlers(true).each { |b| b.pbItemOnWeatherChange(old_weather) }
     pbEndPrimordialWeather
   end
 
@@ -809,9 +811,9 @@ class Battle
     end
     @field.weather = :None
     # Check for form changes/abilities/items caused by the weather changing
-    allBattlers.each { |b| b.pbCheckFormOnWeatherChange }
-    allBattlers.each { |b| b.pbAbilityOnWeatherChange(old_weather) }
-    allBattlers.each { |b| b.pbItemOnWeatherChange(old_weather) }
+    allBattlers(true).each { |b| b.pbCheckFormOnWeatherChange }
+    allBattlers(true).each { |b| b.pbAbilityOnWeatherChange(old_weather) }
+    allBattlers(true).each { |b| b.pbItemOnWeatherChange(old_weather) }
   end
 
   def pbEndPrimordialWeather
@@ -837,9 +839,9 @@ class Battle
     end
     if @field.weather != old_weather
       # Check for form changes caused by the weather changing
-      allBattlers.each { |b| b.pbCheckFormOnWeatherChange }
-      allBattlers.each { |b| b.pbAbilityOnWeatherChange(old_weather) }
-      allBattlers.each { |b| b.pbItemOnWeatherChange(old_weather) }
+      allBattlers(true).each { |b| b.pbCheckFormOnWeatherChange }
+      allBattlers(true).each { |b| b.pbAbilityOnWeatherChange(old_weather) }
+      allBattlers(true).each { |b| b.pbItemOnWeatherChange(old_weather) }
       # Start up the default weather
       pbStartWeather(nil, @field.defaultWeather) if @field.defaultWeather != :None
     end
@@ -893,9 +895,9 @@ class Battle
       end
     end
     # Check for abilities/items that trigger upon the terrain changing
-    allBattlers.each { |b| b.pbCheckFormOnTerrainChange }
-    allBattlers.each { |b| b.pbAbilityOnTerrainChange(old_terrain) }
-    allBattlers.each { |b| b.pbItemOnTerrainChange(old_terrain) }
+    allBattlers(true).each { |b| b.pbCheckFormOnTerrainChange }
+    allBattlers(true).each { |b| b.pbAbilityOnTerrainChange(old_terrain) }
+    allBattlers(true).each { |b| b.pbItemOnTerrainChange(old_terrain) }
   end
 
   # This doesn't reinstate the default terrain. Itj ust handles what happens
@@ -910,9 +912,9 @@ class Battle
     end
     @field.terrain = :None
     # Check for form changes/abilities/items caused by the terrain changing
-    allBattlers.each { |b| b.pbCheckFormOnTerrainChange }
-    allBattlers.each { |b| b.pbAbilityOnTerrainChange(old_terrain) }
-    allBattlers.each { |b| b.pbItemOnTerrainChange(old_terrain) }
+    allBattlers(true).each { |b| b.pbCheckFormOnTerrainChange }
+    allBattlers(true).each { |b| b.pbAbilityOnTerrainChange(old_terrain) }
+    allBattlers(true).each { |b| b.pbItemOnTerrainChange(old_terrain) }
   end
 
   #-----------------------------------------------------------------------------

@@ -768,7 +768,7 @@ class Battle::AI
       :Misty    => :MISTYSEED,
       :Psychic  => :PSYCHICSEED
     }[terrain]
-    each_battler do |b, i|
+    each_battler(true) do |b, i|
       if seed && b.has_active_item?(seed)
         ret += (b.opposes?(move_user)) ? -8 : 8
       end

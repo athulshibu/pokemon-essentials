@@ -688,7 +688,7 @@ class Battle::Battler
     return true if @effects[PBEffects::Trapping] > 0
     return true if @effects[PBEffects::MeanLook] >= 0
     return true if @effects[PBEffects::JawLock] >= 0
-    return true if @battle.allBattlers.any? { |b| b.effects[PBEffects::JawLock] == @index }
+    return true if @battle.allBattlers(true).any? { |b| b.effects[PBEffects::JawLock] == @index }
     return true if @effects[PBEffects::Octolock] >= 0
     return true if @effects[PBEffects::Ingrain]
     return true if @effects[PBEffects::NoRetreat]
@@ -699,6 +699,10 @@ class Battle::Battler
   # Returns whether this battler can be made to switch out because of another
   # battler's move.
   def canBeForcedOutOfBattle?(show_message = true)
+    if @effects[PBEffects::Commanding] >= 0 || @effects[PBEffects::CommandedBy] >= 0
+      @battle.pbDisplay(_INTL("But it failed!"))
+      return false
+    end
     if hasActiveAbility?(:SUCTIONCUPS) && !beingMoldBroken?
       if show_message
         @battle.pbShowAbilitySplash(self)
@@ -835,28 +839,26 @@ class Battle::Battler
     return @battle.sides[idxOpposingSide]
   end
 
-  # Yields each unfainted ally Pokémon.
-  # Unused
-  def eachAlly
-    @battle.battlers.each do |b|
-      yield b if b && !b.fainted? && !b.opposes?(@index) && b.index != @index
-    end
+  # Returns an array containing all unfainted ally Pokémon.
+  def allAllies(with_commanders = false)
+    return @battle.allSameSideBattlers(@index, with_commanders).reject { |b| b.index == @index }
   end
 
-  # Returns an array containing all unfainted ally Pokémon.
-  def allAllies
-    return @battle.allSameSideBattlers(@index).reject { |b| b.index == @index }
+  # Yields each unfainted ally Pokémon.
+  # Unused
+  def eachAlly(with_commanders = false)
+    allAllies(with_commanders).each { |b| yield b }
+  end
+
+  # Returns an array containing all unfainted opposing Pokémon.
+  def allOpposing(with_commanders = false)
+    return @battle.allOtherSideBattlers(@index, with_commanders)
   end
 
   # Yields each unfainted opposing Pokémon.
   # Unused
-  def eachOpposing
-    @battle.battlers.each { |b| yield b if b && !b.fainted? && b.opposes?(@index) }
-  end
-
-  # Returns an array containing all unfainted opposing Pokémon.
-  def allOpposing
-    return @battle.allOtherSideBattlers(@index)
+  def eachOpposing(with_commanders = false)
+    allOpposing(with_commanders).each { |b| yield b }
   end
 
   # Returns the battler that is most directly opposite to self. unfaintedOnly is

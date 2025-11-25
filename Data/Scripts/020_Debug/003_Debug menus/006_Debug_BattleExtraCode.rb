@@ -16,6 +16,8 @@ module Battle::DebugVariables
     PBEffects::BurnUp         => {name: "Burn Up has removed self's Fire type",            default: false},
     PBEffects::Charge         => {name: "Charge number of rounds remaining",               default: 0},
     PBEffects::ChoiceBand     => {name: "Move locked into by Choice items",                default: nil, type: :move},
+#    PBEffects::CommandedBy - not suitable for setting via debug
+#    PBEffects::Commanding - not suitable for setting via debug
     PBEffects::Confusion      => {name: "Confusion number of rounds remaining",            default: 0},
 #    PBEffects::Counter - not suitable for setting via debug
 #    PBEffects::CounterTarget - not suitable for setting via debug
@@ -35,13 +37,13 @@ module Battle::DebugVariables
     PBEffects::Encore         => {name: "Encore number of rounds remaining",               default: 0},
     PBEffects::EncoreMove     => {name: "Encored move",                                    default: nil, type: :move},
     PBEffects::Endure         => {name: "Endures all lethal damage this round",            default: false},
+#    PBEffects::ExtraType - set elsewhere
 #    PBEffects::FirstPledge - only applies to use of specific move, not suitable for setting via debug
     PBEffects::FlashFire      => {name: "Flash Fire powering up Fire moves",               default: false},
     PBEffects::Flinch         => {name: "Will flinch this round",                          default: false},
     PBEffects::FocusEnergy    => {name: "Focus Energy critical hit stages (0-4)",          default: 0, max: 4},
 #    PBEffects::FocusPunch - only applies to use of specific move, not suitable for setting via debug
     PBEffects::FollowMe       => {name: "Follow Me drawing in attacks (if 1+)",            default: 0},   # Order of use, lowest takes priority
-    PBEffects::RagePowder     => {name: "Rage Powder applies (use with Follow Me)",        default: false},
     PBEffects::Foresight      => {name: "Foresight applies (Ghost loses immunities)",      default: false},
     PBEffects::FuryCutter     => {name: "Fury Cutter power multiplier 2**x (0-4)",         default: 0, max: 4},
     PBEffects::GastroAcid     => {name: "Gastro Acid is negating self's ability",          default: false},
@@ -96,8 +98,11 @@ module Battle::DebugVariables
 #    PBEffects::ProtosynthesisStat - TODO: code doesn't support choosing a stat
 #    PBEffects::Quash - not suitable for setting via debug
 #    PBEffects::Rage - only applies to use of specific move, not suitable for setting via debug
+    PBEffects::RagePowder     => {name: "Rage Powder applies (use with Follow Me)",        default: false},
     PBEffects::Rollout        => {name: "Rollout rounds remaining (lower=stronger)",       default: 0},
     PBEffects::Roost          => {name: "Roost removing Flying type this round",           default: false},
+    PBEffects::SaltCure       => {name: "Salt Cure applies (takes damage each round)",     default: false},
+#    PBEffects::ShedTail - only applies while switching with Shed Tail, not suitable for setting via debug
 #    PBEffects::ShellTrap - only applies to use of specific move, not suitable for setting via debug
     PBEffects::SilkTrap       => {name: "Silk Trap applies this round",                    default: false},
 #    PBEffects::SkyDrop - only applies to use of specific move, not suitable for setting via debug
@@ -125,13 +130,26 @@ module Battle::DebugVariables
     PBEffects::TrappingUser   => {name: "Battler trapping self (for Binding Band)",        default: -1},   # Battler index
     PBEffects::Truant         => {name: "Truant will loaf around this round",              default: false},
 #    PBEffects::TwoTurnAttack - only applies to use of specific moves, not suitable for setting via debug
-#    PBEffects::ExtraType - set elsewhere
     PBEffects::Unburden       => {name: "Self lost its item (for Unburden)",               default: false},
     PBEffects::Uproar         => {name: "Uproar number of rounds remaining",               default: 0},
+    PBEffects::Vulnerable     => {name: "Attacks definitely hit self (Glaive Rush)",       default: false},
     PBEffects::WaterSport     => {name: "Used Water Sport (Gen 5 and older)",              default: false},
     PBEffects::WeightChange   => {name: "Weight change +0.1*x kg",                         default: 0, min: -99_999, max: 99_999},
     PBEffects::Yawn           => {name: "Yawn rounds remaining until falling asleep",      default: 0}
   }
+
+  POSITION_EFFECTS = {
+#    PBEffects::FutureSightCounter - too complex to be worth bothering with
+#    PBEffects::FutureSightMove - too complex to be worth bothering with
+#    PBEffects::FutureSightUserIndex - too complex to be worth bothering with
+#    PBEffects::FutureSightUserPartyIndex - too complex to be worth bothering with
+    PBEffects::HealingWish => {name: "Whether Healing Wish is waiting to apply", default: false},
+    PBEffects::LunarDance  => {name: "Whether Lunar Dance is waiting to apply",  default: false}
+#    PBEffects::Wish - too complex to be worth bothering with
+#    PBEffects::WishAmount - too complex to be worth bothering with
+#    PBEffects::WishMaker - too complex to be worth bothering with
+    }
+  end
 
   SIDE_EFFECTS = {
     PBEffects::AuroraVeil         => {name: "Aurora Veil duration",                   default: 0},
@@ -173,19 +191,6 @@ module Battle::DebugVariables
     PBEffects::WaterSportField => {name: "Water Sport duration (Gen 6+)",    default: 0},
     PBEffects::WonderRoom      => {name: "Wonder Room duration",             default: 0}
   }
-
-  POSITION_EFFECTS = {
-#    PBEffects::FutureSightCounter - too complex to be worth bothering with
-#    PBEffects::FutureSightMove - too complex to be worth bothering with
-#    PBEffects::FutureSightUserIndex - too complex to be worth bothering with
-#    PBEffects::FutureSightUserPartyIndex - too complex to be worth bothering with
-    PBEffects::HealingWish => {name: "Whether Healing Wish is waiting to apply", default: false},
-    PBEffects::LunarDance  => {name: "Whether Lunar Dance is waiting to apply",  default: false}
-#    PBEffects::Wish - too complex to be worth bothering with
-#    PBEffects::WishAmount - too complex to be worth bothering with
-#    PBEffects::WishMaker - too complex to be worth bothering with
-  }
-end
 
 #===============================================================================
 # Screen for listing the above battle variables for modifying.

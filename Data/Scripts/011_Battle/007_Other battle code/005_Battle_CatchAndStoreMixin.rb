@@ -32,6 +32,8 @@ module Battle::CatchAndStoreMixin
           pbDisplay(_INTL("Choose a Pokémon in your party to send to your Boxes."))
           party_index = -1
           @scene.pbPartyScreen(0, (@sendToBoxes != 2), 1) do |idxParty, _party_screen|
+            # TODO: Check pkmn.cannot_store. Also figure something out if every
+            #       party Pokémon has that.
             party_index = idxParty
             next true
           end
@@ -239,9 +241,9 @@ module Battle::CatchAndStoreMixin
       mod_catch_rate *= [(36 - (2 * pkmn.level)) / 10.0, 1].max
     end
     # Higher wild level penalty if the player doesn't have enough Gym Badges (Gen 8 only)
-    if Settings::NUM_BADGES_TO_NOT_MAKE_HIGHER_LEVEL_CAPTURES_HARDER >= $player.badge_count
+    if Settings::NUM_BADGES_TO_NOT_MAKE_HIGHER_LEVEL_CAPTURES_HARDER > $player.badge_count
       max_player_level = 0
-      allSameSideBattlers.each { |b| max_player_level = b.level if b.level > max_player_level }
+      allSameSideBattlers(0, true).each { |b| max_player_level = b.level if b.level > max_player_level }
       mod_catch_rate /= 10.0 if pkmn.level > max_player_level
     end
     # Floor the mod_catch_rate
