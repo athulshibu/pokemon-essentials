@@ -240,13 +240,14 @@ Battle::AI::Handlers::ShouldSwitch.add(:cure_status_problem_by_switching_out,
     next false if entry_hazard_damage >= battler.hp
     # Check specific abilities
     single_status_cure = {
-      :IMMUNITY    => :POISON,
-      :INSOMNIA    => :SLEEP,
-      :LIMBER      => :PARALYSIS,
-      :MAGMAARMOR  => :FROZEN,
-      :VITALSPIRIT => :SLEEP,
-      :WATERBUBBLE => :BURN,
-      :WATERVEIL   => :BURN
+      :IMMUNITY        => :POISON,
+      :INSOMNIA        => :SLEEP,
+      :LIMBER          => :PARALYSIS,
+      :MAGMAARMOR      => :FROZEN,
+      :THERMALEXCHANGE => :BURN,
+      :VITALSPIRIT     => :SLEEP,
+      :WATERBUBBLE     => :BURN,
+      :WATERVEIL       => :BURN
     }[battler.ability_id]
     if battler.ability == :NATURALCURE || (single_status_cure && single_status_cure == battler.status)
       # Cures status problem

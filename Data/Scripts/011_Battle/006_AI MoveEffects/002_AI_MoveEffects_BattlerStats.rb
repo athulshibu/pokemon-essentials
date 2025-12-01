@@ -1624,6 +1624,10 @@ Battle::AI::Handlers::MoveEffectScore.add("StartUserSideDoubleSpeed",
       end
     end
     next Battle::AI::MOVE_USELESS_SCORE if outspeeds == 0
+    # Check for Wind Rider
+    ai.each_same_side_battler(user.side) do |b, i|
+      score += 5 if b.has_active_ability?(:WINDRIDER) && ai.stat_raise_worthwhile?(b, :ATTACK)
+    end
     # This move will achieve something
     next score + 8 + (10 * outspeeds)
   }

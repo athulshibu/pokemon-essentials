@@ -48,7 +48,9 @@ class Battle::AI
     when :BULLETPROOF
       move_data = GameData::Move.get(move.id)
       return move_data.has_flag?("Bomb")
-    when :FLASHFIRE
+    when :EARTHEATER
+      return move_type == :GROUND
+    when :FLASHFIRE, :WELLBAKEDBODY
       return move_type == :FIRE
     when :LIGHTNINGROD, :MOTORDRIVE, :VOLTABSORB
       return move_type == :ELECTRIC
@@ -82,6 +84,7 @@ class Battle::AI
     return false if pkmn.hasAbility?(:LEAFGUARD) && [:Sun, :HarshSun].include?(@battle.pbWeather)
     return false if pkmn.hasAbility?(:COMATOSE) && pkmn.isSpecies?(:KOMALA)
     return false if pkmn.hasAbility?(:SHIELDSDOWN) && pkmn.isSpecies?(:MINIOR) && pkmn.form < 7
+    return false if pkmn.hasAbility?(:PURIFYINGSALT)
     return true
   end
 
@@ -112,25 +115,27 @@ class Battle::AI
            :PIXILATE, :PRANKSTER, :PROTEAN, :PSYCHICSURGE, :REFRIGERATE,
            :REGENERATOR, :RKSSYSTEM, :SERENEGRACE, :SHADOWSHIELD, :SHEERFORCE,
            :SIMPLE, :SNOWWARNING, :TECHNICIAN, :TRANSISTOR, :WATERBUBBLE],
-    7  => [:BEASTBOOST, :BULLETPROOF, :COMPOUNDEYES, :DOWNLOAD, :FURCOAT,
-           :HUSTLE, :ICESCALES, :INTIMIDATE, :LEVITATE, :LIGHTNINGROD,
-           :MEGALAUNCHER, :MOLDBREAKER, :MOXIE, :NATURALCURE, :SAPSIPPER,
-           :SHEDSKIN, :SKILLLINK, :SOULHEART, :STORMDRAIN, :TERAVOLT, :THICKFAT,
-           :TINTEDLENS, :TOUGHCLAWS, :TRIAGE, :TURBOBLAZE, :UNBURDEN,
-           :VOLTABSORB, :WATERABSORB],
+    7  => [:BEASTBOOST, :BULLETPROOF, :COMPOUNDEYES, :DOWNLOAD, :EARTHEATER,
+           :FURCOAT, :HUSTLE, :ICESCALES, :INTIMIDATE, :LEVITATE, :LIGHTNINGROD,
+           :MEGALAUNCHER, :MOLDBREAKER, :MOXIE, :NATURALCURE, :ROCKYPAYLOAD,
+           :SAPSIPPER, :SHEDSKIN, :SKILLLINK, :SOULHEART, :STORMDRAIN,
+           :TERAVOLT, :THERMALEXCHANGE, :THICKFAT, :TINTEDLENS, :TOUGHCLAWS,
+           :TRIAGE, :TURBOBLAZE, :UNBURDEN, :VOLTABSORB, :WATERABSORB],
     6  => [:ARMORTAIL, :BATTLEBOND, :CHLOROPHYLL, :COMATOSE, :DARKAURA,
            :DAZZLING, :DRYSKIN, :FAIRYAURA, :FILTER, :FLASHFIRE, :FORECAST,
            :GALEWINGS, :GUTS, :INFILTRATOR, :IRONBARBS, :IRONFIST, :MIRRORARMOR,
            :MOTORDRIVE, :NEUROFORCE, :PRISMARMOR, :QUEENLYMAJESTY, :RECKLESS,
-           :ROUGHSKIN, :SANDRUSH, :SCHOOLING, :SCRAPPY, :SHIELDSDOWN,
-           :SOLIDROCK, :STAKEOUT, :STAMINA, :STEELWORKER, :STRONGJAW, :STURDY,
-           :SWIFTSWIM, :TOXICBOOST, :TRACE, :UNAWARE, :VICTORYSTAR],
+           :ROUGHSKIN, :SANDRUSH, :SCHOOLING, :SCRAPPY, :SHARPNESS,
+           :SHIELDSDOWN, :SOLIDROCK, :STAKEOUT, :STAMINA, :STEELWORKER,
+           :STRONGJAW, :STURDY, :SWIFTSWIM, :TOXICBOOST, :TRACE, :UNAWARE,
+           :VICTORYSTAR, :WELLBAKEDBODY],
     5  => [:AFTERMATH, :AIRLOCK, :ANALYTIC, :BERSERK, :BLAZE, :CLOUDNINE,
            :COMPETITIVE, :CORROSION, :DANCER, :DEFIANT, :FLAREBOOST, :FLUFFY,
-           :GOOEY, :HARVEST, :HEATPROOF, :INNARDSOUT, :LIQUIDVOICE,
-           :MARVELSCALE, :MUMMY, :NEUTRALIZINGGAS, :OVERCOAT, :OVERGROW,
-           :PRESSURE, :QUICKFEET, :ROCKHEAD, :SANDSPIT, :SHIELDDUST, :SLUSHRUSH,
-           :SWARM, :TANGLINGHAIR, :TORRENT],
+           :GOOEY, :HARVEST, :HEATPROOF, :INNARDSOUT, :LINGERINGAROMA,
+           :LIQUIDVOICE, :MARVELSCALE, :MUMMY, :NEUTRALIZINGGAS, :OVERCOAT,
+           :OVERGROW, :PRESSURE, :PURIFYINGSALT, :QUICKFEET, :ROCKHEAD,
+           :SANDSPIT, :SEEDSOWER, :SHIELDDUST, :SLUSHRUSH, :SWARM,
+           :TANGLINGHAIR, :TORRENT, :TOXICDEBRIS],
     4  => [:ANGERPOINT, :BADDREAMS, :CHEEKPOUCH, :CLEARBODY, :CURSEDBODY,
            :EARLYBIRD, :EFFECTSPORE, :FLAMEBODY, :FLOWERGIFT, :FULLMETALBODY,
            :GORILLATACTICS, :HYDRATION, :ICEFACE, :IMMUNITY, :INSOMNIA,
@@ -254,6 +259,13 @@ Battle::AI::Handlers::AbilityRanking.add(:CUTECHARM,
 
 Battle::AI::Handlers::AbilityRanking.copy(:CUTECHARM, :RIVALRY)
 
+Battle::AI::Handlers::AbilityRanking.add(:DRAGONSMAW,
+  proc { |ability, score, battler, ai|
+    next score if battler.has_damaging_move_of_type?(:DRAGON)
+    next 0
+  }
+)
+
 Battle::AI::Handlers::AbilityRanking.add(:FRIENDGUARD,
   proc { |ability, score, battler, ai|
     has_ally = false
@@ -337,6 +349,13 @@ Battle::AI::Handlers::AbilityRanking.add(:ROCKHEAD,
   }
 )
 
+Battle::AI::Handlers::AbilityRanking.add(:ROCKYPAYLOAD,
+  proc { |ability, score, battler, ai|
+    next score if battler.has_damaging_move_of_type?(:ROCK)
+    next 0
+  }
+)
+
 Battle::AI::Handlers::AbilityRanking.add(:RUNAWAY,
   proc { |ability, score, battler, ai|
     next 0 if battler.wild?
@@ -348,6 +367,13 @@ Battle::AI::Handlers::AbilityRanking.add(:SANDFORCE,
   proc { |ability, score, battler, ai|
     next score if battler.has_damaging_move_of_type?(:GROUND, :ROCK, :STEEL)
     next 2
+  }
+)
+
+Battle::AI::Handlers::AbilityRanking.add(:SHARPNESS,
+  proc { |ability, score, battler, ai|
+    next score if battler.check_for_move { |m| m.slicingMove? }
+    next 0
   }
 )
 
@@ -367,6 +393,13 @@ Battle::AI::Handlers::AbilityRanking.add(:STEELWORKER,
   }
 )
 
+Battle::AI::Handlers::AbilityRanking.add(:STRONGJAW,
+  proc { |ability, score, battler, ai|
+    next score if battler.check_for_move { |m| m.bitingMove? }
+    next 0
+  }
+)
+
 Battle::AI::Handlers::AbilityRanking.add(:SWARM,
   proc { |ability, score, battler, ai|
     next score if battler.has_damaging_move_of_type?(:BUG)
@@ -377,6 +410,32 @@ Battle::AI::Handlers::AbilityRanking.add(:SWARM,
 Battle::AI::Handlers::AbilityRanking.add(:TORRENT,
   proc { |ability, score, battler, ai|
     next score if battler.has_damaging_move_of_type?(:WATER)
+    next 0
+  }
+)
+
+Battle::AI::Handlers::AbilityRanking.add(:TOXICDEBRIS,
+  proc { |ability, score, battler, ai|
+    next 0 if battler.pbOpposingSide.effects[PBEffects::ToxicSpikes] >= 2
+    inBattleIndices = ai.battle.allSameSideBattlers(battler.idxOpposingSide, true).map { |b| b.pokemonIndex }
+    foe_reserves = []
+    ai.battle.pbParty(battler.idxOpposingSide).each_with_index do |pkmn, idxParty|
+      next if !pkmn || !pkmn.able? || inBattleIndices.include?(idxParty)
+      if ai.trainer.medium_skill?
+        next if pkmn.hasItem?(:HEAVYDUTYBOOTS)
+        next if ai.pokemon_airborne?(pkmn)
+        next if !ai.pokemon_can_be_poisoned?(pkmn)
+      end
+      foe_reserves.push(pkmn)   # pkmn will be affected by Toxic Spikes
+    end
+    next score if !foe_reserves.empty?
+    next 0
+  }
+)
+
+Battle::AI::Handlers::AbilityRanking.add(:TRANSISTOR,
+  proc { |ability, score, battler, ai|
+    next score if battler.has_damaging_move_of_type?(:ELECTRIC)
     next 0
   }
 )

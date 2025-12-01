@@ -101,16 +101,16 @@ class DescriptionEditorAbility
         change_ability_index(-1)
       elsif Input.repeat?(Input::DOWN)
         change_ability_index(1)
-      elsif Input.repeat?(Input::JUMPUP)
+      elsif Input.repeat?(Input::QUICK_UP)
         change_ability_index(-10)
-      elsif Input.repeat?(Input::JUMPDOWN)
+      elsif Input.repeat?(Input::QUICK_DOWN)
         change_ability_index(10)
       elsif Input.trigger?(Input::ACTION)
         pbPlayDecisionSE
         @ability.real_description = @text_box.value.clone
-      elsif Input.trigger?(Input::SPECIAL)
-        @text_box.value = @ability.real_description.clone
-        refresh_overlay
+      # elsif Input.trigger?(Input::SPECIAL)
+      #   @text_box.value = @ability.real_description.clone
+      #   refresh_overlay
       elsif Input.trigger?(Input::BACK)
         pbPlayCancelSE
         dispose
@@ -267,16 +267,16 @@ class DescriptionEditorMove
         change_move_index(-1)
       elsif Input.repeat?(Input::DOWN)
         change_move_index(1)
-      elsif Input.repeat?(Input::JUMPUP)
+      elsif Input.repeat?(Input::QUICK_UP)
         change_move_index(-10)
-      elsif Input.repeat?(Input::JUMPDOWN)
+      elsif Input.repeat?(Input::QUICK_DOWN)
         change_move_index(10)
       elsif Input.trigger?(Input::ACTION)
         pbPlayDecisionSE
         @move.real_description = @text_box.value.clone
-      elsif Input.trigger?(Input::SPECIAL)
-        @text_box.value = @move.real_description.clone
-        refresh_overlay
+      # elsif Input.trigger?(Input::SPECIAL)
+      #   @text_box.value = @move.real_description.clone
+      #   refresh_overlay
       elsif Input.trigger?(Input::BACK)
         pbPlayCancelSE
         dispose
@@ -375,16 +375,16 @@ class DescriptionEditorPokedex
         change_species_index(-1)
       elsif Input.repeat?(Input::DOWN)
         change_species_index(1)
-      elsif Input.repeat?(Input::JUMPUP)
+      elsif Input.repeat?(Input::QUICK_UP)
         change_species_index(-10)
-      elsif Input.repeat?(Input::JUMPDOWN)
+      elsif Input.repeat?(Input::QUICK_DOWN)
         change_species_index(10)
       elsif Input.trigger?(Input::ACTION)
         pbPlayDecisionSE
         @species.real_pokedex_entry = @text_box.value.clone
-      elsif Input.trigger?(Input::SPECIAL)
-        @text_box.value = @species.real_pokedex_entry.clone
-        refresh_overlay
+      # elsif Input.trigger?(Input::SPECIAL)
+      #   @text_box.value = @species.real_pokedex_entry.clone
+      #   refresh_overlay
       elsif Input.trigger?(Input::BACK)
         pbPlayCancelSE
         dispose

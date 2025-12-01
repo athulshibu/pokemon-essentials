@@ -1509,11 +1509,13 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("TargetMovesBecomeElectri
       eff *= 1.5 if target.has_type?(m_type)   # STAB
       case m_type
       when :FIRE
-        eff = 0 if user.has_active_ability?(:FLASHFIRE)
+        eff = 0 if user.has_active_ability?([:FLASHFIRE, :WELLBAKEDBODY])
       when :GRASS
         eff = 0 if user.has_active_ability?(:SAPSIPPER)
+      when :GROUND
+        eff = 0 if user.has_active_ability?(:EARTHEATER)
       when :WATER
-        eff = 0 if user.has_active_ability?([:STORMDRAIN, :WATERABSORB])
+        eff = 0 if user.has_active_ability?([:STORMDRAIN, :WATERABSORB, :DRYSKIN])
       end
       if eff > electric_eff
         electric_type_better += 1
