@@ -300,7 +300,13 @@ MenuHandlers.add(:pause_menu, :quit_game, {
   "effect"    => proc { |menu|
     menu.hide_menu
     if pbConfirmMessage(_INTL("Are you sure you want to quit the game?"))
-      $scene = nil
+      pbPlayCloseMenuSE
+      pbBGMFade(1.0)
+      pbBGSFade(1.0)
+      menu.visuals.fade_out
+      menu.silent_end_screen
+      SaveData.mark_values_as_unloaded
+      $scene = pbCallTitle
       next true
     end
     menu.refresh
