@@ -450,7 +450,7 @@ Battle::AI::Handlers::ShouldSwitch.add(:battler_is_useless,
 Battle::AI::Handlers::ShouldSwitch.add(:foe_absorbs_all_moves_with_its_ability,
   proc { |battler, reserves, ai, battle|
     next false if battler.battler.turnCount < 2   # Don't switch out too quickly
-    next false if battler.battler.hasMoldBreaker?
+    next false if battler.has_mold_breaker?
     # Check if battler can damage any of its foes
     can_damage_foe = false
     ai.each_foe_battler(battler.side) do |b, i|
@@ -591,6 +591,19 @@ Battle::AI::Handlers::ShouldSwitch.add(:high_damage_from_foe,
     end
     if big_threat
       PBDebug.log_ai("#{battler.name} wants to switch because a foe has a powerful super-effective move")
+      next true
+    end
+    next false
+  }
+)
+
+#===============================================================================
+# Pokémon is about to faint because of Perish Song.
+#===============================================================================
+Battle::AI::Handlers::ShouldSwitch.add(:zero_to_hero,
+  proc { |battler, reserves, ai, battle|
+    if battler.ability_id == :ZEROTOHERO && battler.battler.form == 0
+      PBDebug.log_ai("#{battler.name} wants to switch because it can change form with Zero to Hero")
       next true
     end
     next false

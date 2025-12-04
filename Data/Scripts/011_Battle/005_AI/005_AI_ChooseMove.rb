@@ -153,6 +153,7 @@ class Battle::AI
     end
     @battle.moldBreaker = @user.has_mold_breaker?
     @move.set_up(move)
+    @battle.moldBreaker ||= @user.has_active_ability?(:MYCELIUMMIGHT) && @move.statusMove?
   end
 
   # Set some extra class variables for the target being assessed.
@@ -166,6 +167,7 @@ class Battle::AI
         @battle.moldBreaker = @user.has_mold_breaker?
         mov = Battle::Move.from_pokemon_move(@battle, Pokemon::Move.new(@target.battler.lastRegularMoveUsed))
         @move.set_up(mov)
+        @battle.moldBreaker ||= @user.has_active_ability?(:MYCELIUMMIGHT) && @move.statusMove?
       end
     end
   end

@@ -346,6 +346,10 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("ThrowUserItemAtTarget",
     when :POISONBARB, :TOXICORB
       score = Battle::AI::Handlers.apply_move_effect_against_target_score("PoisonTarget",
          score, move, user, target, ai, battle)
+      if user.has_active_ability?(:POISONPUPPETEER)
+        score = Battle::AI::Handlers.apply_move_effect_against_target_score("ConfuseTarget",
+           score, move, user, target, ai, battle)
+      end
     when :FLAMEORB
       score = Battle::AI::Handlers.apply_move_effect_against_target_score("BurnTarget",
          score, move, user, target, ai, battle)

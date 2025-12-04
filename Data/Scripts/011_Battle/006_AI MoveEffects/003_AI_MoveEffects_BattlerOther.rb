@@ -114,6 +114,10 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("PoisonTarget",
       else
         score += 8
       end
+      if user.has_active_ability?(:POISONPUPPETEER)
+        score = Battle::AI::Handlers.apply_move_effect_against_target_score("ConfuseTarget",
+           score, move, user, target, ai, battle)
+      end
       # Prefer if the user or an ally has a move/ability that is better if the target is poisoned
       ai.each_same_side_battler(user.side) do |b, i|
         score += 4 if b.has_move_with_function?("DoublePowerIfTargetPoisoned",
@@ -160,7 +164,13 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("PoisonTargetLowerTargetS
   proc { |score, move, user, target, ai, battle|
     poison_score = Battle::AI::Handlers.apply_move_effect_against_target_score("PoisonTarget",
        0, move, user, target, ai, battle)
-    score += poison_score if poison_score != Battle::AI::MOVE_USELESS_SCORE
+    if poison_score != Battle::AI::MOVE_USELESS_SCORE
+      score += poison_score
+      if user.has_active_ability?(:POISONPUPPETEER)
+        score = Battle::AI::Handlers.apply_move_effect_against_target_score("ConfuseTarget",
+           score, move, user, target, ai, battle)
+      end
+    end
     score = ai.get_score_for_target_stat_drop(score, target, move.move.statDown, false)
     next score
   }

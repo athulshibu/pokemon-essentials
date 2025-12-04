@@ -169,7 +169,6 @@ class Battle::Move
     end
     modifiers[:evasion_stage] = 0 if target.effects[PBEffects::Foresight] && modifiers[:evasion_stage] > 0
     modifiers[:evasion_stage] = 0 if target.effects[PBEffects::MiracleEye] && modifiers[:evasion_stage] > 0
-    modifiers[:evasion_stage] = 0 if user.hasActiveAbility?(:MINDSEYE)
   end
 
   #-----------------------------------------------------------------------------

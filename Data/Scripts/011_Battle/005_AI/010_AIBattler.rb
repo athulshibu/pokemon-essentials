@@ -577,8 +577,9 @@ class Battle::AI::AIBattler
         ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
       end
       # Foresight
-      if (user&.has_active_ability?(:SCRAPPY) || self.effects[PBEffects::Foresight]) &&
-         defend_type == :GHOST
+      if (user&.has_active_ability?(:SCRAPPY) ||
+          user&.has_active_ability?(:MINDSEYE) ||
+          self.effects[PBEffects::Foresight]) && defend_type == :GHOST
         ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
       end
       # Miracle Eye

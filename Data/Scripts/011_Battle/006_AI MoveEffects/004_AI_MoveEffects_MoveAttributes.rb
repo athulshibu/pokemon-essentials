@@ -818,6 +818,11 @@ Battle::AI::Handlers::MoveEffectScore.add("ProtectUserBanefulBunker",
            0, move, user, b, ai, battle)
         if poison_score != Battle::AI::MOVE_USELESS_SCORE
           score += poison_score / 2   # Halved because we don't know what move b will use
+          if user.has_active_ability?(:POISONPUPPETEER)
+            confuse_score = Battle::AI::Handlers.apply_move_effect_against_target_score("ConfuseTarget",
+               0, move, user, target, ai, battle)
+            score += confuse_score / 3
+          end
         end
       end
       # Prefer if the foe is in the middle of using a two turn attack
@@ -1370,7 +1375,9 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("EnsureNextMoveAlwaysHits
 #===============================================================================
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("StartNegateTargetEvasionStatStageAndGhostImmunity",
   proc { |score, move, user, target, ai, battle|
-    next Battle::AI::MOVE_USELESS_SCORE if target.effects[PBEffects::Foresight] || user.has_active_ability?(:SCRAPPY)
+    next Battle::AI::MOVE_USELESS_SCORE if target.effects[PBEffects::Foresight] ||
+                                           user.has_active_ability?(:SCRAPPY) ||
+                                           user.has_active_ability?(:MINDSEYE)
     # Check if the user knows any moves that would benefit from negating the
     # target's Ghost type immunity
     if target.has_type?(:GHOST)

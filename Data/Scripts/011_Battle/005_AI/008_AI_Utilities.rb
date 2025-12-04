@@ -52,6 +52,8 @@ class Battle::AI
       return move_type == :GROUND
     when :FLASHFIRE, :WELLBAKEDBODY
       return move_type == :FIRE
+    when :GOODASGOLD
+      return move.is_a?(Pokemon::Move) ? move.status_move? : move.statusMove?
     when :LIGHTNINGROD, :MOTORDRIVE, :VOLTABSORB
       return move_type == :ELECTRIC
     when :SAPSIPPER
@@ -107,59 +109,67 @@ class Battle::AI
     10 => [:DELTASTREAM, :DESOLATELAND, :HUGEPOWER, :MOODY, :PARENTALBOND,
            :POWERCONSTRUCT, :PRIMORDIALSEA, :PUREPOWER, :SHADOWTAG,
            :STANCECHANGE, :WONDERGUARD],
-    9  => [:ARENATRAP, :DRIZZLE, :DROUGHT, :IMPOSTER, :MAGICBOUNCE, :MAGICGUARD,
-           :MAGNETPULL, :SANDSTREAM, :SPEEDBOOST],
-    8  => [:ADAPTABILITY, :AERILATE, :CONTRARY, :DISGUISE, :DRAGONSMAW,
-           :ELECTRICSURGE, :GALVANIZE, :GRASSYSURGE, :ILLUSION, :LIBERO,
-           :MISTYSURGE, :MULTISCALE, :MULTITYPE, :NOGUARD, :POISONHEAL,
-           :PIXILATE, :PRANKSTER, :PROTEAN, :PSYCHICSURGE, :REFRIGERATE,
-           :REGENERATOR, :RKSSYSTEM, :SERENEGRACE, :SHADOWSHIELD, :SHEERFORCE,
-           :SIMPLE, :SNOWWARNING, :TECHNICIAN, :TRANSISTOR, :WATERBUBBLE],
-    7  => [:BEASTBOOST, :BULLETPROOF, :COMPOUNDEYES, :DOWNLOAD, :EARTHEATER,
-           :FURCOAT, :HUSTLE, :ICESCALES, :INTIMIDATE, :LEVITATE, :LIGHTNINGROD,
-           :MEGALAUNCHER, :MOLDBREAKER, :MOXIE, :NATURALCURE, :ROCKYPAYLOAD,
-           :SAPSIPPER, :SHEDSKIN, :SKILLLINK, :SOULHEART, :STORMDRAIN,
-           :TERAVOLT, :THERMALEXCHANGE, :THICKFAT, :TINTEDLENS, :TOUGHCLAWS,
-           :TRIAGE, :TURBOBLAZE, :UNBURDEN, :VOLTABSORB, :WATERABSORB],
+    9  => [:ARENATRAP, :HADRONENGINE, :IMPOSTER, :MAGICBOUNCE, :MAGICGUARD,
+           :MAGNETPULL, :ORICHALCUMPULSE, :SPEEDBOOST],
+    8  => [:ADAPTABILITY, :AERILATE, :COMMANDER, :CONTRARY, :DISGUISE,
+           :DRAGONSMAW, :GALVANIZE, :GOODASGOLD, :ILLUSION, :LIBERO,
+           :MULTISCALE, :MULTITYPE, :NOGUARD, :OPPORTUNIST, :POISONHEAL,
+           :PIXILATE, :PRANKSTER, :PROTEAN, :REFRIGERATE, :REGENERATOR,
+           :RKSSYSTEM, :SERENEGRACE, :SHADOWSHIELD, :SHEERFORCE, :SIMPLE,
+           :SUPREMEOVERLORD, :TECHNICIAN, :TRANSISTOR, :WATERBUBBLE],
+    7  => [:BEASTBOOST, :BULLETPROOF, :COMPOUNDEYES, :EARTHEATER, :FURCOAT,
+           :HUSTLE, :ICESCALES, :LEVITATE, :LIGHTNINGROD, :MEGALAUNCHER,
+           :MOLDBREAKER, :MOXIE, :NATURALCURE, :ROCKYPAYLOAD, :SAPSIPPER,
+           :SHEDSKIN, :SKILLLINK, :SOULHEART, :STORMDRAIN, :TERAVOLT,
+           :THERMALEXCHANGE, :THICKFAT, :TINTEDLENS, :TOUGHCLAWS, :TRIAGE,
+           :TURBOBLAZE, :UNBURDEN, :VOLTABSORB, :WATERABSORB],
     6  => [:ARMORTAIL, :BATTLEBOND, :CHLOROPHYLL, :COMATOSE, :DARKAURA,
            :DAZZLING, :DRYSKIN, :FAIRYAURA, :FILTER, :FLASHFIRE, :FORECAST,
-           :GALEWINGS, :GUTS, :INFILTRATOR, :IRONBARBS, :IRONFIST, :MIRRORARMOR,
-           :MOTORDRIVE, :NEUROFORCE, :PRISMARMOR, :QUEENLYMAJESTY, :RECKLESS,
-           :ROUGHSKIN, :SANDRUSH, :SCHOOLING, :SCRAPPY, :SHARPNESS,
-           :SHIELDSDOWN, :SOLIDROCK, :STAKEOUT, :STAMINA, :STEELWORKER,
-           :STRONGJAW, :STURDY, :SWIFTSWIM, :TOXICBOOST, :TRACE, :UNAWARE,
-           :VICTORYSTAR, :WELLBAKEDBODY],
-    5  => [:AFTERMATH, :AIRLOCK, :ANALYTIC, :BERSERK, :BLAZE, :CLOUDNINE,
-           :COMPETITIVE, :CORROSION, :DANCER, :DEFIANT, :FLAREBOOST, :FLUFFY,
-           :GOOEY, :HARVEST, :HEATPROOF, :INNARDSOUT, :LINGERINGAROMA,
-           :LIQUIDVOICE, :MARVELSCALE, :MUMMY, :NEUTRALIZINGGAS, :OVERCOAT,
-           :OVERGROW, :PRESSURE, :PURIFYINGSALT, :QUICKFEET, :ROCKHEAD,
-           :SANDSPIT, :SEEDSOWER, :SHIELDDUST, :SLUSHRUSH, :SWARM,
-           :TANGLINGHAIR, :TORRENT, :TOXICDEBRIS],
+           :GALEWINGS, :GUTS, :INFILTRATOR, :IRONBARBS, :IRONFIST, :MINDSEYE,
+           :MIRRORARMOR, :MOTORDRIVE, :NEUROFORCE, :PRISMARMOR, :PROTOSYNTHESIS,
+           :QUARKDRIVE, :QUEENLYMAJESTY, :RECKLESS, :ROUGHSKIN, :SANDRUSH,
+           :SCHOOLING, :SCRAPPY, :SHARPNESS, :SHIELDSDOWN, :SOLIDROCK,
+           :STAKEOUT, :STAMINA, :STEELWORKER, :STRONGJAW, :STURDY, :SWIFTSWIM,
+           :TOXICBOOST, :TRACE, :UNAWARE, :VICTORYSTAR, :WELLBAKEDBODY],
+    5  => [:AFTERMATH, :AIRLOCK, :ANALYTIC, :ANGERSHELL, :BERSERK, :BLAZE,
+           :CLOUDNINE, :COMPETITIVE, :CORROSION, :DANCER, :DEFIANT, :FLAREBOOST,
+           :FLUFFY, :GOOEY, :HARVEST, :HEATPROOF, :INNARDSOUT, :LINGERINGAROMA,
+           :LIQUIDVOICE, :MARVELSCALE, :MUMMY, :MYCELIUMMIGHT, :NEUTRALIZINGGAS,
+           :OVERCOAT, :OVERGROW, :PRESSURE, :PURIFYINGSALT, :QUICKFEET,
+           :ROCKHEAD, :SANDSPIT, :SEEDSOWER, :SHIELDDUST, :SLUSHRUSH, :SWARM,
+           :TANGLINGHAIR, :TORRENT, :TOXICCHAIN, :TOXICDEBRIS, :ZEROTOHERO],
     4  => [:ANGERPOINT, :BADDREAMS, :CHEEKPOUCH, :CLEARBODY, :CURSEDBODY,
-           :EARLYBIRD, :EFFECTSPORE, :FLAMEBODY, :FLOWERGIFT, :FULLMETALBODY,
-           :GORILLATACTICS, :HYDRATION, :ICEFACE, :IMMUNITY, :INSOMNIA,
-           :JUSTIFIED, :MERCILESS, :PASTELVEIL, :POISONPOINT, :POISONTOUCH,
-           :RIPEN, :SANDFORCE, :SOUNDPROOF, :STATIC, :SURGESURFER, :SWEETVEIL,
-           :SYNCHRONIZE, :VITALSPIRIT, :WATERCOMPACTION, :WATERVEIL,
+           :EARLYBIRD, :EFFECTSPORE, :ELECTROMORPHOSIS, :FLAMEBODY, :FLOWERGIFT,
+           :FULLMETALBODY, :GORILLATACTICS, :HYDRATION, :ICEFACE, :IMMUNITY,
+           :INSOMNIA, :JUSTIFIED, :MERCILESS, :PASTELVEIL, :POISONPOINT,
+           :POISONTOUCH, :RIPEN, :SANDFORCE, :SOUNDPROOF, :STATIC, :SURGESURFER,
+           :SWEETVEIL, :SYNCHRONIZE, :VITALSPIRIT, :WATERCOMPACTION, :WATERVEIL,
            :WHITESMOKE, :WONDERSKIN],
-    3  => [:AROMAVEIL, :AURABREAK, :COTTONDOWN, :DAUNTLESSSHIELD,
-           :EMERGENCYEXIT, :GLUTTONY, :GULPMISSLE, :HYPERCUTTER, :ICEBODY,
-           :INTREPIDSWORD, :LIMBER, :LIQUIDOOZE, :LONGREACH, :MAGICIAN,
-           :OWNTEMPO, :PICKPOCKET, :RAINDISH, :RATTLED, :SANDVEIL,
-           :SCREENCLEANER, :SNIPER, :SNOWCLOAK, :SOLARPOWER, :STEAMENGINE,
-           :STICKYHOLD, :SUPERLUCK, :UNNERVE, :WIMPOUT],
-    2  => [:BATTLEARMOR, :COLORCHANGE, :CUTECHARM, :DAMP, :GRASSPELT,
+    3  => [:AROMAVEIL, :AURABREAK, :COTTONDOWN, :EMERGENCYEXIT, :GLUTTONY,
+           :GULPMISSLE, :HYPERCUTTER, :ICEBODY, :LIMBER, :LIQUIDOOZE,
+           :LONGREACH, :MAGICIAN, :OWNTEMPO, :PICKPOCKET, :RAINDISH, :RATTLED,
+           :SANDVEIL, :SNIPER, :SNOWCLOAK, :SOLARPOWER, :STEAMENGINE,
+           :STICKYHOLD, :SUPERLUCK, :TERASHELL, :UNNERVE, :WIMPOUT, :WINDPOWER],
+    2  => [:BATTLEARMOR, :COLORCHANGE, :CUTECHARM, :DAMP, :GRASSPELT, :GUARDDOG,
            :HUNGERSWITCH, :INNERFOCUS, :LEAFGUARD, :LIGHTMETAL, :MIMICRY,
            :OBLIVIOUS, :POWERSPOT, :PROPELLERTAIL, :PUNKROCK, :SHELLARMOR,
            :STALWART, :STEADFAST, :STEELYSPIRIT, :SUCTIONCUPS, :TANGLEDFEET,
-           :WANDERINGSPIRIT, :WEAKARMOR],
-    1  => [:BIGPECKS, :KEENEYE, :MAGMAARMOR, :PICKUP, :RIVALRY, :STENCH],
-    0  => [:ANTICIPATION, :ASONECHILLINGNEIGH, :ASONEGRIMNEIGH, :BALLFETCH,
-           :BATTERY, :CHILLINGNEIGH, :CURIOUSMEDICINE, :FLOWERVEIL, :FOREWARN,
-           :FRIENDGUARD, :FRISK, :GRIMNEIGH, :HEALER, :HONEYGATHER, :ILLUMINATE,
-           :MINUS, :PLUS, :POWEROFALCHEMY, :QUICKDRAW, :RECEIVER, :RUNAWAY,
-           :SYMBIOSIS, :TELEPATHY, :UNSEENFIST],
+           :TERASHIFT, :WANDERINGSPIRIT, :WEAKARMOR],
+    1  => [:BIGPECKS, :CUDCHEW, :KEENEYE, :MAGMAARMOR, :PICKUP, :RIVALRY,
+           :STENCH],
+    0  => [:ASONECHILLINGNEIGH, :ASONEGRIMNEIGH, :BALLFETCH, :BATTERY,
+           :CHILLINGNEIGH, :FLOWERVEIL, :FRIENDGUARD, :GRIMNEIGH, :HEALER,
+           :HONEYGATHER, :ILLUMINATE, :MINUS, :PLUS, :POWEROFALCHEMY,
+           :QUICKDRAW, :RECEIVER, :RUNAWAY, :SYMBIOSIS, :TELEPATHY, :UNSEENFIST,
+           # Abilities with OnSwitchIn effects that are useless after switching
+           # in (because these scores are only used to rate moves, which are
+           # used after switch-ins)
+           :ANTICIPATION, :COSTAR, :CURIOUSMEDICINE, :DAUNTLESSSHIELD,
+           :DOWNLOAD, :DRIZZLE, :DROUGHT, :ELECTRICSURGE, :EMBODYASPECTATTACK,
+           :EMBODYASPECTDEFENSE, :EMBODYASPECTSPDEF, :EMBODYASPECTSPEED,
+           :FOREWARN, :FRISK, :GRASSYSURGE, :HOSPITALITY, :INTIMIDATE,
+           :INTREPIDSWORD, :MISTYSURGE, :PSYCHICSURGE, :SANDSTREAM,
+           :SCREENCLEANER, :SNOWWARNING, :SUPERSWEETSYRUP, :TERAFORMZERO],
     -1 => [:DEFEATIST, :HEAVYMETAL, :KLUTZ, :NORMALIZE, :PERISHBODY, :STALL,
            :ZENMODE],
     -2 => [:SLOWSTART, :TRUANT]
@@ -250,6 +260,25 @@ Battle::AI::Handlers::AbilityRanking.add(:BLAZE,
   }
 )
 
+Battle::AI::Handlers::AbilityRanking.add(:COMMANDER,
+  proc { |ability, score, battler, ai|
+    next 0 if !battler.battler.isSpecies?(:TATSUGIRI)
+    next 0 if battler.battler.allAllies.none? do |b|
+      b.isSpecies?(:DONDOZO) && !b.effects[PBEffects::Transform] &&
+      ai.battle.pbGetOwnerIndexFromBattlerIndex(battler.index) == ai.battle.pbGetOwnerIndexFromBattlerIndex(b.index) &&
+      b.effects[PBEffects::CommandedBy] < 0
+    end
+    next score
+  }
+)
+
+Battle::AI::Handlers::AbilityRanking.add(:CUDCHEW,
+  proc { |ability, score, battler, ai|
+    next score if battler.item.is_berry? || battler.effects[PBEffects::CudChewBerry]
+    next 0
+  }
+)
+
 Battle::AI::Handlers::AbilityRanking.add(:CUTECHARM,
   proc { |ability, score, battler, ai|
     next 0 if battler.gender == 2
@@ -265,6 +294,15 @@ Battle::AI::Handlers::AbilityRanking.add(:DRAGONSMAW,
     next 0
   }
 )
+
+Battle::AI::Handlers::AbilityRanking.add(:ELECTROMORPHOSIS,
+  proc { |ability, score, battler, ai|
+    next score if battler.has_damaging_move_of_type?(:ELECTRIC)
+    next 0
+  }
+)
+
+Battle::AI::Handlers::AbilityRanking.copy(:ELECTROMORPHOSIS, :WINDPOWER)
 
 Battle::AI::Handlers::AbilityRanking.add(:FRIENDGUARD,
   proc { |ability, score, battler, ai|
@@ -314,6 +352,13 @@ Battle::AI::Handlers::AbilityRanking.add(:MEGALAUNCHER,
   }
 )
 
+Battle::AI::Handlers::AbilityRanking.add(:MYCELIUMMIGHT,
+  proc { |ability, score, battler, ai|
+    next score if battler.check_for_move { |m| m.statusMove? && m.pbTarget(battler.battler).can_target_one_foe? }
+    next 0
+  }
+)
+
 Battle::AI::Handlers::AbilityRanking.add(:OVERGROW,
   proc { |ability, score, battler, ai|
     next score if battler.has_damaging_move_of_type?(:GRASS)
@@ -327,6 +372,15 @@ Battle::AI::Handlers::AbilityRanking.add(:PRANKSTER,
     next 0
   }
 )
+
+Battle::AI::Handlers::AbilityRanking.add(:PROTOSYNTHESIS,
+  proc { |ability, score, battler, ai|
+    next score if battler.effects[PBEffects::ProtosynthesisStat]
+    next 0
+  }
+)
+
+Battle::AI::Handlers::AbilityRanking.copy(:PROTOSYNTHESIS, :QUARKDRIVE)
 
 Battle::AI::Handlers::AbilityRanking.add(:PUNKROCK,
   proc { |ability, score, battler, ai|
@@ -397,6 +451,12 @@ Battle::AI::Handlers::AbilityRanking.add(:STRONGJAW,
   proc { |ability, score, battler, ai|
     next score if battler.check_for_move { |m| m.bitingMove? }
     next 0
+  }
+)
+
+Battle::AI::Handlers::AbilityRanking.add(:SUPREMEOVERLORD,
+  proc { |ability, score, battler, ai|
+    next (score * battler.effects[PBEffects::SupremeOverlord] / 5.0).ceil
   }
 )
 

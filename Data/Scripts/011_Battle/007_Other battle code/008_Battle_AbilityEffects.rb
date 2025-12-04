@@ -1303,6 +1303,8 @@ Battle::AbilityEffects::AccuracyCalcFromUser.add(:KEENEYE,
   }
 )
 
+Battle::AbilityEffects::AccuracyCalcFromUser.copy(:KEENEYE, :MINDSEYE)
+
 if Settings::MECHANICS_GENERATION >= 9
   Battle::AbilityEffects::AccuracyCalcFromUser.copy(:KEENEYE, :ILLUMINATE)
 end
@@ -3240,7 +3242,6 @@ Battle::AbilityEffects::OnSwitchIn.add(:GRASSYSURGE,
 
 Battle::AbilityEffects::OnSwitchIn.add(:HADRONENGINE,
   proc { |ability, battler, battle, switch_in|
-    next if battle.field.defaultTerrain != :None && battle.field.terrain == battle.field.defaultTerrain
     next if battle.field.terrain == :Electric
     battle.pbShowAbilitySplash(battler)
     battle.pbStartTerrain(battler, :Electric, true,

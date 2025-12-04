@@ -613,7 +613,10 @@ Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("RaiseTargetAttack1",
 )
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RaiseTargetAttack1",
   proc { |score, move, user, target, ai, battle|
-    next ai.get_score_for_target_stat_raise(score, target, [:ATTACK, 1])
+    score = ai.get_score_for_target_stat_raise(score, target, [:ATTACK, 1])
+    score += 5 if user.has_active_ability?(:OPPORTUNIST) &&
+                  user.stat_raise_worthwhile?(user, :ATTACK)
+    next score
   }
 )
 
@@ -633,6 +636,8 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RaiseTargetAttack2Confus
     end
     # Score for stat raise
     score = ai.get_score_for_target_stat_raise(score, target, [:ATTACK, 2], false)
+    score += 5 if user.has_active_ability?(:OPPORTUNIST) &&
+                  user.stat_raise_worthwhile?(user, :ATTACK)
     # Score for confusing the target
     next Battle::AI::Handlers.apply_move_effect_against_target_score(
       "ConfuseTarget", score, move, user, target, ai, battle)
@@ -655,6 +660,8 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RaiseTargetSpAtk1Confuse
     end
     # Score for stat raise
     score = ai.get_score_for_target_stat_raise(score, target, [:SPECIAL_ATTACK, 1], false)
+    score += 5 if user.has_active_ability?(:OPPORTUNIST) &&
+                  user.stat_raise_worthwhile?(user, :SPECIAL_ATTACK)
     # Score for confusing the target
     next Battle::AI::Handlers.apply_move_effect_against_target_score(
       "ConfuseTarget", score, move, user, target, ai, battle)
@@ -671,7 +678,10 @@ Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("RaiseTargetSpDef1",
 )
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RaiseTargetSpDef1",
   proc { |score, move, user, target, ai, battle|
-    next ai.get_score_for_target_stat_raise(score, target, [:SPECIAL_DEFENSE, 1])
+    score = ai.get_score_for_target_stat_raise(score, target, [:SPECIAL_DEFENSE, 1])
+    score += 5 if user.has_active_ability?(:OPPORTUNIST) &&
+                  user.stat_raise_worthwhile?(user, :SPECIAL_DEFENSE)
+    next score
   }
 )
 
@@ -694,6 +704,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RaiseTargetRandomStat2",
     next Battle::AI::MOVE_USELESS_SCORE if target.rough_end_of_round_damage >= target.hp
     score -= 7 if target.index != user.index   # Less likely to use on ally
     score += 10 if target.has_active_ability?(:SIMPLE)
+    score += 5 if user.has_active_ability?(:OPPORTUNIST)
     # Prefer if target is at high HP, don't prefer if target is at low HP
     if ai.trainer.has_skill_flag?("HPAware")
       if target.hp >= target.totalhp * 0.7
@@ -727,7 +738,11 @@ Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("RaiseTargetAtkSpAtk2",
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RaiseTargetAtkSpAtk2",
   proc { |score, move, user, target, ai, battle|
     next Battle::AI::MOVE_USELESS_SCORE if target.opposes?(user)
-    next ai.get_score_for_target_stat_raise(score, target, [:ATTACK, 2, :SPECIAL_ATTACK, 2])
+    score = ai.get_score_for_target_stat_raise(score, target, [:ATTACK, 2, :SPECIAL_ATTACK, 2])
+    score += 5 if user.has_active_ability?(:OPPORTUNIST) &&
+                  (user.stat_raise_worthwhile?(user, :ATTACK) ||
+                  user.stat_raise_worthwhile?(user, :SPECIAL_ATTACK))
+    next score
   }
 )
 
@@ -1626,7 +1641,8 @@ Battle::AI::Handlers::MoveEffectScore.add("StartUserSideDoubleSpeed",
     next Battle::AI::MOVE_USELESS_SCORE if outspeeds == 0
     # Check for Wind Rider
     ai.each_same_side_battler(user.side) do |b, i|
-      score += 5 if b.has_active_ability?(:WINDRIDER) && ai.stat_raise_worthwhile?(b, :ATTACK)
+      score += 4 if b.has_active_ability?(:WINDPOWER) && b.has_damaging_move_of_type?(:ELECTRIC)
+      score += 4 if b.has_active_ability?(:WINDRIDER) && ai.stat_raise_worthwhile?(b, :ATTACK)
     end
     # This move will achieve something
     next score + 8 + (10 * outspeeds)
