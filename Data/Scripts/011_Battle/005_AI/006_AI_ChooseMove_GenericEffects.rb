@@ -672,10 +672,21 @@ class Battle::AI
         end
         beneficial_moves = {
           :Sun       => ["HealUserDependingOnWeather",
+                         "IncreasePowerInSun",
+                         "RaiseUserAtkSpAtk1Or2InSun",
+                         "TwoTurnAttackOneTurnInSun",
+                         "TypeAndPowerDependOnWeather"],
+          :HarshSun  => ["HealUserDependingOnWeather",
+                         "IncreasePowerInSun",
                          "RaiseUserAtkSpAtk1Or2InSun",
                          "TwoTurnAttackOneTurnInSun",
                          "TypeAndPowerDependOnWeather"],
           :Rain      => ["ConfuseTargetAlwaysHitsInRainHitsTargetInSky",
+                         "ParalyzeTargetAlwaysHitsInRain",
+                         "ParalyzeTargetAlwaysHitsInRainHitsTargetInSky",
+                         "TypeAndPowerDependOnWeather"],
+          :HeavyRain => ["ConfuseTargetAlwaysHitsInRainHitsTargetInSky",
+                         "ParalyzeTargetAlwaysHitsInRain",
                          "ParalyzeTargetAlwaysHitsInRainHitsTargetInSky",
                          "TypeAndPowerDependOnWeather"],
           :Sandstorm => ["HealUserDependingOnSandstorm",
@@ -695,14 +706,14 @@ class Battle::AI
         negative_moves = {
           :Sun       => ["ConfuseTargetAlwaysHitsInRainHitsTargetInSky",
                          "ParalyzeTargetAlwaysHitsInRainHitsTargetInSky"],
-          :Rain      => ["HealUserDependingOnWeather",
-                         "TwoTurnAttackOneTurnInSun"],
-          :Sandstorm => ["HealUserDependingOnWeather",
-                         "TwoTurnAttackOneTurnInSun"],
-          :Hail      => ["HealUserDependingOnWeather",
-                         "TwoTurnAttackOneTurnInSun"],
-          :Snowstorm => ["HealUserDependingOnWeather",
-                         "TwoTurnAttackOneTurnInSun"]
+          :HarshSun  => ["ConfuseTargetAlwaysHitsInRainHitsTargetInSky",
+                         "ParalyzeTargetAlwaysHitsInRainHitsTargetInSky"],
+          :Rain      => ["HealUserDependingOnWeather"],
+          :HeavyRain => ["HealUserDependingOnWeather"],
+          :Sandstorm => ["HealUserDependingOnWeather"],
+          :Hail      => ["HealUserDependingOnWeather"],
+          :Snowstorm => ["HealUserDependingOnWeather"],
+          :ShadowSky => ["HealUserDependingOnWeather"]
         }[weather]
         if negative_moves && negative_moves.length > 0 &&
            b.has_move_with_function?(*negative_moves)
@@ -769,9 +780,8 @@ class Battle::AI
       :Psychic  => :PSYCHICSEED
     }[terrain]
     each_battler(true) do |b, i|
-      if seed && b.has_active_item?(seed)
-        ret += (b.opposes?(move_user)) ? -8 : 8
-      end
+      next if !seed || !b.has_active_item?(seed)
+      ret += (b.opposes?(move_user)) ? -8 : 8
     end
     # Check for abilities/moves affected by the terrain
     if @trainer.medium_skill?
@@ -780,7 +790,8 @@ class Battle::AI
         :Grassy   => :GRASSPELT
       }[terrain]
       good_moves = {
-        :Electric => ["DoublePowerInElectricTerrain"],
+        :Electric => ["DoublePowerInElectricTerrain",
+                      "IncreasePowerInElectricTerrain"],
         :Grassy   => ["HealTargetDependingOnGrassyTerrain",
                       "HigherPriorityInGrassyTerrain"],
         :Misty    => ["UserFaintsPowersUpInMistyTerrainExplosive"],

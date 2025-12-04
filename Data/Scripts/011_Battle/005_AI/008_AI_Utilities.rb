@@ -398,7 +398,9 @@ Battle::AI::Handlers::AbilityRanking.add(:RECKLESS,
 
 Battle::AI::Handlers::AbilityRanking.add(:ROCKHEAD,
   proc { |ability, score, battler, ai|
-    next score if battler.check_for_move { |m| m.recoilMove? && !m.is_a?(Battle::Move::CrashDamageIfFailsUnusableInGravity) }
+    next score if battler.check_for_move { |m| m.recoilMove? &&
+                                               !m.is_a?(Battle::Move::CrashDamageIfFails) &&
+                                               !m.is_a?(Battle::Move::CrashDamageIfFailsUnusableInGravity) }
     next 0
   }
 )

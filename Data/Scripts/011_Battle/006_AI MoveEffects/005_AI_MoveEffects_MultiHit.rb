@@ -13,7 +13,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("HitTwoTimes",
     if target.effects[PBEffects::Substitute] > 0 && !move.move.ignoresSubstitute?(user.battler)
       dmg = move.rough_damage
       num_hits = move.move.pbNumHits(user.battler, [target.battler])
-      score += 10 if target.effects[PBEffects::Substitute] < dmg * (num_hits - 1) / num_hits
+      score += 8 if target.effects[PBEffects::Substitute] < dmg * (num_hits - 1) / num_hits
     end
     next score
   }

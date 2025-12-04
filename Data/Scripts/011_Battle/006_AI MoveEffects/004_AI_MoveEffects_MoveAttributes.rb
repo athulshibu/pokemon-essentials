@@ -236,7 +236,7 @@ Battle::AI::Handlers::MoveBasePower.add("PowerHigherWithConsecutiveUseOnUserSide
     next power * (user.pbOwnSide.effects[PBEffects::EchoedVoiceCounter] + 1)
   }
 )
-Battle::AI::Handlers::MoveEffectScore.add("PowerHigherWithConsecutiveUse",
+Battle::AI::Handlers::MoveEffectScore.add("PowerHigherWithConsecutiveUseOnUserSide",
   proc { |score, move, user, ai, battle|
     # Prefer continuing to use this move
     score += 10 if user.pbOwnSide.effects[PBEffects::EchoedVoiceCounter] > 0
@@ -249,10 +249,61 @@ Battle::AI::Handlers::MoveEffectScore.add("PowerHigherWithConsecutiveUse",
 #===============================================================================
 #
 #===============================================================================
+Battle::AI::Handlers::MoveBasePower.copy("PowerHigherWithUserHP",
+                                         "PowerHigherWithTimesHit")
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveBasePower.copy("PowerHigherWithUserHP",
+                                         "PowerHigherWithFaintedAllies")
+
+#===============================================================================
+#
+#===============================================================================
 Battle::AI::Handlers::MoveBasePower.add("RandomPowerDoublePowerIfTargetUnderground",
   proc { |power, move, user, target, ai, battle|
     power = 71   # Average damage
     next move.move.pbModifyDamage(power, user.battler, target.battler)
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveBasePower.add("IncreasePowerInSun",
+  proc { |power, move, user, target, ai, battle|
+    next move.move.pbBasePower(power, user.battler, target.battler)
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveBasePower.add("IncreasePowerInElectricTerrain",
+  proc { |power, move, user, target, ai, battle|
+    next move.move.pbBasePower(power, user.battler, target.battler)
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveBasePower.add("IncreasePowerIfSuperEffective",
+  proc { |power, move, user, target, ai, battle|
+    calc_type = move.rough_type
+    type_mod = target.effectiveness_of_type_against_battler(calc_type, user, move)
+    next power * 4 / 3 if Effectiveness.super_effective?(type_mod)
+    next power
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveBasePower.add("DoublePower30PercentChance",
+  proc { |power, move, user, target, ai, battle|
+    next (power * 1.3).floor
   }
 )
 
@@ -1230,7 +1281,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RecoilQuarterOfDamageDea
       foes     = battle.pbAbleNonActiveCount(user.idxOpposingSide)
       next Battle::AI::MOVE_USELESS_SCORE if reserves <= foes
     end
-    score -= 25 * [dmg, user.hp].min / user.hp
+    score -= 20 * [dmg, user.hp].min / user.hp
     next score
   }
 )
@@ -1248,7 +1299,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RecoilThirdOfDamageDealt
         foes     = battle.pbAbleNonActiveCount(user.idxOpposingSide)
         next Battle::AI::MOVE_USELESS_SCORE if reserves <= foes
       end
-      score -= 25 * [dmg, user.hp].min / user.hp
+      score -= 20 * [dmg, user.hp].min / user.hp
     end
     # Score for paralysing
     next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
@@ -1272,7 +1323,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RecoilThirdOfDamageDealt
         foes     = battle.pbAbleNonActiveCount(user.idxOpposingSide)
         next Battle::AI::MOVE_USELESS_SCORE if reserves <= foes
       end
-      score -= 25 * [dmg, user.hp].min / user.hp
+      score -= 20 * [dmg, user.hp].min / user.hp
     end
     # Score for burning
     next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
@@ -1289,13 +1340,30 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RecoilThirdOfDamageDealt
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RecoilHalfOfDamageDealt",
   proc { |score, move, user, target, ai, battle|
     next score if !user.battler.takesIndirectDamage? || user.has_active_ability?(:ROCKHEAD)
-    dmg = move.rough_damage / 2
+    dmg = (move.rough_damage / 2.0).round
     if dmg >= user.hp
       reserves = battle.pbAbleNonActiveCount(user.idxOwnSide)
       foes     = battle.pbAbleNonActiveCount(user.idxOpposingSide)
       next Battle::AI::MOVE_USELESS_SCORE if reserves <= foes
     end
-    score -= 25 * [dmg, user.hp].min / user.hp
+    score -= 20 * [dmg, user.hp].min / user.hp
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RecoilHalfOfTotalHP",
+  proc { |score, move, user, target, ai, battle|
+    next score if !user.battler.takesIndirectDamage? || user.has_active_ability?(:ROCKHEAD)
+    dmg = (user.totalhp / 2.0).round
+    if dmg >= user.hp
+      reserves = battle.pbAbleNonActiveCount(user.idxOwnSide)
+      foes     = battle.pbAbleNonActiveCount(user.idxOpposingSide)
+      next Battle::AI::MOVE_USELESS_SCORE if reserves <= foes
+    end
+    score -= 20 * [dmg, user.hp].min / user.hp
     next score
   }
 )
@@ -1423,6 +1491,17 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("StartNegateTargetEvasion
 #
 #===============================================================================
 # TypeIsUserFirstType
+
+#===============================================================================
+#
+#===============================================================================
+# TypeDependsOnUserOgerponForm
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveEffectScore.copy("RemoveScreens",
+                                           "TypeDependsOnUserTaurosFormRemoveScreens")
 
 #===============================================================================
 #

@@ -154,7 +154,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("FailsIfTargetActed",
 #===============================================================================
 #
 #===============================================================================
-Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("CrashDamageIfFailsUnusableInGravity",
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("CrashDamageIfFails",
   proc { |score, move, user, target, ai, battle|
     if user.battler.takesIndirectDamage?
       score -= (0.6 * (100 - move.rough_accuracy)).to_i   # -0 (100%) to -60 (1%)
@@ -162,6 +162,12 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("CrashDamageIfFailsUnusab
     next score
   }
 )
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.copy("CrashDamageIfFails",
+                                                        "CrashDamageIfFailsUnusableInGravity")
 
 #===============================================================================
 #

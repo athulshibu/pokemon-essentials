@@ -266,6 +266,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.copy("ParalyzeTarget",
 #
 #===============================================================================
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.copy("ParalyzeTarget",
+                                                        "ParalyzeTargetAlwaysHitsInRain",
                                                         "ParalyzeTargetAlwaysHitsInRainHitsTargetInSky")
 
 #===============================================================================
@@ -961,6 +962,15 @@ Battle::AI::Handlers::MoveFailureCheck.add("UserLosesFireType",
 #===============================================================================
 #
 #===============================================================================
+Battle::AI::Handlers::MoveFailureCheck.add("UserLosesElectricType",
+  proc { |move, user, ai, battle|
+    next !user.has_type?(:ELECTRIC)
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
 Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("SetTargetAbilityToSimple",
   proc { |move, user, target, ai, battle|
     next true if !GameData::Ability.exists?(:SIMPLE)
@@ -1024,6 +1034,33 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("SetUserAbilityToTargetAb
       score += 5 * [old_ability_rating - new_ability_rating, 3].max
     elsif old_ability_rating < new_ability_rating
       score -= 5 * [new_ability_rating - old_ability_rating, 3].max
+    end
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("SetUserAndAlliesAbilityToTargetAbility",
+  proc { |move, user, target, ai, battle|
+    next true if user.battler.unstoppableAbility? &&
+                 user.battler.allAllies.none? { |ally| !ally.unstoppableAbility? }
+    next move.move.pbFailsAgainstTarget?(user.battler, target.battler, false)
+  }
+)
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("SetUserAndAlliesAbilityToTargetAbility",
+  proc { |score, move, user, target, ai, battle|
+    next Battle::AI::MOVE_USELESS_SCORE if !user.ability_active?
+    ai.each_same_side_battler(user.side) do |battler, i|
+      next if battler.battler.unstoppableAbility? || battler.ability_id == target.ability_id
+      old_ability_rating = battler.wants_ability?(battler.ability_id)
+      new_ability_rating = battler.wants_ability?(target.ability_id)
+      if old_ability_rating > new_ability_rating
+        score += 5 * [old_ability_rating - new_ability_rating, 3].max
+      elsif old_ability_rating < new_ability_rating
+        score -= 5 * [new_ability_rating - old_ability_rating, 3].max
+      end
     end
     next score
   }

@@ -340,6 +340,14 @@ Battle::AI::Handlers::MoveEffectScore.copy("RaiseUserAttack1",
 #
 #===============================================================================
 Battle::AI::Handlers::MoveFailureCheck.copy("RaiseUserAtkDef1",
+                                            "RaiseUserAtkDefSpd1")
+Battle::AI::Handlers::MoveEffectScore.copy("RaiseUserAtkDef1",
+                                           "RaiseUserAtkDefSpd1")
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveFailureCheck.copy("RaiseUserAtkDef1",
                                             "RaiseUserAtkDefAcc1")
 Battle::AI::Handlers::MoveEffectScore.copy("RaiseUserAtkDef1",
                                            "RaiseUserAtkDefAcc1")
