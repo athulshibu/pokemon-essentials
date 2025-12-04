@@ -101,8 +101,8 @@ def pbResolveAudioSE(file)
   return nil
 end
 
-# Finds the real path for an image file.  This includes paths in encrypted
-# archives.  Returns nil if the path can't be found.
+# Finds the real path for an image file. This includes paths in encrypted
+# archives. Returns nil if the path can't be found.
 def pbResolveBitmap(x)
   return nil if !x
   noext = x.gsub(/\.(bmp|png|gif|jpg|jpeg)$/, "")
@@ -121,8 +121,8 @@ def pbResolveBitmap(x)
   return filename
 end
 
-# Finds the real path for an image file.  This includes paths in encrypted
-# archives.  Returns _x_ if the path can't be found.
+# Finds the real path for an image file. This includes paths in encrypted
+# archives. Returns _x_ if the path can't be found.
 def pbBitmapName(x)
   ret = pbResolveBitmap(x)
   return (ret) ? ret : x

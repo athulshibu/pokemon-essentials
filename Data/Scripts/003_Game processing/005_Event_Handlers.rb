@@ -30,8 +30,8 @@ class Event
     @callbacks.clear
   end
 
-  # Triggers the event and calls all its event handlers.  Normally called only
-  # by the code where the event occurred.
+  # Triggers the event and calls all its event handlers. Normally called only by
+  # the code where the event occurred.
   # The first argument is the sender of the event, the second argument contains
   # the event's parameters. If three or more arguments are given, this method
   # supports the following callbacks:

@@ -1,5 +1,5 @@
 #===============================================================================
-# Global metadata not specific to a map.  This class holds field state data that
+# Global metadata not specific to a map. This class holds field state data that
 # span multiple maps.
 #===============================================================================
 class PokemonGlobalMetadata
@@ -123,7 +123,7 @@ end
 
 #===============================================================================
 # This class keeps track of erased and moved events so their position
-# can remain after a game is saved and loaded.  This class also includes
+# can remain after a game is saved and loaded. This class also includes
 # variables that should remain valid only for the current map.
 #===============================================================================
 class PokemonMapMetadata

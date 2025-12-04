@@ -263,17 +263,17 @@ module BattleAnimationEditor
       @invalid = true
     end
 
-    # Determines whether the control is invalid
+    # Determines whether the control is invalid.
     def invalid?
       return @invalid
     end
 
-    # Marks that the control is valid.  Normally called only by repaint.
+    # Marks that the control is valid. Normally called only by repaint.
     def validate
       @invalid = false
     end
 
-    # Redraws the sprite only if it is invalid, and then revalidates the sprite
+    # Redraws the sprite only if it is invalid, and then revalidates the sprite.
     def repaint
       if self.invalid?
         refresh
@@ -281,8 +281,8 @@ module BattleAnimationEditor
       end
     end
 
-    # Redraws the sprite.  This method should not check whether
-    # the sprite is invalid, to allow it to be explicitly called.
+    # Redraws the sprite. This method should not check whether the sprite is
+    # invalid, to allow it to be explicitly called.
     def refresh; end
   end
 

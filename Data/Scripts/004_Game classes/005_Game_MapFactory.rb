@@ -242,7 +242,7 @@ class PokemonMapFactory
     return [0, 0]
   end
 
-  # Gets the distance from this event to another event.  Example: If this event's
+  # Gets the distance from this event to another event. Example: If this event's
   # coordinates are (2,5) and the other event's coordinates are (5,1), returns
   # the array (3,-4), because (5-2=3) and (1-5=-4).
   def getThisAndOtherEventRelativePos(thisEvent, otherEvent)

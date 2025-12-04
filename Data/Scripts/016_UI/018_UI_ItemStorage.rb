@@ -324,7 +324,7 @@ module UIHelper
   end
 
   # Letter by letter display of the message _msg_ by the window _helpwindow_,
-  # used to ask questions.  Returns true if the user chose yes, false if no.
+  # used to ask questions. Returns true if the user chose yes, false if no.
   def pbConfirm(helpwindow, msg)
     dw = helpwindow
     oldvisible = dw.visible

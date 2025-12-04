@@ -559,7 +559,7 @@ end
 
 # pbFadeOutIn(z) { block }
 # Fades out the screen before a block is run and fades it back in after the
-# block exits.  z indicates the z-coordinate of the viewport used for this effect
+# block exits. z indicates the z-coordinate of the viewport used for this effect.
 def pbFadeOutIn(z = 99999, nofadeout = false)
   duration = 0.4   # In seconds
   col = Color.new(0, 0, 0, 0)

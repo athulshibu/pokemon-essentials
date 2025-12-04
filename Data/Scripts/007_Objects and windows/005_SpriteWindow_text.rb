@@ -6,7 +6,7 @@ class Window_UnformattedTextPokemon < SpriteWindow_Base
   attr_reader :text
   attr_reader :baseColor
   attr_reader :shadowColor
-  # Letter-by-letter mode.  This mode is not supported in this class.
+  # Letter-by-letter mode. This mode is not supported in this class.
   attr_accessor :letterbyletter
 
   def text=(value)

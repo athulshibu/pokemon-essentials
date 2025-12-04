@@ -265,7 +265,7 @@ class IconSprite < Sprite
     super
   end
 
-  # Sets the icon's filename.  Alias for setBitmap.
+  # Sets the icon's filename. Alias for setBitmap.
   def name=(value)
     setBitmap(value)
   end
