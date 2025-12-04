@@ -181,11 +181,11 @@ class Battle::AI
   #       appropriate.
   BASE_ITEM_RATINGS = {
     10 => [:EVIOLITE, :FOCUSSASH, :LIFEORB, :THICKCLUB],
-    9  => [:ASSAULTVEST, :BLACKSLUDGE, :CHOICEBAND, :CHOICESCARF, :CHOICESPECS,
-           :DEEPSEATOOTH, :LEFTOVERS],
+    9  => [:ASSAULTVEST, :BLACKSLUDGE, :BOOSTERENERGY, :CHOICEBAND,
+           :CHOICESCARF, :CHOICESPECS, :COVERTCLOAK, :DEEPSEATOOTH, :LEFTOVERS],
     8  => [:CLEARAMULET, :LEEK, :STICK, :THROATSPRAY, :WEAKNESSPOLICY],
     7  => [:ABILITYSHIELD, :EXPERTBELT, :LIGHTBALL, :LOADEDDICE, :LUMBERRY,
-           :POWERHERB, :ROCKYHELMET, :SITRUSBERRY],
+           :MIRRORHERB, :POWERHERB, :ROCKYHELMET, :SITRUSBERRY],
     6  => [:KINGSROCK, :LIECHIBERRY, :LIGHTCLAY, :PETAYABERRY, :RAZORFANG,
            :REDCARD, :SALACBERRY, :SHELLBELL, :WHITEHERB,
            # Type-resisting berries
@@ -578,6 +578,14 @@ Battle::AI::Handlers::ItemRanking.add(:BLACKSLUDGE,
   proc { |item, score, battler, ai|
     next score if battler.has_type?(:POISON)
     next -9
+  }
+)
+
+Battle::AI::Handlers::ItemRanking.add(:BOOSTERENERGY,
+  proc { |item, score, battler, ai|
+    next score if battler.has_active_ability?(:PROTOSYNTHESIS) ||
+                  battler.has_active_ability?(:QUARKDRIVE)
+    next 0
   }
 )
 

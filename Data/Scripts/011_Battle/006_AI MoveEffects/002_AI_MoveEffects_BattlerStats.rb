@@ -613,8 +613,10 @@ Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("RaiseTargetAttack1",
 )
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RaiseTargetAttack1",
   proc { |score, move, user, target, ai, battle|
+    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
     score = ai.get_score_for_target_stat_raise(score, target, [:ATTACK, 1])
-    score += 5 if user.has_active_ability?(:OPPORTUNIST) &&
+    score += 5 if (user.has_active_ability?(:OPPORTUNIST) ||
+                  user.has_active_item?(:MIRRORHERB)) &&
                   user.stat_raise_worthwhile?(user, :ATTACK)
     next score
   }
@@ -636,7 +638,8 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RaiseTargetAttack2Confus
     end
     # Score for stat raise
     score = ai.get_score_for_target_stat_raise(score, target, [:ATTACK, 2], false)
-    score += 5 if user.has_active_ability?(:OPPORTUNIST) &&
+    score += 5 if (user.has_active_ability?(:OPPORTUNIST) ||
+                  user.has_active_item?(:MIRRORHERB)) &&
                   user.stat_raise_worthwhile?(user, :ATTACK)
     # Score for confusing the target
     next Battle::AI::Handlers.apply_move_effect_against_target_score(
@@ -660,7 +663,8 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RaiseTargetSpAtk1Confuse
     end
     # Score for stat raise
     score = ai.get_score_for_target_stat_raise(score, target, [:SPECIAL_ATTACK, 1], false)
-    score += 5 if user.has_active_ability?(:OPPORTUNIST) &&
+    score += 5 if (user.has_active_ability?(:OPPORTUNIST) ||
+                  user.has_active_item?(:MIRRORHERB)) &&
                   user.stat_raise_worthwhile?(user, :SPECIAL_ATTACK)
     # Score for confusing the target
     next Battle::AI::Handlers.apply_move_effect_against_target_score(
@@ -679,7 +683,8 @@ Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("RaiseTargetSpDef1",
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RaiseTargetSpDef1",
   proc { |score, move, user, target, ai, battle|
     score = ai.get_score_for_target_stat_raise(score, target, [:SPECIAL_DEFENSE, 1])
-    score += 5 if user.has_active_ability?(:OPPORTUNIST) &&
+    score += 5 if (user.has_active_ability?(:OPPORTUNIST) ||
+                  user.has_active_item?(:MIRRORHERB)) &&
                   user.stat_raise_worthwhile?(user, :SPECIAL_DEFENSE)
     next score
   }
@@ -704,7 +709,8 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RaiseTargetRandomStat2",
     next Battle::AI::MOVE_USELESS_SCORE if target.rough_end_of_round_damage >= target.hp
     score -= 7 if target.index != user.index   # Less likely to use on ally
     score += 10 if target.has_active_ability?(:SIMPLE)
-    score += 5 if user.has_active_ability?(:OPPORTUNIST)
+    score += 5 if user.has_active_ability?(:OPPORTUNIST) ||
+                  user.has_active_item?(:MIRRORHERB)
     # Prefer if target is at high HP, don't prefer if target is at low HP
     if ai.trainer.has_skill_flag?("HPAware")
       if target.hp >= target.totalhp * 0.7
@@ -739,7 +745,8 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RaiseTargetAtkSpAtk2",
   proc { |score, move, user, target, ai, battle|
     next Battle::AI::MOVE_USELESS_SCORE if target.opposes?(user)
     score = ai.get_score_for_target_stat_raise(score, target, [:ATTACK, 2, :SPECIAL_ATTACK, 2])
-    score += 5 if user.has_active_ability?(:OPPORTUNIST) &&
+    score += 5 if (user.has_active_ability?(:OPPORTUNIST) ||
+                  user.has_active_item?(:MIRRORHERB)) &&
                   (user.stat_raise_worthwhile?(user, :ATTACK) ||
                   user.stat_raise_worthwhile?(user, :SPECIAL_ATTACK))
     next score
@@ -757,6 +764,7 @@ Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("LowerTargetAttack1",
 )
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("LowerTargetAttack1",
   proc { |score, move, user, target, ai, battle|
+    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
     next ai.get_score_for_target_stat_drop(score, target, move.move.statDown)
   }
 )
@@ -918,6 +926,7 @@ Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("LowerTargetSpeed1MakeTa
 )
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("LowerTargetSpeed1MakeTargetWeakerToFire",
   proc { |score, move, user, target, ai, battle|
+    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
     # Score for stat drop
     score = ai.get_score_for_target_stat_drop(score, target, move.move.statDown)
     # Score for adding weakness to Fire
@@ -1008,8 +1017,6 @@ Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("LowerTargetEvasion1Remo
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("LowerTargetEvasion1RemoveSideEffects",
   proc { |score, move, user, target, ai, battle|
     next Battle::AI::MOVE_USELESS_SCORE if !target.opposes?(user)
-    # Score for stat drop
-    score = ai.get_score_for_target_stat_drop(score, target, move.move.statDown)
     # Score for removing side effects/terrain
     score += 10 if target.pbOwnSide.effects[PBEffects::AuroraVeil] > 1 ||
                    target.pbOwnSide.effects[PBEffects::Reflect] > 1 ||
@@ -1031,6 +1038,9 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("LowerTargetEvasion1Remov
     if Settings::MECHANICS_GENERATION >= 8 && battle.field.terrain != :None
       score -= ai.get_score_for_terrain(battle.field.terrain, user)
     end
+    # Score for stat drop
+    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    score = ai.get_score_for_target_stat_drop(score, target, move.move.statDown)
     next score
   }
 )

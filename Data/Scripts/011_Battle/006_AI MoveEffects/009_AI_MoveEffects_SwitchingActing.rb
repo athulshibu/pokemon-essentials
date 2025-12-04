@@ -106,11 +106,12 @@ Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("LowerTargetAtkSpAtk1Swi
 )
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("LowerTargetAtkSpAtk1SwitchOutUser",
   proc { |score, move, user, target, ai, battle|
-    next ai.get_score_for_target_stat_drop(score, target, move.move.statDown, false)
+    score = ai.get_score_for_target_stat_drop(score, target, move.move.statDown, false)
+    score = Battle::AI::Handlers.apply_move_effect_score("SwitchOutUserDamagingMove",
+      score, move, user, ai, battle)
+    next score
   }
 )
-Battle::AI::Handlers::MoveEffectAgainstTargetScore.copy("SwitchOutUserDamagingMove",
-                                                        "LowerTargetAtkSpAtk1SwitchOutUser")
 
 #===============================================================================
 #
@@ -621,6 +622,7 @@ Battle::AI::Handlers::MoveEffectScore.add("StartSlowerBattlersActFirst",
 #===============================================================================
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("LowerPPOfTargetLastMoveBy3",
   proc { |score, move, user, target, ai, battle|
+    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
     add_effect = move.get_score_change_for_additional_effect(user, target)
     next score if add_effect == -999   # Additional effect will be negated
     if user.faster_than?(target)
@@ -848,6 +850,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("DisableTargetSoundMoves"
     next score if target.effects[PBEffects::ThroatChop] >= 1
     next score if target.effects[PBEffects::Substitute] > 0
     next score if !target.check_for_move { |m| m.soundMove? }
+    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
     # Check additional effect chance
     add_effect = move.get_score_change_for_additional_effect(user, target)
     next score if add_effect == -999   # Additional effect will be negated

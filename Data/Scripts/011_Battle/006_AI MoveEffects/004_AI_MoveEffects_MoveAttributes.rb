@@ -1251,6 +1251,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RecoilThirdOfDamageDealt
       score -= 25 * [dmg, user.hp].min / user.hp
     end
     # Score for paralysing
+    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
     paralyze_score = Battle::AI::Handlers.apply_move_effect_against_target_score("ParalyzeTarget",
        0, move, user, target, ai, battle)
     score += paralyze_score if paralyze_score != Battle::AI::MOVE_USELESS_SCORE
@@ -1274,6 +1275,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RecoilThirdOfDamageDealt
       score -= 25 * [dmg, user.hp].min / user.hp
     end
     # Score for burning
+    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
     burn_score = Battle::AI::Handlers.apply_move_effect_against_target_score("BurnTarget",
        0, move, user, target, ai, battle)
     score += burn_score if burn_score != Battle::AI::MOVE_USELESS_SCORE

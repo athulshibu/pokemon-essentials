@@ -668,7 +668,7 @@ Battle::ItemEffects::OnStatLoss.add(:EJECTPACK,
 # CopyStatChanges handlers
 #===============================================================================
 
-Battle::ItemEffects::CopyStatChanges.add(:MIRROHERB,
+Battle::ItemEffects::CopyStatChanges.add(:MIRRORHERB,
   proc { |item, battler, battle|
     raises = {}
     GameData::Stat.each_battle { |stat| raises[stat.id] = 0 }
