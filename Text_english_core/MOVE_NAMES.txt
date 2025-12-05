@@ -86,10 +86,10 @@ Jaw Lock
 Jaw Lock
 Throat Chop
 Throat Chop
-Wicked Blow
-Wicked Blow
 Lash Out
 Lash Out
+Wicked Blow
+Wicked Blow
 Night Slash
 Night Slash
 Sucker Punch
@@ -106,6 +106,8 @@ Brutal Swing
 Brutal Swing
 Feint Attack
 Feint Attack
+Punishment
+Punishment
 Thief
 Thief
 Snarl
@@ -114,16 +116,14 @@ Payback
 Payback
 Pursuit
 Pursuit
+Power Trip
+Power Trip
 Beat Up
 Beat Up
 Comeuppance
 Comeuppance
 Fling
 Fling
-Power Trip
-Power Trip
-Punishment
-Punishment
 Ruination
 Ruination
 Dark Void
@@ -686,8 +686,6 @@ Horn Leech
 Horn Leech
 Flower Trick
 Flower Trick
-Grassy Glide
-Grassy Glide
 Trop Kick
 Trop Kick
 Leaf Tornado
@@ -698,6 +696,8 @@ Needle Arm
 Needle Arm
 Syrup Bomb
 Syrup Bomb
+Grassy Glide
+Grassy Glide
 Razor Leaf
 Razor Leaf
 Trailblaze
@@ -964,6 +964,8 @@ Round
 Round
 Swift
 Swift
+Vice Grip
+Vice Grip
 Vise Grip
 Vise Grip
 Cut
@@ -1328,6 +1330,10 @@ Photon Geyser
 Photon Geyser
 Psystrike
 Psystrike
+Luster Purge
+Luster Purge
+Mist Ball
+Mist Ball
 Freezing Glare
 Freezing Glare
 Psychic
@@ -1354,10 +1360,6 @@ Zen Headbutt
 Zen Headbutt
 Psychic Noise
 Psychic Noise
-Luster Purge
-Luster Purge
-Mist Ball
-Mist Ball
 Mystical Power
 Mystical Power
 Psycho Cut
@@ -1536,10 +1538,10 @@ Smart Strike
 Smart Strike
 Steel Wing
 Steel Wing
-Double Iron Bash
-Double Iron Bash
 Mirror Shot
 Mirror Shot
+Double Iron Bash
+Double Iron Bash
 Magnet Bomb
 Magnet Bomb
 Gear Grind
