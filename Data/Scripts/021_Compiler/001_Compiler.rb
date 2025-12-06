@@ -509,6 +509,7 @@ module Compiler
           when Array
             file.write((enumer[value].nil?) ? value : enumer[value])
           when Symbol, String
+            mod = GameData.const_get(enumer.to_sym)
             if mod
               file.write(mod.get(value).id.to_s)
             else

@@ -338,7 +338,7 @@ class DescriptionEditorItem
     @text_box.set_interactive_rects
 
     @sprite_item_description = Window_UnformattedTextPokemon.newWithSize(
-      "", 76, 272, Graphics.width - 98, 128, @viewport
+      "", 76, 272, Graphics.width - 76 + 8, 128, @viewport
     )
     @sprite_item_description.baseColor   = Color.new(248, 248, 248)
     @sprite_item_description.shadowColor = Color.new(40, 40, 40)

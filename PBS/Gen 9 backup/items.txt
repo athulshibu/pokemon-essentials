@@ -2804,7 +2804,6 @@ Name = Covert Cloak
 NamePlural = Covert Cloaks
 Pocket = HeldItems
 Price = 20000
-SellPrice = 5000
 Flags = Fling_30
 Description = An item to be held by a Pokémon. This hooded cloak protects the holder from moves' additional effects.
 #-------------------------------
@@ -2999,7 +2998,6 @@ PortionName = set of Loaded Dice
 PortionNamePlural = sets of Loaded Dice
 Pocket = HeldItems
 Price = 20000
-SellPrice = 5000
 Flags = Fling_30
 Description = An item to be held by a Pokémon. This dice ensures that the holder's multistrike moves hit more times.
 #-------------------------------
@@ -3086,7 +3084,6 @@ Name = Mirror Herb
 NamePlural = Mirror Herbs
 Pocket = HeldItems
 Price = 30000
-SellPrice = 7500
 Flags = Fling_30
 Description = An item to be held by a Pokémon. It allows the holder to copy an opponent's stat increases once.
 #-------------------------------
@@ -3256,7 +3253,6 @@ Name = Punching Glove
 NamePlural = Punching Gloves
 Pocket = HeldItems
 Price = 15000
-SellPrice = 3750
 Flags = Fling_30
 Description = An item to be held by a Pokémon. It powers up the holder's punching moves and prevents direct contact.
 #-------------------------------
@@ -4192,6 +4188,7 @@ Description = It is said that a hero used this shield to halt a disaster in anci
 Name = Wellspring Mask
 NamePlural = Wellspring Masks
 Pocket = HeldItems
+Price = 0
 Flags = Fling_60
 Description = An item to be held by Ogerpon. This carved wooden mask allows Ogerpon to wield the Water type in battle.
 #-------------------------------

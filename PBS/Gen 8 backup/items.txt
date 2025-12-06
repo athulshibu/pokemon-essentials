@@ -5129,7 +5129,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_150
 Move = FOCUSPUNCH
-Description = The user focuses its mind before launching a punch. This move fails if the user is hit before it is used.
+Description = The user focuses its mind before launching a punch. This move fails if the user is hit before using the move.
 #-------------------------------
 [TM02]
 Name = TM02
@@ -5140,7 +5140,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_80
 Move = DRAGONCLAW
-Description = The user slashes the target with huge sharp claws.
+Description = The user slashes the target with huge, sharp claws to inflict damage.
 #-------------------------------
 [TM03]
 Name = TM03
@@ -5173,7 +5173,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = ROAR
-Description = The target is scared off, and a different Pokémon is dragged out. In the wild, this ends the battle.
+Description = The target is scared off, and a different Pokémon is dragged out. In the wild, this ends a battle against a single Pokémon.
 #-------------------------------
 [TM06]
 Name = TM06
@@ -5206,7 +5206,7 @@ BPPrice = 48
 FieldUse = TR
 Flags = Fling_10
 Move = BULKUP
-Description = The user tenses its muscles to bulk up its body, raising both its Attack and Defense stats.
+Description = The user tenses its muscles to bulk up its body, raising its Attack and Defense stats.
 #-------------------------------
 [TM09]
 Name = TM09
@@ -5217,7 +5217,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_25
 Move = BULLETSEED
-Description = The user forcefully shoots seeds at the target two to five times in a row.
+Description = The user attacks by forcefully shooting seeds at the target. This move hits two to five times a row.
 #-------------------------------
 [TM10]
 Name = TM10
@@ -5228,7 +5228,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = WORKUP
-Description = The user is roused, and its Attack and Sp. Atk stats increase.
+Description = The user is roused, and its Attack and Sp. Atk stats are raised.
 #-------------------------------
 [TM11]
 Name = TM11
@@ -5239,7 +5239,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = SUNNYDAY
-Description = The user intensifies the sun for five turns, powering up Fire-type moves and weakening Water-type moves.
+Description = The user intensifies the sun for five turns, powering up Fire-type attacks. The sunlight also lowers the power of Water-type attacks.
 #-------------------------------
 [TM12]
 Name = TM12
@@ -5272,7 +5272,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_110
 Move = BLIZZARD
-Description = A howling blizzard is summoned to strike opposing Pokémon. This may also leave them frozen.
+Description = A howling blizzard is summoned to strike opposing Pokémon. This may also leave the opposing Pokémon frozen.
 #-------------------------------
 [TM15]
 Name = TM15
@@ -5294,7 +5294,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = LIGHTSCREEN
-Description = A wondrous wall of light is put up to reduce damage from special attacks for five turns.
+Description = A wondrous wall of light is put up to reduce damage from special moves for five turns.
 #-------------------------------
 [TM17]
 Name = TM17
@@ -5305,7 +5305,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = PROTECT
-Description = The user protects itself from all attacks. Its chance of failing rises if it is used in succession.
+Description = This move enables the user to protect itself from all attacks. Its chance of failing rises if it is used in succession.
 #-------------------------------
 [TM18]
 Name = TM18
@@ -5316,7 +5316,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = RAINDANCE
-Description = The user summons a heavy rain for five turns, powering up Water-type moves and weakening Fire-type ones.
+Description = The user summons a heavy rain that falls for five turns, powering up Water-type attacks and lowering the power of Fire-type attacks.
 #-------------------------------
 [TM19]
 Name = TM19
@@ -5327,7 +5327,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_75
 Move = GIGADRAIN
-Description = A nutrient-draining attack. The user's HP is restored by half the damage taken by the target.
+Description = A nutrient-draining attack. The user's HP is restored by up to half the damage taken by the target.
 #-------------------------------
 [TM20]
 Name = TM20
@@ -5360,7 +5360,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_120
 Move = SOLARBEAM
-Description = In this two-turn attack, the user gathers light, then blasts a bundled beam on the next turn.
+Description = The user gathers light on the first turn, then blasts a bundled beam on the second turn.
 #-------------------------------
 [TM23]
 Name = TM23
@@ -5382,7 +5382,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_90
 Move = THUNDERBOLT
-Description = A strong electric blast crashes down on the target. This may also leave the target with paralysis.
+Description = The user attacks the target with a strong electric blast. This may also leave the target with paralysis.
 #-------------------------------
 [TM25]
 Name = TM25
@@ -5393,7 +5393,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_110
 Move = THUNDER
-Description = A wicked thunderbolt is dropped on the target to inflict damage. This may also leave them with paralysis.
+Description = A wicked thunderbolt is dropped on the target to inflict damage. This may also leave the target with paralysis.
 #-------------------------------
 [TM26]
 Name = TM26
@@ -5415,7 +5415,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_65
 Move = LOWSWEEP
-Description = The user makes a swift attack on the target's legs, which lowers the target's Speed stat.
+Description = The user makes a swift attacks on the target's legs. This also lowers the target's Speed stat.
 #-------------------------------
 [TM28]
 Name = TM28
@@ -5426,7 +5426,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_80
 Move = DIG
-Description = The user burrows into the ground, then attacks on the next turn. It can also be used to exit dungeons.
+Description = The user burrows into the ground on the first turn, then attacks on the next turn. This can also be used to exit dungeons.
 #-------------------------------
 [TM29]
 Name = TM29
@@ -5437,7 +5437,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_90
 Move = PSYCHIC
-Description = The target is hit by a strong telekinetic force. This may also lower the target's Sp. Def stat.
+Description = The target is hit with a strong telekinetic force to inflicts damage. This may also lower the target's Sp. Def stat.
 #-------------------------------
 [TM30]
 Name = TM30
@@ -5448,7 +5448,7 @@ BPPrice = 64
 FieldUse = TR
 Flags = Fling_80
 Move = SHADOWBALL
-Description = The user hurls a shadowy blob at the target. This may also lower the target's Sp. Def stat.
+Description = The user attacks by hurling a shadowy blob at the target. This may also lower the target's Sp. Def stat.
 #-------------------------------
 [TM31]
 Name = TM31
@@ -5459,7 +5459,7 @@ BPPrice = 40
 FieldUse = TR
 Flags = Fling_75
 Move = BRICKBREAK
-Description = The user attacks with a swift chop. It can also break barriers, such as Light Screen and Reflect.
+Description = The user attacks with a swift chop. This move can also break barriers, such as Light Screen and Reflect.
 #-------------------------------
 [TM32]
 Name = TM32
@@ -5481,7 +5481,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = REFLECT
-Description = A wondrous wall of light is put up to reduce damage from physical attacks for five turns.
+Description = A wondrous wall of light is put up to reduce damage from physical moves for five turns.
 #-------------------------------
 [TM34]
 Name = TM34
@@ -5514,7 +5514,7 @@ BPPrice = 80
 FieldUse = TR
 Flags = Fling_90
 Move = SLUDGEBOMB
-Description = Unsanitary sludge is hurled at the target. This may also poison the target.
+Description = The user hurls unsanitary sludge at the target to inflict damage. This may also poison the target.
 #-------------------------------
 [TM37]
 Name = TM37
@@ -5525,7 +5525,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = SANDSTORM
-Description = A five-turn sandstorm is summoned to hurt all combatants except Rock, Ground, and Steel types.
+Description = Summons a five-turn sandstorm to damage all Pokémon except Rock, Ground and Steel types. Also raises the Sp. Def stats of Rock types.
 #-------------------------------
 [TM38]
 Name = TM38
@@ -5536,7 +5536,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_110
 Move = FIREBLAST
-Description = The target is attacked with an intense blast of all-consuming fire. This may also leave them with a burn.
+Description = The target is attacked with an intense blast of all-consuming fire. This may also leave the target with a burn.
 #-------------------------------
 [TM39]
 Name = TM39
@@ -5547,7 +5547,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_60
 Move = ROCKTOMB
-Description = Boulders are hurled at the target. This also lowers the target's Speed stat by preventing its movement.
+Description = The user hurls boulders at the target to inflict damage. This also lowers the target's Speed stat by cutting off its movement.
 #-------------------------------
 [TM40]
 Name = TM40
@@ -5580,7 +5580,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_70
 Move = FACADE
-Description = This attack move doubles its power if the user is poisoned, burned, or paralyzed.
+Description = This move's power is doubled if the user is poisoned, burned or paralyzed.
 #-------------------------------
 [TM43]
 Name = TM43
@@ -5602,7 +5602,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = REST
-Description = The user goes to sleep for two turns. This fully restores the user's HP and heals any status conditions.
+Description = The user goes to sleep for two turns. This fully restores the user's HP and cures any status conditions.
 #-------------------------------
 [TM45]
 Name = TM45
@@ -5613,7 +5613,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = ATTRACT
-Description = If it is the opposite gender of the user, the target becomes infatuated and less likely to attack.
+Description = If the target is of the opposite gender to the user, it becomes infatuated with the user and will sometimes be unable to use moves.
 #-------------------------------
 [TM46]
 Name = TM46
@@ -5624,7 +5624,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_60
 Move = THIEF
-Description = The user attacks and steals the target's held item simultaneously.
+Description = The user attacks and simultaneously steals the target's held item. The user can't steal anything if it already holds an item.
 #-------------------------------
 [TM47]
 Name = TM47
@@ -5657,7 +5657,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_80
 Move = SCALD
-Description = The user shoots boiling hot water at its target. This may also leave the target with a burn.
+Description = The user attacks by shooting boiling hot water at its target. This may also leave the target with a burn.
 #-------------------------------
 [TM50]
 Name = TM50
@@ -5668,7 +5668,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_130
 Move = OVERHEAT
-Description = The user attacks the target at full power. The attack's recoil harshly lowers the user's Sp. Atk stat.
+Description = The user attacks the target with all its might. The recoil from this move harshly lowers the user's Sp. Atk stat.
 #-------------------------------
 [TM51]
 Name = TM51
@@ -5679,7 +5679,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = ROOST
-Description = The user lands and rests its body. This move restores the user's HP by up to half of its max HP.
+Description = The user lands and rests its body. This move restores the user's HP by up to half its max HP.
 #-------------------------------
 [TM52]
 Name = TM52
@@ -5723,7 +5723,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_65
 Move = BRINE
-Description = If the target's HP is half or less, this attack will hit with double the power.
+Description = This move's power is doubled if the target's HP is at half or less.
 #-------------------------------
 [TM56]
 Name = TM56
@@ -5745,7 +5745,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_50
 Move = CHARGEBEAM
-Description = The user attacks with an electric charge. The user may use any remaining charge to raise its Sp. Atk.
+Description = The user attacks the target with an electric charge. The residual energy may also raise the user's Sp. Atk stat.
 #-------------------------------
 [TM58]
 Name = TM58
@@ -5756,7 +5756,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = ENDURE
-Description = The user endures any attack with at least 1 HP. Its chance of failing rises if it is used in succession.
+Description = The user endures any attack with at least 1 HP. This move's chance of failing rises if used in succession.
 #-------------------------------
 [TM59]
 Name = TM59
@@ -5778,7 +5778,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_75
 Move = DRAINPUNCH
-Description = An energy-draining punch. The user's HP is restored by half the damage taken by the target.
+Description = The user attacks with an energy-draining punch. The user's HP is restored by up to half the damage taken by the target.
 #-------------------------------
 [TM61]
 Name = TM61
@@ -5800,7 +5800,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_90
 Move = BUGBUZZ
-Description = The user generates a damaging sound wave by vibration. This may also lower the target's Sp. Def stat.
+Description = The user vibrates to generate a damaging sound wave. This may also lower the target's Sp. Def stat.
 #-------------------------------
 [TM63]
 Name = TM63
@@ -5822,7 +5822,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_250
 Move = EXPLOSION
-Description = The user attacks everything around it by causing a tremendous explosion. The user faints upon using this move.
+Description = The user attacks everything about it by causing a tremendous explosion. The user faints upon using this move.
 #-------------------------------
 [TM65]
 Name = TM65
@@ -5833,7 +5833,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_70
 Move = SHADOWCLAW
-Description = The user slashes with a sharp claw made from shadows. Critical hits land more easily.
+Description = The user attacks by slashing the target with a sharp claw made from shadows. This move has a higher chance of landing a critical hit.
 #-------------------------------
 [TM66]
 Name = TM66
@@ -5844,7 +5844,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_50
 Move = PAYBACK
-Description = The user stores power, then attacks. If the user goes after the target, this attack's power doubles.
+Description = The user stores power, then attacks. This move's power is doubled if the user moves after the target.
 #-------------------------------
 [TM67]
 Name = TM67
@@ -5877,7 +5877,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = ROCKPOLISH
-Description = The user polishes its body to reduce drag. This sharply raises the Speed stat.
+Description = The user polishes its body to reduce drag. This sharply raises the user's Speed stat.
 #-------------------------------
 [TM70]
 Name = TM70
@@ -5888,7 +5888,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = FLASH
-Description = The user flashes a light that lowers the target's accuracy. It can also be used to illuminate caves.
+Description = The user flashes a light that lowers the target's accuracy. It can also be used to illuminate dark caves.
 #-------------------------------
 [TM71]
 Name = TM71
@@ -5899,7 +5899,7 @@ BPPrice = 80
 FieldUse = TR
 Flags = Fling_100
 Move = STONEEDGE
-Description = The user stabs the target from below with sharpened stones. Critical hits land more easily.
+Description = The user stabs the target with sharpened stones. This move has a heightened chance of landing a critical hit.
 #-------------------------------
 [TM72]
 Name = TM72
@@ -5910,7 +5910,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_60
 Move = AVALANCHE
-Description = The power of this attack move is doubled if the user has been hurt by the target in the same turn.
+Description = This move's power is doubled if the target has inflicted damage on the user in the same turn.
 #-------------------------------
 [TM73]
 Name = TM73
@@ -5921,7 +5921,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = THUNDERWAVE
-Description = The user launches a weak jolt of electricity that paralyzes the target.
+Description = The user launches a weak jolt of electricity that paralyses the target.
 #-------------------------------
 [TM74]
 Name = TM74
@@ -5932,7 +5932,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = GYROBALL
-Description = The user tackles with a high-speed spin. This move is stronger the slower the user is than the target.
+Description = The user tackles the target with a high-speed spin. The slower the user is than the target, the greater the move's power.
 #-------------------------------
 [TM75]
 Name = TM75
@@ -5954,7 +5954,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = STEALTHROCK
-Description = The user lays a trap of levitating stones around the opposing team that hurt Pokémon that switch in.
+Description = The user lays a trap of levitating stones around the opposing team. The trap damages opposing Pokémon that switch into battle.
 #-------------------------------
 [TM77]
 Name = TM77
@@ -5976,7 +5976,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_55
 Move = SNARL
-Description = The user yells as if it's ranting about something, which lowers the Sp. Atk stats of opposing Pokémon.
+Description = The user attacks the targets by crying out as if it's ranting about something. This also lowers the Sp. Atk stats of the targets.
 #-------------------------------
 [TM79]
 Name = TM79
@@ -5987,7 +5987,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_80
 Move = DARKPULSE
-Description = The user releases a horrible aura imbued with dark thoughts. This may also make the target flinch.
+Description = The user releases a horrible aura imbued with ill intent. This may also make the target flinch.
 #-------------------------------
 [TM80]
 Name = TM80
@@ -5998,7 +5998,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_75
 Move = ROCKSLIDE
-Description = Large boulders are hurled at opposing Pokémon to inflict damage. This may also make them flinch.
+Description = Large boulders are hurled at opposing Pokémon to inflict damage. This may also make the opposing Pokémon flinch.
 #-------------------------------
 [TM81]
 Name = TM81
@@ -6009,7 +6009,7 @@ BPPrice = 64
 FieldUse = TR
 Flags = Fling_80
 Move = XSCISSOR
-Description = The user slashes at the target by crossing its scythes or claws as if they were a pair of scissors.
+Description = The user slashes at the target by crossing its scythes, claws, or the like as if they were a pair of scissors.
 #-------------------------------
 [TM82]
 Name = TM82
@@ -6020,7 +6020,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = SLEEPTALK
-Description = While it is asleep, the user randomly uses one of the moves it knows.
+Description = The user randomly uses one of the moves it knows. This move can only be used while the user is asleep.
 #-------------------------------
 [TM83]
 Name = TM83
@@ -6031,7 +6031,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_60
 Move = BULLDOZE
-Description = The user strikes everything around it by stomping down on the ground. This lowers the Speed of those hit.
+Description = The user strikes everything around it by stomping down on the ground. This lowers the Speed stats of those hit.
 #-------------------------------
 [TM84]
 Name = TM84
@@ -6042,7 +6042,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_80
 Move = POISONJAB
-Description = The target is stabbed with a tentacle, arm, or the like steeped in poison. This may also poison them.
+Description = The target is stabbed with a tentacle, an arm or the like steeped in poison. This may also poison the target.
 #-------------------------------
 [TM85]
 Name = TM85
@@ -6053,7 +6053,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_100
 Move = DREAMEATER
-Description = The user eats the dreams of a sleeping target. The user's HP is restored by half the damage dealt.
+Description = The user eats the dreams of a sleeping target. The user's HP is restored by up to half the damage taken by the target.
 #-------------------------------
 [TM86]
 Name = TM86
@@ -6064,7 +6064,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = GRASSKNOT
-Description = The user snares the target with grass and trips it. The heavier the target, the strong the move is.
+Description = The user snares the target with grass and trips it. The heavier the target, the greater the move's power.
 #-------------------------------
 [TM87]
 Name = TM87
@@ -6086,7 +6086,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_60
 Move = PLUCK
-Description = The user pecks the target. If the target is holding a Berry, the user eats it and gains its effect.
+Description = The user attacks by pecking the target. If the target is holding a Berry, the user eats it and gains its effect.
 #-------------------------------
 [TM89]
 Name = TM89
@@ -6108,7 +6108,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = SUBSTITUTE
-Description = The user creates a substitute for itself using some of its HP. The substitute serves as a decoy.
+Description = The user creates a substitute for itself using some of its own HP. The substitute serves as the user's decoy.
 #-------------------------------
 [TM91]
 Name = TM91
@@ -6141,7 +6141,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_50
 Move = CUT
-Description = The target is cut with a scythe or claw.
+Description = The target is cut with a scythe, a claw or the like to inflict damage. It can also be used to cut down thin trees.
 #-------------------------------
 [TM94]
 Name = TM94
@@ -6152,7 +6152,7 @@ BPPrice = 40
 FieldUse = TR
 Flags = Fling_90
 Move = FLY
-Description = The user flies up into the sky and then strikes its target on the next turn.
+Description = The user flies up into the sky on the first turn, then attacks on the next turn. This can also be used to fly to any familiar town.
 #-------------------------------
 [TM95]
 Name = TM95
@@ -6163,7 +6163,7 @@ BPPrice = 64
 FieldUse = TR
 Flags = Fling_90
 Move = SURF
-Description = The user attacks everything around it by swamping its surroundings with a giant wave.
+Description = The user attacks everything around it by swamping the area with a giant wave. This can also be used for crossing water.
 #-------------------------------
 [TM96]
 Name = TM96
@@ -6174,7 +6174,7 @@ BPPrice = 40
 FieldUse = TR
 Flags = Fling_80
 Move = STRENGTH
-Description = The target is slugged with a punch thrown at maximum power.
+Description = The target is slugged with a punch thrown at maximum power. This can also be used to move heavy boulders.
 #-------------------------------
 [TM97]
 Name = TM97
@@ -6185,7 +6185,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_10
 Move = DEFOG
-Description = A strong wind blows away the target's barriers, such as Reflect, and lowers their evasiveness.
+Description = A strong wind blows away the target's barriers such as Light Screen or Reflect. This also lowers the target's evasiveness.
 #-------------------------------
 [TM98]
 Name = TM98
@@ -6196,7 +6196,7 @@ BPPrice = 40
 FieldUse = TR
 Flags = Fling_40
 Move = ROCKSMASH
-Description = The user attacks with a punch that may lower the target's Defense stat.
+Description = The user attacks with a punch that can shatter a rock. This may also lower the target's Defense stat.
 #-------------------------------
 [TM99]
 Name = TM99
@@ -6207,7 +6207,7 @@ BPPrice = 64
 FieldUse = TR
 Flags = Fling_80
 Move = WATERFALL
-Description = The user charges at the target and may make it flinch.
+Description = The user charges at the target and may make it flinch. This can also be used to climb a waterfall.
 #-------------------------------
 [TM100]
 Name = TM100
@@ -6218,7 +6218,7 @@ BPPrice = 32
 FieldUse = TR
 Flags = Fling_90
 Move = ROCKCLIMB
-Description = A charging attack that may also leave the foe confused.
+Description = The user attacks the target by smashing into it with incredible force. This may also confuse the target.
 #-------------------------------
 [HM01]
 Name = HM01
@@ -6227,7 +6227,7 @@ Pocket = Machines
 Price = 0
 FieldUse = HM
 Move = CUT
-Description = The target is cut with a scythe or claw. This can also be used to cut down thin trees.
+Description = The target is cut with a scythe, a claw or the like to inflict damage. It can also be used to cut down thin trees.
 #-------------------------------
 [HM02]
 Name = HM02
@@ -6236,7 +6236,7 @@ Pocket = Machines
 Price = 0
 FieldUse = HM
 Move = FLY
-Description = The user soars and then strikes on the next turn. This can also be used to fly to any familiar town.
+Description = The user flies up into the sky on the first turn, then attacks on the next turn. This can also be used to fly to any familiar town.
 #-------------------------------
 [HM03]
 Name = HM03
@@ -6245,7 +6245,7 @@ Pocket = Machines
 Price = 0
 FieldUse = HM
 Move = SURF
-Description = Attacks everything by swamping the surroundings with a giant wave. This can also be used to cross water.
+Description = The user attacks everything around it by swamping the area with a giant wave. This can also be used for crossing water.
 #-------------------------------
 [HM04]
 Name = HM04
@@ -6263,7 +6263,7 @@ Pocket = Machines
 Price = 0
 FieldUse = HM
 Move = WATERFALL
-Description = The user charges at the target and may make it flinch. It can also be used to climb a waterfall.
+Description = The user charges at the target and may make it flinch. This can also be used to climb a waterfall.
 #-------------------------------
 [HM06]
 Name = HM06
@@ -6272,7 +6272,7 @@ Pocket = Machines
 Price = 0
 FieldUse = HM
 Move = DIVE
-Description = The user dives on the first turn, and floats up and attacks on the next. It can be used to dive underwater.
+Description = The user dives on the first turn, then floats up and attacks on the next turn. This can also be used to dive deep in the ocean.
 #-------------------------------
 [BICYCLE]
 Name = Bicycle
