@@ -156,6 +156,11 @@ class Battle::AI::AIBattler
     if self.effects[PBEffects::Curse]
       ret += [self.totalhp / 4, 1].max if battler.takesIndirectDamage?
     end
+    # Salt Cure
+    if self.effects[PBEffects::SaltCure]
+      fraction = (has_type?(:STEEL) || has_type?(:WATER)) ? 4 : 8
+      ret += [self.totalhp / fraction, 1].max if battler.takesIndirectDamage?
+    end
     # Trapping damage
     if self.effects[PBEffects::Trapping] > 1 && battler.takesIndirectDamage?
       amt = (Settings::MECHANICS_GENERATION >= 6) ? self.totalhp / 8 : self.totalhp / 16
@@ -216,7 +221,7 @@ class Battle::AI::AIBattler
 
   #-----------------------------------------------------------------------------
 
-  def types; return battler.types; end
+  def types;                          return battler.types;                  end
   def pbTypes(withExtraType = false); return battler.pbTypes(withExtraType); end
 
   def has_type?(type)

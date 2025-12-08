@@ -55,25 +55,30 @@ module Settings
   # Move, ability and item effects
   #-----------------------------------------------------------------------------
 
+  # Whether a battle's default weather or default terrain can (false) or cannot
+  # (true) be overridden by an ability or move inducing another weather type.
+  # This doesn't apply to the primal weathers (harsh sun, heavy rain, strong
+  # winds), which can replace the default weather.
+  DEFAULT_WEATHER_AND_TERRAIN_CANNOT_BE_REPLACED = (MECHANICS_GENERATION >= 9)
   # Whether the in-battle hail weather is replaced by Snowstorm (from Gen 9+)
   # instead. Affects the weather started by the Ability Snow Warning and the
   # default battle weather if it is hailing in the overworld.
-  USE_SNOWSTORM_WEATHER_INSTEAD_OF_HAIL = (MECHANICS_GENERATION >= 9)
+  USE_SNOWSTORM_WEATHER_INSTEAD_OF_HAIL          = (MECHANICS_GENERATION >= 9)
   # Whether weather caused by an ability lasts 5 rounds (true) or forever (false).
-  FIXED_DURATION_WEATHER_FROM_ABILITY   = (MECHANICS_GENERATION >= 6)
+  FIXED_DURATION_WEATHER_FROM_ABILITY            = (MECHANICS_GENERATION >= 6)
   # Whether X items (X Attack, etc.) raise their stat by 2 stages (true) or 1
   # (false).
-  X_STAT_ITEMS_RAISE_BY_TWO_STAGES      = (MECHANICS_GENERATION >= 7)
+  X_STAT_ITEMS_RAISE_BY_TWO_STAGES               = (MECHANICS_GENERATION >= 7)
   # Whether some Poké Balls have catch rate multipliers from Gen 7 (true) or
   # from earlier generations (false).
-  NEW_POKE_BALL_CATCH_RATES             = (MECHANICS_GENERATION >= 7)
+  NEW_POKE_BALL_CATCH_RATES                      = (MECHANICS_GENERATION >= 7)
   # Whether Soul Dew powers up Psychic and Dragon-type moves by 20% (true) or
   # raises the holder's Special Attack and Special Defense by 50% (false).
-  SOUL_DEW_POWERS_UP_TYPES              = (MECHANICS_GENERATION >= 7)
+  SOUL_DEW_POWERS_UP_TYPES                       = (MECHANICS_GENERATION >= 7)
   # Whether Greninja's Battle Bond ability makes it change into Ash-Greninja
   # (false) or raises its Atk/SpAtk/Spd (true) when it knocks out a target.
   # Either way, it only happens once per battle.
-  GRENINJA_BATTLE_BOND_RAISES_STATS     = (MECHANICS_GENERATION >= 9)
+  GRENINJA_BATTLE_BOND_RAISES_STATS              = (MECHANICS_GENERATION >= 9)
 
   #-----------------------------------------------------------------------------
   # Affection

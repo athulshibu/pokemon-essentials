@@ -2259,10 +2259,7 @@ Battle::AbilityEffects::OnBeingHit.add(:STAMINA,
 
 Battle::AbilityEffects::OnBeingHit.add(:SEEDSOWER,
   proc { |ability, user, target, move, battle|
-    next if battle.field.terrain == :Grassy
-    battle.pbShowAbilitySplash(target)
-    battle.pbStartTerrain(target, :Grassy)
-    # NOTE: The ability splash is hidden again in def pbStartTerrain.
+    battle.pbStartTerrainAbility(:Grassy, target)
   }
 )
 
@@ -3108,10 +3105,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:DROUGHT,
 
 Battle::AbilityEffects::OnSwitchIn.add(:ELECTRICSURGE,
   proc { |ability, battler, battle, switch_in|
-    next if battle.field.terrain == :Electric
-    battle.pbShowAbilitySplash(battler)
-    battle.pbStartTerrain(battler, :Electric)
-    # NOTE: The ability splash is hidden again in def pbStartTerrain.
+    battle.pbStartTerrainAbility(:Electric, battler)
   }
 )
 
@@ -3233,20 +3227,14 @@ Battle::AbilityEffects::OnSwitchIn.add(:FRISK,
 
 Battle::AbilityEffects::OnSwitchIn.add(:GRASSYSURGE,
   proc { |ability, battler, battle, switch_in|
-    next if battle.field.terrain == :Grassy
-    battle.pbShowAbilitySplash(battler)
-    battle.pbStartTerrain(battler, :Grassy)
-    # NOTE: The ability splash is hidden again in def pbStartTerrain.
+    battle.pbStartTerrainAbility(:Grassy, battler)
   }
 )
 
 Battle::AbilityEffects::OnSwitchIn.add(:HADRONENGINE,
   proc { |ability, battler, battle, switch_in|
-    next if battle.field.terrain == :Electric
-    battle.pbShowAbilitySplash(battler)
-    battle.pbStartTerrain(battler, :Electric, true,
+    battle.pbStartTerrainAbility(:Electric, battler,
        _INTL("{1} turned the ground into Electric Terrain, energizing its futuristic engine!", battler.pbThis))
-    # NOTE: The ability splash is hidden again in def pbStartTerrain.
   }
 )
 
@@ -3331,10 +3319,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:MIMICRY,
 
 Battle::AbilityEffects::OnSwitchIn.add(:MISTYSURGE,
   proc { |ability, battler, battle, switch_in|
-    next if battle.field.terrain == :Misty
-    battle.pbShowAbilitySplash(battler)
-    battle.pbStartTerrain(battler, :Misty)
-    # NOTE: The ability splash is hidden again in def pbStartTerrain.
+    battle.pbStartTerrainAbility(:Misty, battler)
   }
 )
 
@@ -3382,7 +3367,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:NEUTRALIZINGGAS,
 
 Battle::AbilityEffects::OnSwitchIn.add(:ORICHALCUMPULSE,
   proc { |ability, battler, battle, switch_in|
-    next if battle.field.defaultWeather != :None && battle.field.weather == battle.field.defaultWeather
+    next if !battle.pbCanStartWeather?(:Sun)
     battle.pbStartWeatherAbility(:Sun, battler, false,
        _INTL("{1} turned the sunlight harsh, sending its ancient pulse into a frenzy!", battler.pbThis))
   }
@@ -3427,10 +3412,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:PROTOSYNTHESIS,
 
 Battle::AbilityEffects::OnSwitchIn.add(:PSYCHICSURGE,
   proc { |ability, battler, battle, switch_in|
-    next if battle.field.terrain == :Psychic
-    battle.pbShowAbilitySplash(battler)
-    battle.pbStartTerrain(battler, :Psychic)
-    # NOTE: The ability splash is hidden again in def pbStartTerrain.
+    battle.pbStartTerrainAbility(:Psychic, battler)
   }
 )
 

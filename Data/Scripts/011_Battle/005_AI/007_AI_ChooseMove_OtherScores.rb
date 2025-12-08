@@ -241,9 +241,6 @@ Battle::AI::Handlers::GeneralMoveAgainstTargetScore.add(:target_can_make_moves_E
 
 #===============================================================================
 # Don't prefer attacking the target if they'd be semi-invulnerable.
-# TODO: Don't treat the move as useless? If the user's moves are all useless
-#       because of this, it will want to switch instead, which may not be
-#       desirable.
 #===============================================================================
 Battle::AI::Handlers::GeneralMoveAgainstTargetScore.add(:target_semi_invulnerable,
   proc { |score, move, user, target, ai, battle|
@@ -268,7 +265,7 @@ Battle::AI::Handlers::GeneralMoveAgainstTargetScore.add(:target_semi_invulnerabl
         end
         if miss
           old_score = score
-          score = Battle::AI::MOVE_USELESS_SCORE
+          score -= 20
           PBDebug.log_score_change(score - old_score, "target is semi-invulnerable")
         end
       end
@@ -304,14 +301,14 @@ Battle::AI::Handlers::GeneralMoveAgainstTargetScore.add(:predicted_damage,
       old_score = score
       if target.effects[PBEffects::Substitute] > 0
         target_hp = target.effects[PBEffects::Substitute]
-        score += ([15.0 * dmg / target.effects[PBEffects::Substitute], 20].min).to_i
-        PBDebug.log_score_change(score - old_score, "damaging move (predicted damage #{dmg} = #{100 * dmg / target.hp}% of target's Substitute)")
+        score += ([25.0 * dmg / target_hp, 30].min).to_i
+        PBDebug.log_score_change(score - old_score, "damaging move (predicted damage #{dmg} = #{100 * dmg / target_hp}% of target's Substitute)")
       else
-        score += ([25.0 * dmg / target.hp, 30].min).to_i
+        score += ([35.0 * dmg / target.hp, 40].min).to_i
         PBDebug.log_score_change(score - old_score, "damaging move (predicted damage #{dmg} = #{100 * dmg / target.hp}% of target's HP)")
         if ai.trainer.has_skill_flag?("HPAware") && dmg > target.hp * 1.1   # Predicted to KO the target
           old_score = score
-          score += 20
+          score += 15
           PBDebug.log_score_change(score - old_score, "predicted to KO the target")
           if move.move.multiHitMove? && target.hp == target.totalhp &&
              (target.has_active_ability?(:STURDY) || target.has_active_item?(:FOCUSSASH))
@@ -332,16 +329,18 @@ Battle::AI::Handlers::GeneralMoveAgainstTargetScore.add(:predicted_damage,
 #===============================================================================
 Battle::AI::Handlers::GeneralMoveAgainstTargetScore.add(:external_flinching_effects,
   proc { |score, move, user, target, ai, battle|
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
-    next score if !move.damagingMove? || move.move.flinchingMove?
-    next score if target.has_active_ability?([:INNERFOCUS, :SHIELDDUST]) && !target.being_mold_broken?
-    next score if !user.has_active_item?([:KINGSROCK, :RAZORFANG]) &&
-                  !user.has_active_ability?(:STENCH)
-    if ai.trainer.medium_skill? && user.faster_than?(target) && target.effects[PBEffects::Substitute] == 0
-      old_score = score
-      score += 8
-      score += 5 if move.move.multiHitMove?
-      PBDebug.log_score_change(score - old_score, "added chance to cause flinching")
+    if ai.trainer.medium_skill?
+      next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
+      next score if !move.damagingMove? || move.move.flinchingMove?
+      next score if target.has_active_ability?([:INNERFOCUS, :SHIELDDUST]) && !target.being_mold_broken?
+      next score if !user.has_active_item?([:KINGSROCK, :RAZORFANG]) &&
+                    !user.has_active_ability?(:STENCH)
+      if user.faster_than?(target) && target.effects[PBEffects::Substitute] == 0
+        old_score = score
+        score += 8
+        score += 5 if move.move.multiHitMove?
+        PBDebug.log_score_change(score - old_score, "added chance to cause flinching")
+      end
     end
     next score
   }
@@ -467,7 +466,7 @@ Battle::AI::Handlers::GeneralMoveAgainstTargetScore.add(:damaging_a_raging_targe
       end
       old_score = score
       score -= 10
-      PBDebug.log_score_change(score - old_score, "don't want to damage a Raging target")
+      PBDebug.log_score_change(score - old_score, "don't want to damage the Raging target")
     end
     next score
   }
@@ -486,12 +485,11 @@ Battle::AI::Handlers::GeneralMoveAgainstTargetScore.add(:damaging_a_biding_targe
       if !Effectiveness.ineffective?(eff)
         # Worth damaging the target if it can be knocked out before Bide ends
         if ai.trainer.has_skill_flag?("HPAware")
+          hits_possible = target.effects[PBEffects::Bide] - 1
+          hits_possible += 1 if user.faster_than?(target)
           dmg = move.rough_damage
           eor_dmg = target.rough_end_of_round_damage
-          hits_possible = target.effects[PBEffects::Bide] - 1
-          eor_dmg *= hits_possible
-          hits_possible += 1 if user.faster_than?(target)
-          next score if (dmg * hits_possible) + eor_dmg > target.hp * 1.1
+          next score if (dmg + eor_dmg) * hits_possible > target.hp * 1.1
         end
         old_score = score
         score -= 20

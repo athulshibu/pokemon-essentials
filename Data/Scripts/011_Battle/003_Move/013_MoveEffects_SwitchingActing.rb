@@ -213,10 +213,11 @@ class Battle::Move::StartSnowstormWeatherSwitchOutUser < Battle::Move
   end
 
   def pbMoveFailed?(user, targets)
-    if @battle.field.weather == :Snowstorm &&
-       (user.wild? || !@battle.pbCanChooseNonActive?(user.index))
-      @battle.pbDisplay(_INTL("But it failed!"))
-      return true
+    if user.wild? || !@battle.pbCanChooseNonActive?(user.index)
+      if !@battle.pbCanStartWeather?(:Snowstorm)
+        @battle.pbDisplay(_INTL("But it failed!"))
+        return true
+      end
     end
     return false
   end

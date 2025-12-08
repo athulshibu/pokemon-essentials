@@ -637,7 +637,9 @@ class Battle::AI
           ret += (b.opposes?(move_user)) ? 10 : -10
         end
       when :Snowstorm
-        # TODO: Snowstorm AI.
+        if b.has_type?(:ICE)   # +Def for Ice types
+          ret += (b.opposes?(move_user)) ? -10 : 10
+        end
       when :ShadowSky
         # Check for battlers affected by Shadow Sky's effects
         if b.has_damaging_move_of_type?(:SHADOW)
