@@ -15,7 +15,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("SleepTarget",
     next useless_score if target.faster_than?(user) &&
                           target.has_active_ability?(:HYDRATION) &&
                           [:Rain, :HeavyRain].include?(target.battler.effectiveWeather)
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     if target.battler.pbCanSleep?(user.battler, false, move.move)
       add_effect = move.get_score_change_for_additional_effect(user, target)
       next useless_score if add_effect == -999   # Additional effect will be negated
@@ -105,7 +105,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("PoisonTarget",
     next useless_score if target.faster_than?(user) &&
                           target.has_active_ability?(:HYDRATION) &&
                           [:Rain, :HeavyRain].include?(target.battler.effectiveWeather)
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     if target.battler.pbCanPoison?(user.battler, false, move.move)
       add_effect = move.get_score_change_for_additional_effect(user, target)
       next useless_score if add_effect == -999   # Additional effect will be negated
@@ -181,6 +181,26 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("PoisonTargetLowerTargetS
 #===============================================================================
 #
 #===============================================================================
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("PoisonTargetRemoveUserBindingAndEntryHazards",
+  proc { |score, move, user, target, ai, battle|
+    poison_score = Battle::AI::Handlers.apply_move_effect_against_target_score("PoisonTarget",
+       0, move, user, target, ai, battle)
+    if poison_score != Battle::AI::MOVE_USELESS_SCORE
+      score += poison_score
+      if user.has_active_ability?(:POISONPUPPETEER)
+        score = Battle::AI::Handlers.apply_move_effect_against_target_score("ConfuseTarget",
+           score, move, user, target, ai, battle)
+      end
+    end
+    score = Battle::AI::Handlers.apply_move_effect_against_target_score("RemoveUserBindingAndEntryHazards",
+       0, move, user, target, ai, battle)
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
 Battle::AI::Handlers::MoveFailureAgainstTargetCheck.copy("PoisonTarget",
                                                          "BadPoisonTarget")
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.copy("PoisonTarget",
@@ -202,7 +222,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("ParalyzeTarget",
     next useless_score if target.faster_than?(user) &&
                           target.has_active_ability?(:HYDRATION) &&
                           [:Rain, :HeavyRain].include?(target.battler.effectiveWeather)
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     if target.battler.pbCanParalyze?(user.battler, false, move.move)
       add_effect = move.get_score_change_for_additional_effect(user, target)
       next useless_score if add_effect == -999   # Additional effect will be negated
@@ -274,7 +294,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.copy("ParalyzeTarget",
 #===============================================================================
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("ParalyzeFlinchTarget",
   proc { |score, move, user, target, ai, battle|
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     paralyze_score = Battle::AI::Handlers.apply_move_effect_against_target_score("ParalyzeTarget",
        0, move, user, target, ai, battle)
     flinch_score = Battle::AI::Handlers.apply_move_effect_against_target_score("FlinchTarget",
@@ -305,7 +325,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("BurnTarget",
     next useless_score if target.faster_than?(user) &&
                           target.has_active_ability?(:HYDRATION) &&
                           [:Rain, :HeavyRain].include?(target.battler.effectiveWeather)
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     if target.battler.pbCanBurn?(user.battler, false, move.move)
       add_effect = move.get_score_change_for_additional_effect(user, target)
       next useless_score if add_effect == -999   # Additional effect will be negated
@@ -351,6 +371,14 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("BurnTarget",
 #===============================================================================
 #
 #===============================================================================
+Battle::AI::Handlers::MoveFailureAgainstTargetCheck.copy("BurnTarget",
+                                                         "BurnTargetAlwaysHitsInRain")
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.copy("BurnTarget",
+                                                        "BurnTargetAlwaysHitsInRain")
+
+#===============================================================================
+#
+#===============================================================================
 # BurnTargetIfTargetStatsRaisedThisTurn
 
 #===============================================================================
@@ -358,7 +386,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("BurnTarget",
 #===============================================================================
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("BurnFlinchTarget",
   proc { |score, move, user, target, ai, battle|
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     burn_score = Battle::AI::Handlers.apply_move_effect_against_target_score("BurnTarget",
        0, move, user, target, ai, battle)
     flinch_score = Battle::AI::Handlers.apply_move_effect_against_target_score("FlinchTarget",
@@ -389,7 +417,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("FreezeTarget",
     next useless_score if target.faster_than?(user) &&
                           target.has_active_ability?(:HYDRATION) &&
                           [:Rain, :HeavyRain].include?(target.battler.effectiveWeather)
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     if target.battler.pbCanFreeze?(user.battler, false, move.move)
       add_effect = move.get_score_change_for_additional_effect(user, target)
       next useless_score if add_effect == -999   # Additional effect will be negated
@@ -439,7 +467,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.copy("FreezeTarget",
 #===============================================================================
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("FreezeFlinchTarget",
   proc { |score, move, user, target, ai, battle|
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     freeze_score = Battle::AI::Handlers.apply_move_effect_against_target_score("FreezeTarget",
        0, move, user, target, ai, battle)
     flinch_score = Battle::AI::Handlers.apply_move_effect_against_target_score("FlinchTarget",
@@ -459,17 +487,47 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("FreezeFlinchTarget",
 #===============================================================================
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("ParalyzeBurnOrFreezeTarget",
   proc { |score, move, user, target, ai, battle|
+    next score if target.effects[PBEffects::Substitute] > 0
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     # No score modifier if the status problem will be removed immediately
     next score if target.has_active_item?(:LUMBERRY)
     next score if target.faster_than?(user) &&
                   target.has_active_ability?(:HYDRATION) &&
                   [:Rain, :HeavyRain].include?(target.battler.effectiveWeather)
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
     # Scores for the possible effects
     ["ParalyzeTarget", "BurnTarget", "FreezeTarget"].each do |function_code|
       effect_score = Battle::AI::Handlers.apply_move_effect_against_target_score(function_code,
          0, move, user, target, ai, battle)
       score += effect_score / 3 if effect_score != Battle::AI::MOVE_USELESS_SCORE
+    end
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("PoisonParalyzeOrSleepTarget",
+  proc { |score, move, user, target, ai, battle|
+    next score if target.effects[PBEffects::Substitute] > 0
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
+    # No score modifier if the status problem will be removed immediately
+    next score if target.has_active_item?(:LUMBERRY)
+    next score if target.faster_than?(user) &&
+                  target.has_active_ability?(:HYDRATION) &&
+                  [:Rain, :HeavyRain].include?(target.battler.effectiveWeather)
+    # Scores for the possible effects
+    ["PoisonTarget", "ParalyzeTarget", "SleepTarget"].each do |function_code|
+      effect_score = Battle::AI::Handlers.apply_move_effect_against_target_score(function_code,
+         0, move, user, target, ai, battle)
+      if effect_score != Battle::AI::MOVE_USELESS_SCORE
+        score += effect_score / 3
+        if function_code == "PoisonTarget" && user.has_active_ability?(:POISONPUPPETEER)
+          confuse_score = Battle::AI::Handlers.apply_move_effect_against_target_score("ConfuseTarget",
+            0, move, user, target, ai, battle)
+          score += confuse_score / 3 if confuse_score != Battle::AI::MOVE_USELESS_SCORE
+        end
+      end
     end
     next score
   }
@@ -549,7 +607,7 @@ Battle::AI::Handlers::MoveEffectScore.add("CureUserPartyStatus",
 #===============================================================================
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("CureTargetBurn",
   proc { |score, move, user, target, ai, battle|
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     add_effect = move.get_score_change_for_additional_effect(user, target)
     next score if add_effect == -999   # Additional effect will be negated
     if target.status == :BURN
@@ -598,7 +656,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("FlinchTarget",
   proc { |score, move, user, target, ai, battle|
     next score if target.faster_than?(user) || target.effects[PBEffects::Substitute] > 0
     next score if target.has_active_ability?(:INNERFOCUS) && !target.being_mold_broken?
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     add_effect = move.get_score_change_for_additional_effect(user, target)
     next score if add_effect == -999   # Additional effect will be negated
     score += add_effect
@@ -633,6 +691,20 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.copy("FlinchTarget",
 #===============================================================================
 #
 #===============================================================================
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("FlinchTargetFailsIfTargetNotUsingPriorityMove",
+  proc { |score, move, user, target, ai, battle|
+    next Battle::AI::MOVE_USELESS_SCORE if !target.check_for_move { |m| m.pbPriority(target.battler) > 0 }
+    score = Battle::AI::Handlers.apply_move_effect_against_target_score("FlinchTarget",
+       score, move, user, target, ai, battle)
+    # Inherent disfavour because target may not use a priority move
+    score -= 8
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
 Battle::AI::Handlers::MoveBasePower.add("FlinchTargetDoublePowerIfTargetInSky",
   proc { |power, move, user, target, ai, battle|
     next move.move.pbBasePower(power, user.battler, target.battler)
@@ -653,7 +725,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("ConfuseTarget",
   proc { |score, move, user, target, ai, battle|
     # No score modifier if the status problem will be removed immediately
     next score if target.has_active_item?(:PERSIMBERRY)
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     if target.battler.pbCanConfuse?(user.battler, false, move.move)
       add_effect = move.get_score_change_for_additional_effect(user, target)
       next score if add_effect == -999   # Additional effect will be negated
@@ -682,6 +754,33 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.copy("ConfuseTarget",
 #===============================================================================
 #
 #===============================================================================
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("ConfuseTargetCrashDamageIfFails",
+  proc { |score, move, user, target, ai, battle|
+    # Confuse score
+    score = Battle::AI::Handlers.apply_move_effect_against_target_score("ConfuseTarget",
+       score, move, user, target, ai, battle)
+    # Crash damage score
+    score = Battle::AI::Handlers.apply_move_effect_against_target_score("CrashDamageIfFails",
+       score, move, user, target, ai, battle)
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("ConfuseTargetIfTargetStatsRaisedThisTurn",
+  proc { |score, move, user, target, ai, battle|
+    confuse_score = Battle::AI::Handlers.apply_move_effect_against_target_score("ConfuseTarget",
+       0, move, user, target, ai, battle)
+    score += confuse_score / 3   # Less likely target will raise its stats
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
 Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("AttractTarget",
   proc { |move, user, target, ai, battle|
     next move.statusMove? && !target.battler.pbCanAttract?(user.battler, false)
@@ -689,7 +788,7 @@ Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("AttractTarget",
 )
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("AttractTarget",
   proc { |score, move, user, target, ai, battle|
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     if target.battler.pbCanAttract?(user.battler, false)
       add_effect = move.get_score_change_for_additional_effect(user, target)
       next score if add_effect == -999   # Additional effect will be negated
@@ -1172,6 +1271,19 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("NegateTargetAbilityIfTar
 #===============================================================================
 #
 #===============================================================================
+Battle::AI::Handlers::MoveEffectScore.add("UserVulnerableUntilNextAction",
+  proc { |score, move, user, ai, battle|
+    # Don't prefer if user is at a low HP (and more likely to be KO'd by the extra damage)
+    if ai.trainer.has_skill_flag?("HPAware")
+      score -= 10 if user.hp < user.totalhp / 2
+    end
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
 Battle::AI::Handlers::MoveFailureCheck.add("StartUserAirborne",
   proc { |move, user, ai, battle|
     next true if user.has_active_item?(:IRONBALL)
@@ -1319,6 +1431,20 @@ Battle::AI::Handlers::MoveEffectScore.add("StartGravity",
                                     "TwoTurnAttackInvulnerableInSkyTargetCannotAct")
         score += (user.opposes?(b)) ? 10 : -10
       end
+    end
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("StartSaltCureTarget",
+  proc { |score, move, user, target, ai, battle|
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
+    if !target.effects[PBEffects::SaltCure]
+      score += 8
+      score += 5 if target.has_type?(:STEEL) || target.has_type?(:WATER)
     end
     next score
   }

@@ -716,16 +716,22 @@ class Battle::Move::RevivePokemonToHalfHP < Battle::Move
 
   def pbEffectGeneral(user)
     pkmn = nil
-    @battle.scene.pbPartyScreen(user.index, false, 3) do |idxParty, party_screen|
-      pkmn = @battle.pbParty(user.idxOwnSide)[idxParty]
-      if pkmn.egg?
-        party_screen.show_message(_INTL("You can't revive an egg!"))
-        next false
-      elsif !pkmn.fainted?
-        party_screen.show_message(_INTL("This Pokémon cannot be revived."))
-        next false
+    if !@battle.controlPlayer && @battle.pbOwnedByPlayer?(user.index)
+      # Player chooses the Pokémon to revive
+      @battle.scene.pbPartyScreen(user.index, false, 3) do |idxParty, party_screen|
+        pkmn = @battle.pbParty(user.idxOwnSide)[idxParty]
+        if pkmn.egg?
+          party_screen.show_message(_INTL("You can't revive an egg!"))
+          next false
+        elsif !pkmn.fainted?
+          party_screen.show_message(_INTL("This Pokémon cannot be revived."))
+          next false
+        end
+        next true
       end
-      next true
+    else
+      # The AI chooses the Pokémon to revive
+      pkmn = Battle::AI.choose_pokemon_to_revive(user)
     end
     pkmn.hp = (pkmn.totalhp / 2).floor
     pkmn.hp = 1 if pkmn.hp <= 0

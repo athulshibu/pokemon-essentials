@@ -116,33 +116,6 @@ class Battle::Move::MaxUserAttackLoseHalfOfTotalHP < Battle::Move
 end
 
 #===============================================================================
-# Reduces the user's HP by half of max, and raises its Attack, Special Attack
-# and Speed by 2 stages each. (Fillet Away)
-#===============================================================================
-class Battle::Move::RaiseUserAtkSpAtkSpeed2LoseHalfOfTotalHP < Battle::Move::MultiStatUpMove
-  def initialize(battle, move)
-    super
-    @statUp = [:ATTACK, 2, :SPECIAL_ATTACK, 2, :SPEED, 2]
-  end
-
-  def pbMoveFailed?(user, targets)
-    hpLoss = [user.totalhp / 2, 1].max
-    if user.hp <= hpLoss
-      @battle.pbDisplay(_INTL("But it failed!"))
-      return true
-    end
-    return super
-  end
-
-  def pbEffectGeneral(user)
-    super
-    hpLoss = [user.totalhp / 2, 1].max
-    user.pbReduceHP(hpLoss, false, false)
-    user.pbItemHPHealCheck
-  end
-end
-
-#===============================================================================
 # Increases the user's Defense by 1 stage. (Harden, Steel Wing, Withdraw)
 #===============================================================================
 class Battle::Move::RaiseUserDefense1 < Battle::Move::StatUpMove
@@ -490,6 +463,33 @@ class Battle::Move::RaiseUserAtkSpAtk1Or2InSun < Battle::Move::MultiStatUpMove
 end
 
 #===============================================================================
+# Reduces the user's HP by half of max, and raises its Attack, Special Attack
+# and Speed by 2 stages each. (Fillet Away)
+#===============================================================================
+class Battle::Move::RaiseUserAtkSpAtkSpeed2LoseHalfOfTotalHP < Battle::Move::MultiStatUpMove
+  def initialize(battle, move)
+    super
+    @statUp = [:ATTACK, 2, :SPECIAL_ATTACK, 2, :SPEED, 2]
+  end
+
+  def pbMoveFailed?(user, targets)
+    hpLoss = [user.totalhp / 2, 1].max
+    if user.hp <= hpLoss
+      @battle.pbDisplay(_INTL("But it failed!"))
+      return true
+    end
+    return super
+  end
+
+  def pbEffectGeneral(user)
+    super
+    hpLoss = [user.totalhp / 2, 1].max
+    user.pbReduceHP(hpLoss, false, false)
+    user.pbItemHPHealCheck
+  end
+end
+
+#===============================================================================
 # Decreases the user's Defense and Special Defense by 1 stage each.
 # Increases the user's Attack, Speed and Special Attack by 2 stages each.
 # (Shell Smash)
@@ -554,7 +554,7 @@ end
 
 #===============================================================================
 # Removes trapping moves, entry hazards and Leech Seed on user/user's side.
-# Poisons the target. (Mortal Spin)
+# Poisons the target. (Tidy Up)
 #===============================================================================
 class Battle::Move::RaiseUserAtkSpd1RemoveEntryHazardsAndSubstitutes < Battle::Move::RaiseUserAtkSpd1
   def pbMoveFailed?(user, targets)
@@ -879,7 +879,7 @@ end
 # Decreases the user's Special Attack by 1 stage. Scatters coins that the player
 # picks up after winning the battle. (Make It Rain)
 #===============================================================================
-class Battle::Move::LowerUserSpAtk1 < Battle::Move::LowerUserSpAtk1
+class Battle::Move::AddMoneyGainedFromBattleLowerUserSpAtk1 < Battle::Move::LowerUserSpAtk1
   def pbEffectWhenDealingDamage(user, target)
     return if @stats_lowered
     if user.pbOwnedByPlayer?

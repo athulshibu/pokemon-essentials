@@ -352,6 +352,14 @@ Battle::AI::Handlers::MoveBasePower.add("DoublePowerIfTargetPoisoned",
 #===============================================================================
 #
 #===============================================================================
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.copy("PoisonTarget",
+                                                        "DoublePowerIfTargetPoisonedPoisonTarget")
+Battle::AI::Handlers::MoveBasePower.copy("DoublePowerIfTargetPoisoned",
+                                         "DoublePowerIfTargetPoisonedPoisonTarget")
+
+#===============================================================================
+#
+#===============================================================================
 Battle::AI::Handlers::MoveBasePower.copy("DoublePowerIfTargetPoisoned",
                                          "DoublePowerIfTargetParalyzedCureTarget")
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("DoublePowerIfTargetParalyzedCureTarget",
@@ -375,6 +383,14 @@ Battle::AI::Handlers::MoveBasePower.add("DoublePowerIfTargetStatusProblem",
     next move.move.pbBasePower(power, user.battler, target.battler)
   }
 )
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.copy("BurnTarget",
+                                                        "DoublePowerIfTargetStatusProblemBurnTarget")
+Battle::AI::Handlers::MoveBasePower.copy("DoublePowerIfTargetStatusProblem",
+                                         "DoublePowerIfTargetStatusProblemBurnTarget")
 
 #===============================================================================
 #
@@ -907,6 +923,58 @@ Battle::AI::Handlers::MoveEffectScore.add("ProtectUserBanefulBunker",
 #===============================================================================
 #
 #===============================================================================
+Battle::AI::Handlers::MoveEffectScore.add("ProtectUserFromDamagingMovesBurningBulwark",
+  proc { |score, move, user, ai, battle|
+    # Useless if the success chance is 25% or lower
+    next Battle::AI::MOVE_USELESS_SCORE if user.effects[PBEffects::ProtectRate] >= 4
+    # Score changes for each foe
+    useless = true
+    ai.each_foe_battler(user.side) do |b, i|
+      next if !b.can_attack?
+      next if !b.check_for_move { |m| m.damagingMove? && m.canProtectAgainst? }
+      next if b.has_active_ability?(:UNSEENFIST) && b.check_for_move { |m| m.pbContactMove?(b.battler) }
+      useless = false
+      # General preference
+      score += 7
+      # Prefer if the foe is likely to be burned by this move
+      if b.check_for_move { |m| m.pbContactMove?(b.battler) }
+        burn_score = Battle::AI::Handlers.apply_move_effect_against_target_score("BurnTarget",
+           0, move, user, b, ai, battle)
+        if burn_score != Battle::AI::MOVE_USELESS_SCORE
+          score += burn_score / 2   # Halved because we don't know what move b will use
+        end
+      end
+      # Prefer if the foe is in the middle of using a two turn attack
+      score += 15 if b.effects[PBEffects::TwoTurnAttack] &&
+                     GameData::Move.get(b.effects[PBEffects::TwoTurnAttack]).flags.any? { |f| f[/^CanProtect$/i] }
+      # Prefer if foe takes EOR damage, don't prefer if they have EOR healing
+      b_eor_damage = b.rough_end_of_round_damage
+      if b_eor_damage > 0
+        score += 8
+      elsif b_eor_damage < 0
+        score -= 8
+      end
+    end
+    next Battle::AI::MOVE_USELESS_SCORE if useless
+    # Prefer if the user has EOR healing, don't prefer if they take EOR damage
+    user_eor_damage = user.rough_end_of_round_damage
+    if user_eor_damage >= user.hp
+      next Battle::AI::MOVE_USELESS_SCORE
+    elsif user_eor_damage > 0
+      score -= 8
+    elsif user_eor_damage < 0
+      score += 8
+    end
+    # Don't prefer if the user used a protection move last turn, making this one
+    # less likely to work
+    score -= (user.effects[PBEffects::ProtectRate] - 1) * ((Settings::MECHANICS_GENERATION >= 6) ? 15 : 10)
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
 Battle::AI::Handlers::MoveEffectScore.add("ProtectUserFromDamagingMovesKingsShield",
   proc { |score, move, user, ai, battle|
     # Useless if the success chance is 25% or lower
@@ -973,9 +1041,58 @@ Battle::AI::Handlers::MoveEffectScore.add("ProtectUserFromDamagingMovesObstruct"
       useless = false
       # General preference
       score += 7
-      # Prefer if the foe's Attack can be lowered by this move
+      # Prefer if the foe's Defense can be lowered by this move
       if b.battler.affectedByContactEffect? && b.check_for_move { |m| m.pbContactMove?(b.battler) }
         drop_score = ai.get_score_for_target_stat_drop(0, b, [:DEFENSE, 2], false)
+        score += drop_score / 2   # Halved because we don't know what move b will use
+      end
+      # Prefer if the foe is in the middle of using a two turn attack
+      score += 15 if b.effects[PBEffects::TwoTurnAttack] &&
+                     GameData::Move.get(b.effects[PBEffects::TwoTurnAttack]).flags.any? { |f| f[/^CanProtect$/i] }
+      # Prefer if foe takes EOR damage, don't prefer if they have EOR healing
+      b_eor_damage = b.rough_end_of_round_damage
+      if b_eor_damage > 0
+        score += 8
+      elsif b_eor_damage < 0
+        score -= 8
+      end
+    end
+    next Battle::AI::MOVE_USELESS_SCORE if useless
+    # Prefer if the user has EOR healing, don't prefer if they take EOR damage
+    user_eor_damage = user.rough_end_of_round_damage
+    if user_eor_damage >= user.hp
+      next Battle::AI::MOVE_USELESS_SCORE
+    elsif user_eor_damage > 0
+      score -= 8
+    elsif user_eor_damage < 0
+      score += 8
+    end
+    # Don't prefer if the user used a protection move last turn, making this one
+    # less likely to work
+    score -= (user.effects[PBEffects::ProtectRate] - 1) * ((Settings::MECHANICS_GENERATION >= 6) ? 15 : 10)
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveEffectScore.add("ProtectUserFromDamagingMovesSilkTrap",
+  proc { |score, move, user, ai, battle|
+    # Useless if the success chance is 25% or lower
+    next Battle::AI::MOVE_USELESS_SCORE if user.effects[PBEffects::ProtectRate] >= 4
+    # Score changes for each foe
+    useless = true
+    ai.each_foe_battler(user.side) do |b, i|
+      next if !b.can_attack?
+      next if !b.check_for_move { |m| m.damagingMove? && m.canProtectAgainst? }
+      next if b.has_active_ability?(:UNSEENFIST) && b.check_for_move { |m| m.pbContactMove?(b.battler) }
+      useless = false
+      # General preference
+      score += 7
+      # Prefer if the foe's Speed can be lowered by this move
+      if b.battler.affectedByContactEffect? && b.check_for_move { |m| m.pbContactMove?(b.battler) }
+        drop_score = ai.get_score_for_target_stat_drop(0, b, [:SPEED, 1], false)
         score += drop_score / 2   # Halved because we don't know what move b will use
       end
       # Prefer if the foe is in the middle of using a two turn attack
@@ -1302,7 +1419,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RecoilThirdOfDamageDealt
       score -= 20 * [dmg, user.hp].min / user.hp
     end
     # Score for paralysing
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     paralyze_score = Battle::AI::Handlers.apply_move_effect_against_target_score("ParalyzeTarget",
        0, move, user, target, ai, battle)
     score += paralyze_score if paralyze_score != Battle::AI::MOVE_USELESS_SCORE
@@ -1326,7 +1443,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RecoilThirdOfDamageDealt
       score -= 20 * [dmg, user.hp].min / user.hp
     end
     # Score for burning
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     burn_score = Battle::AI::Handlers.apply_move_effect_against_target_score("BurnTarget",
        0, move, user, target, ai, battle)
     score += burn_score if burn_score != Battle::AI::MOVE_USELESS_SCORE

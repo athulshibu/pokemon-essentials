@@ -101,6 +101,18 @@ class Battle::AI
 
   #-----------------------------------------------------------------------------
 
+  # Used by Revival Blessing.
+  def choose_pokemon_to_revive(user)
+    targets = get_usability_of_item_on_pkmn(:REVIVE,
+       @battle.pbGetOwnerIndexFromBattlerIndex(user.index), user.idxOwnSide)
+    targets = targets[:revive]
+    targets.sort! { |a, b| a[1] <=> b[1] }
+    idxParty = targets.last[1]   # Latest fainted Pokémon in party
+    return @battle.pbParty(user.idxOwnSide)[idxParty]
+  end
+
+  #-----------------------------------------------------------------------------
+
   # These values are taken from the Complete-Fire-Red-Upgrade decomp here:
   # https://github.com/Skeli789/Complete-Fire-Red-Upgrade/blob/f7f35becbd111c7e936b126f6328fc52d9af68c8/src/ability_battle_effects.c#L41
   # TODO: Ensure all abilities are listed here and have an AbilityRanking if

@@ -165,6 +165,49 @@ Battle::AI::Handlers::MoveEffectScore.add("SwitchOutUserPassOnEffects",
 #===============================================================================
 #
 #===============================================================================
+Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("UserMakeSubstituteSwitchOutUser",
+  proc { |move, user, target, ai, battle|
+    next true if user.effects[PBEffects::Substitute] > 0
+    next true if user.hp <= [(user.totalhp / 2.0).ceil, 1].max
+    next true if user.wild? || !battle.pbCanChooseNonActive?(user.index)
+    next true if user.effects[PBEffects::Commanding] >= 0 || user.effects[PBEffects::CommandedBy] >= 0
+    next false
+  }
+)
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("UserMakeSubstituteSwitchOutUser",
+  proc { |score, move, user, target, ai, battle|
+    score = Battle::AI::Handlers.apply_move_effect_score("UserMakeSubstitute",
+       score, move, user, ai, battle)
+    next score if score == Battle::AI::MOVE_USELESS_SCORE
+    score = Battle::AI::Handlers.apply_move_effect_score("SwitchOutUserStatusMove",
+       score, move, user, ai, battle)
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("StartSnowstormWeatherSwitchOutUser",
+  proc { |move, user, target, ai, battle|
+    next Battle::AI::Handlers.move_will_fail?("SwitchOutUserStatusMove", move, user, ai, battle) &&
+         Battle::AI::Handlers.move_will_fail?("StartSnowstormWeather", move, user, ai, battle)
+  }
+)
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("StartSnowstormWeatherSwitchOutUser",
+  proc { |score, move, user, target, ai, battle|
+    score = Battle::AI::Handlers.apply_move_effect_score("StartSnowstormWeather",
+       score, move, user, ai, battle)
+    next score if score == Battle::AI::MOVE_USELESS_SCORE
+    score = Battle::AI::Handlers.apply_move_effect_score("SwitchOutUserStatusMove",
+       score, move, user, ai, battle)
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
 Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("SwitchOutTargetStatusMove",
   proc { |move, user, target, ai, battle|
     next move.move.pbFailsAgainstTarget?(user.battler, target.battler, false)
@@ -622,7 +665,7 @@ Battle::AI::Handlers::MoveEffectScore.add("StartSlowerBattlersActFirst",
 #===============================================================================
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("LowerPPOfTargetLastMoveBy3",
   proc { |score, move, user, target, ai, battle|
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     add_effect = move.get_score_change_for_additional_effect(user, target)
     next score if add_effect == -999   # Additional effect will be negated
     if user.faster_than?(target)
@@ -798,17 +841,17 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("DisableTargetStatusMoves
     # Prefer if the target has a protection move
     protection_moves = [
       "ProtectUser",                                       # Detect, Protect
-      "ProtectUserSideFromPriorityMoves",                  # Quick Guard
-      "ProtectUserSideFromMultiTargetDamagingMoves",       # Wide Guard
-      "UserEnduresFaintingThisTurn",                       # Endure
-      "ProtectUserSideFromDamagingMovesIfUserFirstTurn",   # Mat Block
-      "ProtectUserSideFromStatusMoves",                    # Crafty Shield
+      "ProtectUserBanefulBunker",                          # Baneful Bunker
+      "ProtectUserFromDamagingMovesBurningBulwark",        # Burning Bulwark
       "ProtectUserFromDamagingMovesKingsShield",           # King's Shield
       "ProtectUserFromDamagingMovesObstruct",              # Obstruct
-      "ProtectUserFromTargetingMovesSpikyShield",          # Spiky Shield
-      "ProtectUserBanefulBunker",                          # Baneful Bunker
       "ProtectUserFromDamagingMovesSilkTrap",              # Silk Trap
-      "ProtectUserFromDamagingMovesBurningBulwark"         # Burning Bulwark
+      "ProtectUserFromTargetingMovesSpikyShield",          # Spiky Shield
+      "ProtectUserSideFromDamagingMovesIfUserFirstTurn",   # Mat Block
+      "ProtectUserSideFromMultiTargetDamagingMoves",       # Wide Guard
+      "ProtectUserSideFromPriorityMoves",                  # Quick Guard
+      "ProtectUserSideFromStatusMoves",                    # Crafty Shield
+      "UserEnduresFaintingThisTurn"                        # Endure
     ]
     if target.check_for_move { |m| m.statusMove? && protection_moves.include?(m.function_code) }
       score += 10
@@ -845,12 +888,34 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("DisableTargetHealingMove
 #===============================================================================
 #
 #===============================================================================
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("StartTargetCannotHeal",
+  proc { |score, move, user, target, ai, battle|
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
+    next score if target.effects[PBEffects::HealBlock] > 0
+    next score if move.move.pbMoveFailedAromaVeil?(user.battler, target.battler, false)
+    # No change to score if the foe can't heal themselves with a move or some
+    # held items
+    if !target.check_for_move { |m| m.healingMove? }
+      if !target.has_active_item?(:LEFTOVERS) &&
+         !(target.has_active_item?(:BLACKSLUDGE) && target.has_type?(:POISON))
+        next score
+      end
+    end
+    # Inherent preference
+    score += 8
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("DisableTargetSoundMoves",
   proc { |score, move, user, target, ai, battle|
     next score if target.effects[PBEffects::ThroatChop] >= 1
     next score if target.effects[PBEffects::Substitute] > 0
     next score if !target.check_for_move { |m| m.soundMove? }
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     # Check additional effect chance
     add_effect = move.get_score_change_for_additional_effect(user, target)
     next score if add_effect == -999   # Additional effect will be negated

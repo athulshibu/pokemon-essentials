@@ -163,8 +163,11 @@ class Battle::Move::UserMakeSubstituteSwitchOutUser < Battle::Move
       @battle.pbDisplay(_INTL("But it failed!"))
       return true
     end
-    if user.wild? || !@battle.pbCanChooseNonActive?(user.index) ||
-       user.effects[PBEffects::Commanding] >= 0 || user.effects[PBEffects::CommandedBy] >= 0
+    if user.wild? || !@battle.pbCanChooseNonActive?(user.index)
+      @battle.pbDisplay(_INTL("But it failed!"))
+      return true
+    end
+    if user.effects[PBEffects::Commanding] >= 0 || user.effects[PBEffects::CommandedBy] >= 0
       @battle.pbDisplay(_INTL("But it failed!"))
       return true
     end
@@ -1006,6 +1009,7 @@ end
 class Battle::Move::StartTargetCannotHeal < Battle::Move
   def pbAdditionalEffect(user, target)
     return if !target.affectedByAdditionalEffects?
+    return if pbMoveFailedAromaVeil?(user, target, false)
     return if target.effects[PBEffects::HealBlock] > 0
     target.effects[PBEffects::HealBlock] = 2
     @battle.pbDisplay(_INTL("{1} was prevented from healing!", target.pbThis))

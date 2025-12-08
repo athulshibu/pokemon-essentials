@@ -201,6 +201,21 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.copy("HealUserByHalfOfDamageD
 #===============================================================================
 #
 #===============================================================================
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("HealUserByHalfOfDamageDoneBurnTarget",
+  proc { |score, move, user, target, ai, battle|
+    # Score for healing
+    score = Battle::AI::Handlers.apply_move_effect_score("HealUserByHalfOfDamageDone",
+       score, move, user, ai, battle)
+    # Score for causing a burn
+    score = Battle::AI::Handlers.apply_move_effect_score("BurnTarget",
+       score, move, user, ai, battle)
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("HealUserByThreeQuartersOfDamageDone",
   proc { |score, move, user, target, ai, battle|
     rough_dmg = move.rough_damage
@@ -677,6 +692,36 @@ Battle::AI::Handlers::MoveEffectScore.add("SetAttackerMovePPTo0IfUserFaints",
       score += 20 if user.hp <= user.totalhp * 0.4
       score += 10 if user.hp <= user.totalhp * 0.25
       score += 15 if user.hp <= user.totalhp * 0.1
+    end
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveFailureCheck.add("RevivePokemonToHalfHP",
+  proc { |move, user, ai, battle|
+    failed = true
+    battle.eachInTeamFromBattlerIndex(user.index) do |pkmn, party_index|
+      failed = false if pkmn.fainted?
+      break if !failed
+    end
+    next failed
+  }
+)
+Battle::AI::Handlers::MoveEffectScore.add("RevivePokemonToHalfHP",
+  proc { |score, move, user, ai, battle|
+    party_count = 0
+    unfainted_count = 0
+    battle.eachInTeamFromBattlerIndex(user.index) do |pkmn, party_index|
+      party_count += 1
+      unfainted_count += 1 if !pkmn.fainted?
+    end
+    if unfainted_count == 1 || unfainted_count * 2 <= party_count   # 50% or more of party is fainted
+      score += 15
+    else
+      score -= 10
     end
     next score
   }

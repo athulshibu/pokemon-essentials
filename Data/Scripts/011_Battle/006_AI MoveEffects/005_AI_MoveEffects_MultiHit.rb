@@ -30,7 +30,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("HitTwoTimesPoisonTarget"
     score = Battle::AI::Handlers.apply_move_effect_against_target_score("HitTwoTimes",
        score, move, user, target, ai, battle)
     # Score for poisoning
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     poison_score = Battle::AI::Handlers.apply_move_effect_against_target_score("PoisonTarget",
        0, move, user, target, ai, battle)
     score += poison_score if poison_score != Battle::AI::MOVE_USELESS_SCORE
@@ -49,7 +49,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("HitTwoTimesFlinchTarget"
     score = Battle::AI::Handlers.apply_move_effect_against_target_score("HitTwoTimes",
        score, move, user, target, ai, battle)
     # Score for flinching
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     score = Battle::AI::Handlers.apply_move_effect_against_target_score("FlinchTarget",
        score, move, user, target, ai, battle)
     next score
@@ -245,18 +245,18 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("TwoTurnAttack",
       end
       if move.move.canProtectAgainst?
         if target.has_move_with_function?("ProtectUser",
-                                          "ProtectUserFromTargetingMovesSpikyShield",
-                                          "ProtectUserBanefulBunker")
+                                          "ProtectUserBanefulBunker",
+                                          "ProtectUserFromTargetingMovesSpikyShield")
           has_protect_move = true
         end
         if move.damagingMove?
           # NOTE: Doesn't check for Mat Block because it only works on its
           #       user's first turn in battle, so it can't be used in response
           #       to this move charging up.
-          if target.has_move_with_function?("ProtectUserFromDamagingMovesKingsShield",
+          if target.has_move_with_function?("ProtectUserFromDamagingMovesBurningBulwark",
+                                            "ProtectUserFromDamagingMovesKingsShield",
                                             "ProtectUserFromDamagingMovesObstruct",
-                                            "ProtectUserFromDamagingMovesSilkTrap",
-                                            "ProtectUserFromDamagingMovesBurningBulwark")
+                                            "ProtectUserFromDamagingMovesSilkTrap")
             has_protect_move = true
           end
         end
@@ -300,7 +300,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("TwoTurnAttackParalyzeTar
        score, move, user, target, ai, battle)
     next score if score == Battle::AI::MOVE_USELESS_SCORE
     # Score for paralysing
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     score = Battle::AI::Handlers.apply_move_effect_against_target_score("ParalyzeTarget",
        score, move, user, target, ai, battle)
     next score
@@ -317,7 +317,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("TwoTurnAttackBurnTarget"
        score, move, user, target, ai, battle)
     next score if score == Battle::AI::MOVE_USELESS_SCORE
     # Score for burning
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     score = Battle::AI::Handlers.apply_move_effect_against_target_score("BurnTarget",
        score, move, user, target, ai, battle)
     next score
@@ -334,7 +334,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("TwoTurnAttackFlinchTarge
        score, move, user, target, ai, battle)
     next score if score == Battle::AI::MOVE_USELESS_SCORE
     # Score for flinching
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     score = Battle::AI::Handlers.apply_move_effect_against_target_score("FlinchTarget",
        score, move, user, target, ai, battle)
     next score
@@ -383,6 +383,24 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("TwoTurnAttackChargeRaise
     score = Battle::AI::Handlers.apply_move_effect_against_target_score("TwoTurnAttack",
        score, move, user, target, ai, battle)
     next score if score == Battle::AI::MOVE_USELESS_SCORE
+    # Score for raising the user's stat
+    score = Battle::AI::Handlers.apply_move_effect_score("RaiseUserSpAtk1",
+       score, move, user, ai, battle)
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("TwoTurnAttackOneTurnInRainChargeRaiseUserSpAtk1",
+  proc { |score, move, user, target, ai, battle|
+    # Score for being a two turn attack
+    if ![:Rain, :HeavyRain].include?(user.battler.effectiveWeather)
+      score = Battle::AI::Handlers.apply_move_effect_against_target_score("TwoTurnAttack",
+         score, move, user, target, ai, battle)
+      next score if score == Battle::AI::MOVE_USELESS_SCORE
+    end
     # Score for raising the user's stat
     score = Battle::AI::Handlers.apply_move_effect_score("RaiseUserSpAtk1",
        score, move, user, ai, battle)
@@ -463,7 +481,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("TwoTurnAttackInvulnerabl
        score, move, user, target, ai, battle)
     next score if score == Battle::AI::MOVE_USELESS_SCORE
     # Score for paralyzing the target
-    next score if move.move.addlEffect > 0 && target.has_active_item?(:COVERTCLOAK)
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     score = Battle::AI::Handlers.apply_move_effect_against_target_score("ParalyzeTarget",
        score, move, user, target, ai, battle)
     next score

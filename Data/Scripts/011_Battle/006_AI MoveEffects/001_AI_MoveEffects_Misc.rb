@@ -38,6 +38,15 @@ Battle::AI::Handlers::MoveEffectScore.copy("DoesNothingCongratulations",
 #===============================================================================
 #
 #===============================================================================
+Battle::AI::Handlers::MoveFailureCheck.add("CannotUseConsecutively",
+  proc { |move, user, ai, battle|
+    next user.effects[PBEffects::GigatonHammer]
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
 Battle::AI::Handlers::MoveFailureCheck.add("FailsIfNotUserFirstTurn",
   proc { |move, user, ai, battle|
     next user.turnCount > 0
@@ -390,6 +399,7 @@ Battle::AI::Handlers::MoveEffectScore.copy("RemoveTerrain",
 #===============================================================================
 Battle::AI::Handlers::MoveFailureCheck.add("AddSpikesToFoeSide",
   proc { |move, user, ai, battle|
+    next false if move.damagingMove?
     next user.pbOpposingSide.effects[PBEffects::Spikes] >= 3
   }
 )
@@ -406,7 +416,9 @@ Battle::AI::Handlers::MoveEffectScore.add("AddSpikesToFoeSide",
       end
       foe_reserves.push(pkmn)   # pkmn will be affected by Spikes
     end
-    next Battle::AI::MOVE_USELESS_SCORE if foe_reserves.empty?
+    if foe_reserves.empty?
+      next (move.damagingMove?) ? score : Battle::AI::MOVE_USELESS_SCORE
+    end
     multiplier = [10, 7, 5][user.pbOpposingSide.effects[PBEffects::Spikes]]
     score += [multiplier * foe_reserves.length, 30].min
     next score
@@ -418,6 +430,7 @@ Battle::AI::Handlers::MoveEffectScore.add("AddSpikesToFoeSide",
 #===============================================================================
 Battle::AI::Handlers::MoveFailureCheck.add("AddToxicSpikesToFoeSide",
   proc { |move, user, ai, battle|
+    next false if move.damagingMove?
     next user.pbOpposingSide.effects[PBEffects::ToxicSpikes] >= 2
   }
 )
@@ -434,7 +447,9 @@ Battle::AI::Handlers::MoveEffectScore.add("AddToxicSpikesToFoeSide",
       end
       foe_reserves.push(pkmn)   # pkmn will be affected by Toxic Spikes
     end
-    next Battle::AI::MOVE_USELESS_SCORE if foe_reserves.empty?
+    if foe_reserves.empty?
+      next (move.damagingMove?) ? score : Battle::AI::MOVE_USELESS_SCORE
+    end
     multiplier = [8, 5][user.pbOpposingSide.effects[PBEffects::ToxicSpikes]]
     score += [multiplier * foe_reserves.length, 30].min
     next score
@@ -446,6 +461,7 @@ Battle::AI::Handlers::MoveEffectScore.add("AddToxicSpikesToFoeSide",
 #===============================================================================
 Battle::AI::Handlers::MoveFailureCheck.add("AddStealthRocksToFoeSide",
   proc { |move, user, ai, battle|
+    next false if move.damagingMove?
     next user.pbOpposingSide.effects[PBEffects::StealthRock]
   }
 )
@@ -461,7 +477,9 @@ Battle::AI::Handlers::MoveEffectScore.add("AddStealthRocksToFoeSide",
       end
       foe_reserves.push(pkmn)   # pkmn will be affected by Stealth Rock
     end
-    next Battle::AI::MOVE_USELESS_SCORE if foe_reserves.empty?
+    if foe_reserves.empty?
+      next (move.damagingMove?) ? score : Battle::AI::MOVE_USELESS_SCORE
+    end
     score += [10 * foe_reserves.length, 30].min
     next score
   }
@@ -472,6 +490,7 @@ Battle::AI::Handlers::MoveEffectScore.add("AddStealthRocksToFoeSide",
 #===============================================================================
 Battle::AI::Handlers::MoveFailureCheck.add("AddStickyWebToFoeSide",
   proc { |move, user, ai, battle|
+    next false if move.damagingMove?
     next user.pbOpposingSide.effects[PBEffects::StickyWeb]
   }
 )
@@ -487,7 +506,9 @@ Battle::AI::Handlers::MoveEffectScore.add("AddStickyWebToFoeSide",
       end
       foe_reserves.push(pkmn)   # pkmn will be affected by Sticky Web
     end
-    next Battle::AI::MOVE_USELESS_SCORE if foe_reserves.empty?
+    if foe_reserves.empty?
+      next (move.damagingMove?) ? score : Battle::AI::MOVE_USELESS_SCORE
+    end
     score += [8 * foe_reserves.length, 30].min
     next score
   }

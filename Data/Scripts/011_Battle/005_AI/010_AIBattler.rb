@@ -33,10 +33,7 @@ class Battle::AI::AIBattler
   def statStageAtMin?(stat); return battler.statStageAtMin?(stat); end
   def criticalHitRate; return battler.criticalHitRate; end
   def moves;           return battler.moves;           end
-
-  def wild?
-    return @ai.battle.wildBattle? && opposes?
-  end
+  def wild?;           return battler.wild?;           end
 
   def name
     return sprintf("%s (%d)", battler.name, @index)
@@ -497,8 +494,8 @@ class Battle::AI::AIBattler
           :MAGOBERRY   => :SPEED,
           :WIKIBERRY   => :SPECIAL_ATTACK
         }[item]
-        if @battler.nature.stat_changes.any? { |val| val[0] == flavor_stat && val[1] < 0 }
-          ret -= 3 if @battler.pbCanConfuseSelf?(false)
+        if battler.nature.stat_changes.any? { |val| val[0] == flavor_stat && val[1] < 0 }
+          ret -= 3 if battler.pbCanConfuseSelf?(false)
         end
       end
     when :ASPEARBERRY, :CHERIBERRY, :CHESTOBERRY, :PECHABERRY, :RAWSTBERRY

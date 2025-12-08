@@ -953,7 +953,7 @@ end
 
 #===============================================================================
 # User is protected against moves with the "CanProtect" flag this round.
-# (Detect, Protect)
+# Contributes to Protect's counter. (Detect, Protect)
 #===============================================================================
 class Battle::Move::ProtectUser < Battle::Move::ProtectMove
   def initialize(battle, move)
@@ -965,7 +965,7 @@ end
 #===============================================================================
 # User is protected against moves with the "CanProtect" flag this round. If a
 # Pokémon makes contact with the user while this effect applies, that Pokémon is
-# poisoned. (Baneful Bunker)
+# poisoned. Contributes to Protect's counter. (Baneful Bunker)
 #===============================================================================
 class Battle::Move::ProtectUserBanefulBunker < Battle::Move::ProtectMove
   def initialize(battle, move)
@@ -977,7 +977,7 @@ end
 #===============================================================================
 # User is protected against damaging moves this round. If a Pokémon makes
 # contact with the user while this effect applies, that Pokémon is burned.
-# (Burning Bulwark)
+# Contributes to Protect's counter. (Burning Bulwark)
 #===============================================================================
 class Battle::Move::ProtectUserFromDamagingMovesBurningBulwark < Battle::Move::ProtectMove
   def initialize(battle, move)
@@ -987,8 +987,10 @@ class Battle::Move::ProtectUserFromDamagingMovesBurningBulwark < Battle::Move::P
 end
 
 #===============================================================================
-# User is protected against damaging moves this round. Decreases the Attack of
-# the user of a stopped contact move by 2 stages. (King's Shield)
+# User is protected against damaging moves this round. If a Pokémon makes
+# contact with the user while this effect applies, that Pokémon's Attack is
+# lowered by 2 stages (or 1 in Gen 8+). Contributes to Protect's counter.
+# (King's Shield)
 #===============================================================================
 class Battle::Move::ProtectUserFromDamagingMovesKingsShield < Battle::Move::ProtectMove
   def initialize(battle, move)
@@ -998,10 +1000,9 @@ class Battle::Move::ProtectUserFromDamagingMovesKingsShield < Battle::Move::Prot
 end
 
 #===============================================================================
-# For the rest of this round, the user avoids all damaging moves that would hit
-# it. If a move that makes contact is stopped by this effect, decreases the
-# Defense of the Pokémon using that move by 2 stages. Contributes to Protect's
-# counter. (Obstruct)
+# User is protected against damaging moves this round. If a Pokémon makes
+# contact with the user while this effect applies, that Pokémon's Defense is
+# lowered by 2 stages. Contributes to Protect's counter. (Obstruct)
 #===============================================================================
 class Battle::Move::ProtectUserFromDamagingMovesObstruct < Battle::Move::ProtectMove
   def initialize(battle, move)
@@ -1011,10 +1012,9 @@ class Battle::Move::ProtectUserFromDamagingMovesObstruct < Battle::Move::Protect
 end
 
 #===============================================================================
-# For the rest of this round, the user avoids all damaging moves that would hit
-# it. If a move that makes contact is stopped by this effect, decreases the
-# Speed of the Pokémon using that move by 1 stage. Contributes to Protect's
-# counter. (Silk Trap)
+# User is protected against damaging moves this round. If a Pokémon makes
+# contact with the user while this effect applies, that Pokémon's Speed is
+# lowered by 1 stage. Contributes to Protect's counter. (Silk Trap)
 #===============================================================================
 class Battle::Move::ProtectUserFromDamagingMovesSilkTrap < Battle::Move::ProtectMove
   def initialize(battle, move)
@@ -1024,8 +1024,9 @@ class Battle::Move::ProtectUserFromDamagingMovesSilkTrap < Battle::Move::Protect
 end
 
 #===============================================================================
-# User is protected against moves that target it this round. Damages the user of
-# a stopped contact move by 1/8 of its max HP. (Spiky Shield)
+# User is protected against moves that target it this round. If a Pokémon makes
+# contact with the user while this effect applies, that Pokémon takes damage
+# equal to 1/8 of its max HP. Contributes to Protect's counter. (Spiky Shield)
 #===============================================================================
 class Battle::Move::ProtectUserFromTargetingMovesSpikyShield < Battle::Move::ProtectMove
   def initialize(battle, move)
@@ -1035,7 +1036,7 @@ class Battle::Move::ProtectUserFromTargetingMovesSpikyShield < Battle::Move::Pro
 end
 
 #===============================================================================
-# This round, the user's side is unaffected by damaging moves. (Mat Block)
+# User's side is protected against damaging moves this round. (Mat Block)
 #===============================================================================
 class Battle::Move::ProtectUserSideFromDamagingMovesIfUserFirstTurn < Battle::Move
   def canSnatch?; return true; end
@@ -1056,7 +1057,8 @@ class Battle::Move::ProtectUserSideFromDamagingMovesIfUserFirstTurn < Battle::Mo
 end
 
 #===============================================================================
-# User's side is protected against status moves this round. (Crafty Shield)
+# User's side is protected against targeting status moves this round.
+# (Crafty Shield)
 #===============================================================================
 class Battle::Move::ProtectUserSideFromStatusMoves < Battle::Move
   def pbMoveFailed?(user, targets)
@@ -1075,7 +1077,7 @@ class Battle::Move::ProtectUserSideFromStatusMoves < Battle::Move
 end
 
 #===============================================================================
-# User's side is protected against moves with priority greater than 0 this round.
+# User's side is protected against moves with priority higher than 0 this round.
 # (Quick Guard)
 #===============================================================================
 class Battle::Move::ProtectUserSideFromPriorityMoves < Battle::Move::ProtectMove
@@ -1089,8 +1091,8 @@ class Battle::Move::ProtectUserSideFromPriorityMoves < Battle::Move::ProtectMove
 end
 
 #===============================================================================
-# User's side is protected against moves that target multiple battlers this round.
-# (Wide Guard)
+# User's side is protected against moves that target multiple battlers this
+# round. (Wide Guard)
 #===============================================================================
 class Battle::Move::ProtectUserSideFromMultiTargetDamagingMoves < Battle::Move::ProtectMove
   def canSnatch?; return true; end
