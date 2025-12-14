@@ -11,12 +11,20 @@ class UI::PauseMenuVisuals < UI::BaseVisuals
   def initialize_overlay; end
 
   def initialize_sprites
+    # Location window
+    map_name = $game_map.name
+    location_sign_graphic = $game_map.metadata&.location_sign || Settings::DEFAULT_LOCATION_SIGN_GRAPHIC
+    @sprites[:location] = LocationWindow.new(map_name, location_sign_graphic, false, @viewport)
+    # Delete any location window currently being displayed
+    $scene.spriteset.usersprites.each { |sprite| sprite.dispose if sprite.is_a?(LocationWindow) }
     # Pause menu
     @sprites[:commands] = Window_CommandPokemon.new([])
+    @sprites[:commands].z = 100
     @sprites[:commands].visible = false
     @sprites[:commands].viewport = @viewport
     # Info text box
     @sprites[:info_text] = Window_UnformattedTextPokemon.newWithSize("", 0, 0, 32, 32, @viewport)
+    @sprites[:info_text].z = 100
     @sprites[:info_text].visible = false
   end
 
@@ -50,6 +58,7 @@ class UI::PauseMenuVisuals < UI::BaseVisuals
   def show_info(text)
     @sprites[:info_text].resizeToFit(text, Graphics.height)
     @sprites[:info_text].text    = text
+    @sprites[:info_text].y = Graphics.height - @sprites[:info_text].height
     @sprites[:info_text].visible = true
     @info_text_visible = true
   end

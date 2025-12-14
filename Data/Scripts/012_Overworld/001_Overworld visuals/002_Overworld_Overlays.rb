@@ -5,17 +5,22 @@ class LocationWindow
   APPEAR_TIME = 0.4   # In seconds; is also the disappear time
   LINGER_TIME = 1.6   # In seconds; time during which self is fully visible
 
-  def initialize(name, graphic_name = nil)
-    initialize_viewport
+  def initialize(name, graphic_name = nil, animate = true, viewport = nil)
+    initialize_viewport(viewport)
     initialize_graphic(graphic_name)
     initialize_text_window(name)
     apply_style(graphic_name)
     @current_map = $game_map.map_id
     @timer_start = System.uptime
     @delayed = !$game_temp.fly_destination.nil?
+    @animate = animate
   end
 
-  def initialize_viewport
+  def initialize_viewport(viewport)
+    if viewport
+      @viewport = viewport
+      return
+    end
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @viewport.z = 99999
   end
@@ -25,14 +30,14 @@ class LocationWindow
     @graphic = Sprite.new(@viewport)
     @graphic.bitmap = RPG::Cache.ui("Location/#{graphic_name}")
     @graphic.x = 0
-    @graphic.y = -@graphic.height
+    @graphic.y = (@animate) ? -@graphic.height : 0
   end
 
   def initialize_text_window(name)
     @window = Window_AdvancedTextPokemon.new(name)
     @window.resizeToFit(name, Graphics.width)
     @window.x        = 0
-    @window.y        = -@window.height
+    @window.y        = (@animate) ? -@window.height : 0
     @window.z        = 1
     @window.viewport = @viewport
   end
@@ -77,7 +82,7 @@ class LocationWindow
       @graphic.width    = @window.width + (@window_offset[0] * 2) - 4
       @graphic.height   = 48
       @graphic.x        = 0
-      @graphic.y        = -@graphic.height
+      @graphic.y        = (@animate) ? -@graphic.height : @graphic_offset[1]
       @graphic.z        = 0
       @graphic.viewport = @viewport
       @y_distance = @graphic.height
@@ -93,6 +98,7 @@ class LocationWindow
       @window_offset = [10, 16]
     end
     @window.x = @window_offset[0]
+    @window.y = @window_offset[1] if !@animate
   end
 
   def disposed?
@@ -113,6 +119,7 @@ class LocationWindow
     end
     @graphic&.update
     @window.update
+    return if !@animate
     if $game_temp.message_window_showing || @current_map != $game_map.map_id
       dispose
       return
