@@ -170,8 +170,6 @@ module Settings
     "choice 28"
   ]
 
-  # TODO: Allow renaming a Pokémon from the party screen/summary screen (not
-  #       sure which). Gen 9 feature.
   # TODO: Allow forgetting/remembering moves from the summary screen. Gen 9
   #       feature.
 end

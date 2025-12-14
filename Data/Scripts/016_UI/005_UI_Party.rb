@@ -820,6 +820,7 @@ class UI::Party < UI::BaseScreen
       pbFadeOutInWithUpdate(screen.sprites) do
         new_index = UI::PokemonSummary.new(screen.party, screen.index, mode: summary_mode).main
         screen.set_index(new_index)
+        screen.refresh
       end
     }
   })

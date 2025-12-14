@@ -2082,6 +2082,7 @@ class UI::PokemonStorage < UI::BaseScreen
         new_index = UI::PokemonSummary.new(party, screen.index).main
         screen.set_index(new_index, true)
       end
+      screen.refresh
       screen.visuals.fade_in
     }
   })

@@ -1529,20 +1529,6 @@ class UI::PokemonSummary < UI::BaseScreen
 
   #-----------------------------------------------------------------------------
 
-  ACTIONS.add(:marking, {
-    :effect => proc { |screen|
-      screen.visuals.navigate_markings
-      screen.refresh
-    }
-  })
-  ACTIONS.add(:pokedex, {
-    :effect => proc { |screen|
-      $player.pokedex.register_last_seen(screen.pokemon)
-      screen.visuals.fade_out
-      pbShowPokedexEntry(screen.pokemon.species, false, true)
-      screen.visuals.fade_in
-    }
-  })
   ACTIONS.add(:give_item, {
     :effect => proc { |screen|
       item = nil
@@ -1561,6 +1547,30 @@ class UI::PokemonSummary < UI::BaseScreen
   ACTIONS.add(:take_item, {
     :effect => proc { |screen|
       screen.refresh if pbTakeItemFromPokemon(screen.pokemon, screen)
+    }
+  })
+  ACTIONS.add(:change_nickname, {
+    :effect => proc { |screen|
+      screen.visuals.fade_out
+      nickname = pbEnterText(_INTL("{1}'s nickname?", screen.pokemon.name),
+                             0, Pokemon::MAX_NAME_SIZE, screen.pokemon.name, 2, screen.pokemon)
+      screen.pokemon.name = nickname
+      screen.refresh
+      screen.visuals.fade_in
+    }
+  })
+  ACTIONS.add(:pokedex, {
+    :effect => proc { |screen|
+      $player.pokedex.register_last_seen(screen.pokemon)
+      screen.visuals.fade_out
+      pbShowPokedexEntry(screen.pokemon.species, false, true)
+      screen.visuals.fade_in
+    }
+  })
+  ACTIONS.add(:marking, {
+    :effect => proc { |screen|
+      screen.visuals.navigate_markings
+      screen.refresh
     }
   })
 
@@ -1596,15 +1606,21 @@ MenuHandlers.add(:summary_screen_interact, :take_item, {
   "condition" => proc { |screen| next !screen.pokemon.egg? && screen.pokemon.hasItem? }
 })
 
+MenuHandlers.add(:summary_screen_interact, :change_nickname, {
+  "name"      => _INTL("Change nickname"),
+  "order"     => 30,
+  "condition" => proc { |screen| next Settings::ALLOW_RENAMING_POKEMON_IN_SUMMARY_SCREEN }
+})
+
 MenuHandlers.add(:summary_screen_interact, :pokedex, {
   "name"      => _INTL("View Pokédex"),
-  "order"     => 30,
+  "order"     => 40,
   "condition" => proc { |screen| next !screen.pokemon.egg? && $player.has_pokedex }
 })
 
 MenuHandlers.add(:summary_screen_interact, :marking, {
   "name"      => _INTL("Mark"),
-  "order"     => 40
+  "order"     => 50
 })
 
 MenuHandlers.add(:summary_screen_interact, :cancel, {
