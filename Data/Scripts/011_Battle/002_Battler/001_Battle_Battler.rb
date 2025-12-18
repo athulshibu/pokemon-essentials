@@ -54,7 +54,7 @@ class Battle::Battler
   STAT_STAGE_DIVISORS       = [8, 7, 6, 5, 4, 3, 2, 2, 2, 2, 2, 2, 2]
   ACC_EVA_STAGE_MULTIPLIERS = [3, 3, 3, 3, 3, 3, 3, 4, 5, 6, 7, 8, 9]
   ACC_EVA_STAGE_DIVISORS    = [9, 8, 7, 6, 5, 4, 3, 3, 3, 3, 3, 3, 3]
-  STAT_STAGE_MAXIMUM        = 6   # Is also the minimum (-6)
+  STAT_STAGE_MAXIMUM        = STAT_STAGE_MULTIPLIERS.length / 2   # 6, is also the minimum (-6)
 
   #-----------------------------------------------------------------------------
   # Complex accessors.
@@ -144,6 +144,10 @@ class Battle::Battler
   def gender;          return @pokemon ? @pokemon.gender : 0;          end
   def nature;          return @pokemon ? @pokemon.nature : nil;        end
   def pokerusStage;    return @pokemon ? @pokemon.pokerusStage : 0;    end
+
+  def isSpecies?(*check_species)
+    return @pokemon&.isSpecies?(*check_species)
+  end
 
   #-----------------------------------------------------------------------------
   # Mega Evolution, Primal Reversion, Shadow Pokémon.
@@ -251,8 +255,18 @@ class Battle::Battler
   end
 
   #-----------------------------------------------------------------------------
-  # Calculated properties.
+  # Stats.
   #-----------------------------------------------------------------------------
+
+  def plainStats
+    ret = {}
+    ret[:ATTACK]          = self.attack
+    ret[:DEFENSE]         = self.defense
+    ret[:SPECIAL_ATTACK]  = self.spatk
+    ret[:SPECIAL_DEFENSE] = self.spdef
+    ret[:SPEED]           = self.speed
+    return ret
+  end
 
   def stat_with_stages(stat)
     stat_value = 0
@@ -311,22 +325,8 @@ class Battle::Battler
   end
 
   #-----------------------------------------------------------------------------
-  # Queries about what the battler has.
+  # Types.
   #-----------------------------------------------------------------------------
-
-  def plainStats
-    ret = {}
-    ret[:ATTACK]          = self.attack
-    ret[:DEFENSE]         = self.defense
-    ret[:SPECIAL_ATTACK]  = self.spatk
-    ret[:SPECIAL_DEFENSE] = self.spdef
-    ret[:SPEED]           = self.speed
-    return ret
-  end
-
-  def isSpecies?(*check_species)
-    return @pokemon&.isSpecies?(*check_species)
-  end
 
   # Returns the active types of this Pokémon. The array should not include the
   # same type more than once, and should not include any invalid types.
@@ -362,6 +362,14 @@ class Battle::Battler
     return activeTypes.length > 0
   end
 
+  def canChangeType?
+    return ![:MULTITYPE, :RKSSYSTEM].include?(@ability_id)
+  end
+
+  #-----------------------------------------------------------------------------
+  # Ability.
+  #-----------------------------------------------------------------------------
+
   # NOTE: Do not create any held item which affects whether a Pokémon's ability
   #       is active. The ability Klutz affects whether a Pokémon's item is
   #       active, and the code for the two combined would cause an infinite loop
@@ -382,10 +390,55 @@ class Battle::Battler
   end
   alias hasWorkingAbility hasActiveAbility?
 
-  # Applies to both losing self's ability (i.e. being replaced by another) and
-  # having self's ability be negated.
-  # TODO: Any changes needed here?
+  # Returns whether the ability can be negated.
   def unstoppableAbility?(abil = nil)
+    abil = @ability_id if !abil
+    abil = GameData::Ability.try_get(abil)
+    return false if !abil
+    ability_blacklist = [
+      # Form-changing abilities
+      :BATTLEBOND,
+      :DISGUISE,
+#      :EMBODYASPECTATTACK,                                # This can be negated
+#      :EMBODYASPECTDEFENSE,                               # This can be negated
+#      :EMBODYASPECTSPDEF,                                 # This can be negated
+#      :EMBODYASPECTSPEED,                                 # This can be negated
+#      :FLOWERGIFT,                                        # This can be negated
+#      :FORECAST,                                          # This can be negated
+      :GULPMISSILE,
+#      :HUNGERSWITCH,                                      # This can be negated
+      :ICEFACE,
+      :MULTITYPE,
+      :POWERCONSTRUCT,
+      :SCHOOLING,
+      :SHIELDSDOWN,
+      :STANCECHANGE,
+      :TERASHIFT,
+      :ZENMODE,
+      :ZEROTOHERO,
+      # Abilities intended to be inherent properties of a certain species
+      :ASONECHILLINGNEIGH,
+      :ASONEGRIMNEIGH,
+      :COMATOSE,
+#      :COMMANDER,                                         # This can be negated
+#      :POISONPUPPETEER,                                   # This can be negated
+#      :PROTOSYNTHESIS,                                    # This can be negated
+#      :QUARKDRIVE,                                        # This can be negated
+      :RKSSYSTEM
+#      :TERAFORMZERO,                                      # This can be negated
+#      :TERASHELL,                                         # This can be negated
+#      :WONDERGUARD                                        # This can be negated
+    ]
+    if Settings::MECHANICS_GENERATION <= 6
+      ability_blacklist.delete(:ZENMODE)
+    end
+    return true if ability_blacklist.include?(abil.id)
+    return true if hasActiveItem?(:ABILITYSHIELD)
+    return false
+  end
+
+  # Applies to losing self's ability (i.e. being replaced by another).
+  def unlosableAbility?(abil = nil)
     abil = @ability_id if !abil
     abil = GameData::Ability.try_get(abil)
     return false if !abil
@@ -397,10 +450,9 @@ class Battle::Battler
       :EMBODYASPECTDEFENSE,
       :EMBODYASPECTSPDEF,
       :EMBODYASPECTSPEED,
-#      :FLOWERGIFT,                                        # This can be stopped
-#      :FORECAST,                                          # This can be stopped
-      :GULPMISSILE,
-#      :HUNGERSWITCH,                                      # This can be stopped
+#      :FLOWERGIFT,                                       # This can be replaced
+#      :FORECAST,                                         # This can be replaced
+      :HUNGERSWITCH,
       :ICEFACE,
       :MULTITYPE,
       :POWERCONSTRUCT,
@@ -411,32 +463,38 @@ class Battle::Battler
       :ZENMODE,
       :ZEROTOHERO,
       # Appearance-changing abilities
-#      :ILLUSION,                                          # This can be stopped
-#      :IMPOSTER,                                          # This can be stopped
+      :ILLUSION,
+#      :IMPOSTER,                                         # This can be replaced
       # Abilities intended to be inherent properties of a certain species
       :ASONECHILLINGNEIGH,
       :ASONEGRIMNEIGH,
       :COMATOSE,
       :COMMANDER,
-      # TODO: Poison Puppeteer can't be lost but can be negated by Gastro Acid.
       :POISONPUPPETEER,
-#      :POWEROFALCHEMY,                                    # This can be stopped
-#      :PROTOSYNTHESIS,                                    # This can be stopped
-#      :QUARKDRIVE,                                        # This can be stopped
-#      :RECEIVER,                                          # This can be stopped
-      :RKSSYSTEM
-#      :TERAFORMZERO,                                      # This can be stopped
-#      :TERASHELL,                                         # This can be stopped
-#      :TRACE,                                             # This can be stopped
-#      :WONDERGUARD                                        # This can be stopped
+      :PROTOSYNTHESIS,
+      :QUARKDRIVE,
+      :RKSSYSTEM,
+      :TERAFORMZERO,
+      :TERASHELL,
+      :WONDERGUARD,
+      # Abilities that can't be negated
+      :NEUTRALIZINGGAS
     ]
+    if Settings::MECHANICS_GENERATION <= 6
+      ability_blacklist.delete(:ZENMODE)
+    end
+    if Settings::MECHANICS_GENERATION <= 8
+      ability_blacklist.delete(:HUNGERSWITCH)
+      ability_blacklist.delete(:ILLUSION)
+      ability_blacklist.delete(:NEUTRALIZINGGAS)
+      ability_blacklist.push(:GULPMISSILE)
+    end
     return true if ability_blacklist.include?(abil.id)
     return true if hasActiveItem?(:ABILITYSHIELD)
     return false
   end
 
   # Applies to gaining the ability.
-  # TODO: Any changes needed here?
   def ungainableAbility?(abil = nil)
     abil = @ability_id if !abil
     abil = GameData::Ability.try_get(abil)
@@ -451,7 +509,6 @@ class Battle::Battler
       :EMBODYASPECTSPEED,
       :FLOWERGIFT,
       :FORECAST,
-      :GULPMISSILE,
       :HUNGERSWITCH,
       :ICEFACE,
       :MULTITYPE,
@@ -471,21 +528,31 @@ class Battle::Battler
       :COMATOSE,
       :COMMANDER,
       :POISONPUPPETEER,
-      :POWEROFALCHEMY,
       :PROTOSYNTHESIS,
       :QUARKDRIVE,
-      :RECEIVER,
       :RKSSYSTEM,
       :TERAFORMZERO,
       :TERASHELL,
-      :TRACE,
       :WONDERGUARD,
+      # Abilities that replace themselves
+      :POWEROFALCHEMY,
+      :RECEIVER,
+      :TRACE,
       # Abilities that can't be negated
       :NEUTRALIZINGGAS
     ]
-    ability_blacklist.delete(:GULPMISSILE) if Settings::MECHANICS_GENERATION >= 9
+    if Settings::MECHANICS_GENERATION <= 6
+      ability_blacklist.delete(:ZENMODE)
+    end
+    if Settings::MECHANICS_GENERATION <= 8
+      ability_blacklist.push(:GULPMISSILE)
+    end
     return ability_blacklist.include?(abil.id)
   end
+
+  #-----------------------------------------------------------------------------
+  # Held item.
+  #-----------------------------------------------------------------------------
 
   def itemActive?(ignoreFainted = false)
     return false if fainted? && !ignoreFainted
@@ -522,6 +589,30 @@ class Battle::Battler
     return item_data.unlosable?(@species, self.ability)
   end
 
+  def initialItem
+    return @battle.initialItems[@index & 1][@pokemonIndex]
+  end
+
+  def setInitialItem(value)
+    item_data = GameData::Item.try_get(value)
+    new_item = (item_data) ? item_data.id : nil
+    @battle.initialItems[@index & 1][@pokemonIndex] = new_item
+  end
+
+  def recycleItem
+    return @battle.recycleItems[@index & 1][@pokemonIndex]
+  end
+
+  def setRecycleItem(value)
+    item_data = GameData::Item.try_get(value)
+    new_item = (item_data) ? item_data.id : nil
+    @battle.recycleItems[@index & 1][@pokemonIndex] = new_item
+  end
+
+  #-----------------------------------------------------------------------------
+  # Moves.
+  #-----------------------------------------------------------------------------
+
   def eachMove
     @moves.each { |m| yield m }
   end
@@ -557,6 +648,10 @@ class Battle::Battler
     return nil
   end
 
+  #-----------------------------------------------------------------------------
+  # Other properties.
+  #-----------------------------------------------------------------------------
+
   def hasMoldBreaker?
     return hasActiveAbility?([:MOLDBREAKER, :TERAVOLT, :TURBOBLAZE])
   end
@@ -564,10 +659,6 @@ class Battle::Battler
   def beingMoldBroken?
     return false if hasActiveItem?(:ABILITYSHIELD)
     return @battle.moldBreaker
-  end
-
-  def canChangeType?
-    return ![:MULTITYPE, :RKSSYSTEM].include?(@ability_id)
   end
 
   def airborne?
@@ -585,12 +676,6 @@ class Battle::Battler
 
   def affectedByAdditionalEffects?
     return false if hasActiveItem?(:COVERTCLOAK)
-    return true
-  end
-
-  def affectedByTerrain?
-    return false if airborne?
-    return false if semiInvulnerable?
     return true
   end
 
@@ -641,6 +726,12 @@ class Battle::Battler
     ret = @battle.pbWeather
     ret = :None if [:Sun, :Rain, :HarshSun, :HeavyRain].include?(ret) && hasActiveItem?(:UTILITYUMBRELLA)
     return ret
+  end
+
+  def affectedByTerrain?
+    return false if airborne?
+    return false if semiInvulnerable?
+    return true
   end
 
   def affectedByPowder?(showMsg = false)
@@ -765,26 +856,6 @@ class Battle::Battler
       break
     end
     return ret
-  end
-
-  def initialItem
-    return @battle.initialItems[@index & 1][@pokemonIndex]
-  end
-
-  def setInitialItem(value)
-    item_data = GameData::Item.try_get(value)
-    new_item = (item_data) ? item_data.id : nil
-    @battle.initialItems[@index & 1][@pokemonIndex] = new_item
-  end
-
-  def recycleItem
-    return @battle.recycleItems[@index & 1][@pokemonIndex]
-  end
-
-  def setRecycleItem(value)
-    item_data = GameData::Item.try_get(value)
-    new_item = (item_data) ? item_data.id : nil
-    @battle.recycleItems[@index & 1][@pokemonIndex] = new_item
   end
 
   def belched?

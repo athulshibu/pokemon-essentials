@@ -655,7 +655,6 @@ class Battle::Move::TargetUsesItsLastUsedMoveAgain < Battle::Move
 
   def initialize(battle, move)
     super
-    # TODO: Any more function codes that belong in here?
     @moveBlacklist = [
       "MultiTurnAttackBideThenReturnDoubleDamage",       # Bide
       "ProtectUserFromDamagingMovesKingsShield",         # King's Shield
@@ -881,7 +880,6 @@ class Battle::Move::DisableTargetUsingDifferentMove < Battle::Move
 
   def initialize(battle, move)
     super
-    # TODO: Any more function codes that belong in here?
     @moveBlacklist = [
       "DisableTargetUsingDifferentMove",               # Encore
       # Struggle
@@ -896,7 +894,7 @@ class Battle::Move::DisableTargetUsingDifferentMove < Battle::Move
     if Settings::MECHANICS_GENERATION >= 7
       @moveBlacklist += [
         # Moves that call other moves
-#        "UseLastMoveUsedByTarget",                    # Mirror Move   # See above
+#        "UseLastMoveUsedByTarget",                    # Mirror Move   # Already above
         "UseLastMoveUsed",                             # Copycat
         "UseMoveTargetIsAboutToUse",                   # Me First
         "UseMoveDependingOnEnvironment",               # Nature Power

@@ -1120,7 +1120,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("SetTargetAbilityToInsomn
 #===============================================================================
 Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("SetUserAbilityToTargetAbility",
   proc { |move, user, target, ai, battle|
-    next true if user.battler.unstoppableAbility?
+    next true if user.battler.unlosableAbility?
     next move.move.pbFailsAgainstTarget?(user.battler, target.battler, false)
   }
 )
@@ -1143,8 +1143,8 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("SetUserAbilityToTargetAb
 #===============================================================================
 Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("SetUserAndAlliesAbilityToTargetAbility",
   proc { |move, user, target, ai, battle|
-    next true if user.battler.unstoppableAbility? &&
-                 user.battler.allAllies.none? { |ally| !ally.unstoppableAbility? }
+    next true if user.battler.unlosableAbility? &&
+                 user.battler.allAllies.none? { |ally| !ally.unlosableAbility? }
     next move.move.pbFailsAgainstTarget?(user.battler, target.battler, false)
   }
 )
@@ -1152,7 +1152,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("SetUserAndAlliesAbilityT
   proc { |score, move, user, target, ai, battle|
     next Battle::AI::MOVE_USELESS_SCORE if !user.ability_active?
     ai.each_same_side_battler(user.side) do |battler, i|
-      next if battler.battler.unstoppableAbility? || battler.ability_id == target.ability_id
+      next if battler.battler.unlosableAbility? || battler.ability_id == target.ability_id
       old_ability_rating = battler.wants_ability?(battler.ability_id)
       new_ability_rating = battler.wants_ability?(target.ability_id)
       if old_ability_rating > new_ability_rating
@@ -1196,8 +1196,8 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("SetTargetAbilityToUserAb
 #===============================================================================
 Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("UserTargetSwapAbilities",
   proc { |move, user, target, ai, battle|
-    next true if !user.ability || user.battler.unstoppableAbility? ||
-                 user.battler.ungainableAbility? || user.ability_id == :WONDERGUARD
+    next true if !user.ability || user.battler.unlosableAbility? ||
+                 user.battler.ungainableAbility?
     next move.move.pbFailsAgainstTarget?(user.battler, target.battler, false)
   }
 )
