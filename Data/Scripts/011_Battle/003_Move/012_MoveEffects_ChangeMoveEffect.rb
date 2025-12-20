@@ -788,12 +788,6 @@ end
 
 #===============================================================================
 # Uses the last move that the target used. (Mirror Move)
-# TODO: In Gen 5-6, this copies the most recent move that hit the user. In Gen
-#       7+, this copies the target's move (it's unclear if said move needed to
-#       have targeted the user). The Gen 7+ effect might have applied in earlier
-#       Gens, but there's no research.
-# TODO: In Gen 7+ (maybe earlier), this can copy a move from before the user
-#       switches in. Ensure this happens.
 #===============================================================================
 class Battle::Move::UseLastMoveUsedByTarget < Battle::Move
   def ignoresSubstitute?(user); return true; end

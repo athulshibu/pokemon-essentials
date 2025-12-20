@@ -83,7 +83,7 @@ module Battle::CatchAndStoreMixin
     stored_box = @peer.pbStorePokemon(pbPlayer, pkmn)
     if stored_box < 0
       pbDisplayPaused(_INTL("{1} has been added to your party.", pkmn.name))
-      # TODO: Should this be done?
+      # TODO: Should this be done? Related to restoring held item.
       @initialItems[0][pbPlayer.party.length - 1] = pkmn.item_id if @initialItems
     else
       # Messages saying the Pokémon was stored in a PC box

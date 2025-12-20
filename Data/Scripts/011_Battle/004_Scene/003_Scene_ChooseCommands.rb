@@ -175,12 +175,9 @@ class Battle::Scene
     end
     wasTargeting = false
     # Start Bag screen
-    bag_screen = UI::Bag.new($bag, mode: :choose_item_in_battle)
+    bag_screen = UI::Bag.new($bag, mode: :battle_choose_item)
     bag_screen.set_filter_proc(proc { |itm|
       use_type = GameData::Item.get(itm).battle_use
-      # TODO: If use_type == 3, check UsableOnBattler handlers for the item and
-      #       idxBattler. Every BattleUseOnBattler handler needs a corresponding
-      #       UsableOnBattler handler created for it.
       next use_type && use_type > 0
     })
     bag_screen.show_and_hide do

@@ -79,15 +79,25 @@ class Battle
     end
   end
 
-  # TODO: Make this say "...on Pikachu" if the item is used on a Pokémon in
-  #       battle/in the party and there are multiple Pokémon it could have been
-  #       used on.
-  def pbUseItemMessage(item, trainerName)
-    itemName = GameData::Item.get(item).portion_name
-    if itemName.starts_with_vowel?
-      pbDisplayBrief(_INTL("{1} used an {2}.", trainerName, itemName))
+  def pbUseItemMessage(item, trainer_name, battler = nil)
+    item_data = GameData::Item.get(item)
+    one_target_of_many =
+    item_name = item_data.portion_name
+    if battler && !battler.allAllies.empty?
+      # Specify which Pokémon the item was used on (only for Pokémon in battle,
+      # because the effects of items used on party Pokémon all mention the
+      # Pokémon's name so it doesn't need specifying here too)
+      if item_name.starts_with_vowel?
+        pbDisplayBrief(_INTL("{1} used an {2} on {3}.", trainer_name, item_name, battler.name))
+      else
+        pbDisplayBrief(_INTL("{1} used a {2} on {3}.", trainer_name, item_name, battler.name))
+      end
     else
-      pbDisplayBrief(_INTL("{1} used a {2}.", trainerName, itemName))
+      if item_name.starts_with_vowel?
+        pbDisplayBrief(_INTL("{1} used an {2}.", trainer_name, item_name))
+      else
+        pbDisplayBrief(_INTL("{1} used a {2}.", trainer_name, item_name))
+      end
     end
   end
 
@@ -111,8 +121,8 @@ class Battle
   # Uses an item on a Pokémon in battle that belongs to the trainer.
   def pbUseItemOnBattler(item, idxParty, userBattler)
     trainerName = pbGetOwnerName(userBattler.index)
-    pbUseItemMessage(item, trainerName)
     battler = pbFindBattler(idxParty, userBattler.index)
+    pbUseItemMessage(item, trainerName, battler)
     ch = @choices[userBattler.index]
     if battler
       if ItemHandlers.triggerCanUseInBattle(item, battler.pokemon, battler, ch[3], true, self, @scene, false)

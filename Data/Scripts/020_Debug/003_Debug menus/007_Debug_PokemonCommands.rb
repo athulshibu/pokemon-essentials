@@ -739,7 +739,6 @@ MenuHandlers.add(:pokemon_debug_menu, :species_and_form, {
           pbPlayCancelSE
         end
       when :set_form
-        # TODO: Allow setting any form number for any species.
         form_cmd = 0
         form_commands = {}
         GameData::Species.each do |sp|
@@ -750,25 +749,23 @@ MenuHandlers.add(:pokemon_debug_menu, :species_and_form, {
           form_commands[sp.form] = form_name
           form_cmd = sp.form if pkmn.form == sp.form
         end
-        if form_commands.length <= 1
-          screen.show_message(_INTL("Species {1} only has one form.", pkmn.speciesName))
-          if pkmn.form != 0 && screen.show_confirm_message(_INTL("Do you want to reset the form to 0?"))
-            pkmn.form = 0
-            $player.pokedex.register(pkmn) if !setting_up_battle && !pkmn.egg?
-            screen.refresh
+        form_commands[99999] = _INTL("Choose custom number")
+        form_cmd = screen.show_menu(_INTL("Set the Pokémon's form."), form_commands, form_commands.keys.index(form_cmd))
+        next if form_cmd.nil?
+        if form_cmd == 99999
+          params = ChooseNumberParams.new
+          params.setRange(0, 999)
+          params.setDefaultValue(pkmn.form)
+          form_cmd = screen.choose_number("\\se[]" + _INTL("Choose a custom form (max. {1}).", params.maxNumber), params)
+        end
+        if form_cmd != pkmn.form
+          if MultipleForms.hasFunction?(pkmn, "getForm")
+            next if !screen.show_confirm_message(_INTL("This species decides its own form. Override?"))
+            pkmn.forced_form = form_cmd
           end
-        else
-          form_cmd = screen.show_menu(_INTL("Set the Pokémon's form."), form_commands, form_commands.keys.index(form_cmd))
-          next if form_cmd.nil?
-          if form_cmd != pkmn.form
-            if MultipleForms.hasFunction?(pkmn, "getForm")
-              next if !screen.show_confirm_message(_INTL("This species decides its own form. Override?"))
-              pkmn.forced_form = form_cmd
-            end
-            pkmn.form = form_cmd
-            $player.pokedex.register(pkmn) if !setting_up_battle && !pkmn.egg?
-            screen.refresh
-          end
+          pkmn.form = form_cmd
+          $player.pokedex.register(pkmn) if !setting_up_battle && !pkmn.egg?
+          screen.refresh
         end
       when :reset_form
         pkmn.forced_form = nil

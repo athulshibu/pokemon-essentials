@@ -298,7 +298,7 @@ class UI::BagVisuals < UI::BaseVisuals
     end
     # Ensure current pocket is one that isn't empty
     new_pocket_index = 0
-    if [:choose_item, :choose_item_in_battle].include?(@mode) && !@filtered_list[@bag.last_viewed_pocket].empty?
+    if [:choose_item, :battle_choose_item].include?(@mode) && !@filtered_list[@bag.last_viewed_pocket].empty?
       new_pocket_index = all_pockets.index(@bag.last_viewed_pocket)
     end
     all_pockets.length.times do |i|
@@ -337,7 +337,7 @@ class UI::BagVisuals < UI::BaseVisuals
     loop do
       new_pocket_index = (new_pocket_index + 1) % all_pockets.length
       new_pocket = all_pockets[new_pocket_index]
-      break if ![:choose_item, :choose_item_in_battle].include?(@mode)
+      break if ![:choose_item, :battle_choose_item].include?(@mode)
       break if new_pocket == @pocket   # Bag is empty somehow
       if @filtered_list
         break if @filtered_list[new_pocket].length > 0
@@ -357,7 +357,7 @@ class UI::BagVisuals < UI::BaseVisuals
     loop do
       new_pocket_index = (new_pocket_index - 1) % all_pockets.length
       new_pocket = all_pockets[new_pocket_index]
-      break if ![:choose_item, :choose_item_in_battle].include?(@mode)
+      break if ![:choose_item, :battle_choose_item].include?(@mode)
       break if new_pocket == @pocket   # Bag is empty somehow
       if @filtered_list
         break if @filtered_list[new_pocket].length > 0
@@ -476,7 +476,7 @@ class UI::BagVisuals < UI::BaseVisuals
                 icon_pos * icon_size[0], icon_size[1], *icon_size, overlay: :pocket_icons)
     end
     # Draw disabled pocket icons
-    if [:choose_item, :choose_item_in_battle].include?(@mode) && @filtered_list
+    if [:choose_item, :battle_choose_item].include?(@mode) && @filtered_list
       all_pockets.each_with_index do |pckt, i|
         next if @filtered_list[pckt].length > 0
         icon_pos = GameData::BagPocket.get(pckt).icon_position
@@ -490,7 +490,7 @@ class UI::BagVisuals < UI::BaseVisuals
     draw_image(@bitmaps[:pocket_icons], icon_x + (pocket_number * (icon_size[0] - icon_overlap)), icon_y,
                icon_pos * icon_size[0], 0, *icon_size, overlay: :pocket_icons)
     # Draw left/right arrows if there are multiple pockets that can be looked at
-    if ![:choose_item, :choose_item_in_battle].include?(@mode) ||
+    if ![:choose_item, :battle_choose_item].include?(@mode) ||
        !@filtered_list || @filtered_list.count { |pckt, contents| !contents.empty? } > 1
       draw_image(@bitmaps[:pocket_icons], icon_x - (icon_size[0] - icon_overlap), icon_y,
                  0, icon_size[1] * 3, *icon_size, overlay: :pocket_icons)
@@ -541,6 +541,12 @@ class UI::BagVisuals < UI::BaseVisuals
   def refresh_party_display
     @sprites[:party_icons].bitmap.clear
     return if item.nil? || @mode == :choose_item
+    # TODO: Pass an array of battlers into this UI in battle. If the item's
+    #       battle usability is 3 (i.e. on a battler), display the party and use
+    #       the battlers array to determine if the item has an effect on any.
+    #       Use new pbCanUseItemOnBattler? and pbItemHasEffectOnBattler?
+    #       methods below to check the item for items with battle usability 3.
+    #       All when @mode == :battle_choose_item.
     return if !pbCanUseItemOnPokemon?(item)
     icon_x = 0
     icon_y = 0
@@ -745,6 +751,10 @@ class UI::Bag < UI::BaseScreen
 
   ACTIONS = HandlerHash.new
 
+  # mode is one of:
+  #   :normal               Can use/toss items directly.
+  #   :choose_item          Can only choose an item. May have a filter applied.
+  #   :battle_choose_item   Choose an item to use in battle. Has a filter applied.
   def initialize(bag, mode: :normal)
     @bag = bag
     @mode = mode

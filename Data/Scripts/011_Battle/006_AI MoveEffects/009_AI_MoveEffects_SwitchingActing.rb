@@ -360,13 +360,14 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("TrapTargetInBattle",
     # Score for being an additional effect
     add_effect = move.get_score_change_for_additional_effect(user, target)
     next score if add_effect == -999   # Additional effect will be negated
-    score += add_effect
     # Score for target becoming trapped in battle
     if target.effects[PBEffects::PerishSong] > 0 ||
        target.effects[PBEffects::Attract] >= 0 ||
        target.effects[PBEffects::Confusion] > 0 ||
        eor_damage > 0
-      score += 15
+      trapping_score = 15
+      trapping_score = (trapping_score > 0) ? [trapping_score + add_effect, 0].max : [trapping_score - add_effect, 0].min
+      score += trapping_score
     end
     next score
   }

@@ -341,7 +341,6 @@ end
 # that negates the move, e.g. Lightning Rod, the bearer of that ability will
 # have their ability triggered regardless of whether they are holding a berry,
 # and they will not consume their berry. (Teatime)
-# TODO: This isn't quite right for the messages shown when a berry is consumed.
 #===============================================================================
 class Battle::Move::AllBattlersConsumeBerry < Battle::Move
   def pbMoveFailed?(user, targets)

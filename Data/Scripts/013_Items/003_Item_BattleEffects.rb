@@ -506,7 +506,18 @@ ItemHandlers::BattleUseOnPokemon.add(:ETHER, proc { |item, pokemon, battler, cho
   idxMove = choices[3]
   pbBattleRestorePP(pokemon, battler, idxMove, 10)
   pbSEPlay("Use item in party")
-  scene.pbDisplay(_INTL("PP was restored."))
+  if battler
+    if battler.battle.pbOwnedByPlayer?(battler.index)
+      scene.pbDisplay(_INTL("The PP of {1}'s {2} was restored!",
+                            battler.pbThis(true), pokemon.moves[idxMove].name))
+    else
+      scene.pbDisplay(_INTL("{1}'s {2} had its {3} PP restored!",
+                            battler.battle.pbGetOwnerName(battler.index),
+                            battler.pbThis(true), pokemon.moves[idxMove].name))
+    end
+  else
+    scene.pbDisplay(_INTL("The PP of {1}'s {2} was restored!", pokemon.name, pokemon.moves[idxMove].name))
+  end
 })
 
 ItemHandlers::BattleUseOnPokemon.copy(:ETHER, :LEPPABERRY)
@@ -515,7 +526,18 @@ ItemHandlers::BattleUseOnPokemon.add(:MAXETHER, proc { |item, pokemon, battler, 
   idxMove = choices[3]
   pbBattleRestorePP(pokemon, battler, idxMove, pokemon.moves[idxMove].total_pp)
   pbSEPlay("Use item in party")
-  scene.pbDisplay(_INTL("PP was restored."))
+  if battler
+    if battler.battle.pbOwnedByPlayer?(battler.index)
+      scene.pbDisplay(_INTL("The PP of {1}'s {2} was restored!",
+                            battler.pbThis(true), pokemon.moves[idxMove].name))
+    else
+      scene.pbDisplay(_INTL("{1}'s {2} had its {3} PP restored!",
+                            battler.battle.pbGetOwnerName(battler.index),
+                            battler.pbThis(true), pokemon.moves[idxMove].name))
+    end
+  else
+    scene.pbDisplay(_INTL("The PP of {1}'s {2} was restored!", pokemon.name, pokemon.moves[idxMove].name))
+  end
 })
 
 ItemHandlers::BattleUseOnPokemon.add(:ELIXIR, proc { |item, pokemon, battler, choices, scene|
@@ -523,7 +545,16 @@ ItemHandlers::BattleUseOnPokemon.add(:ELIXIR, proc { |item, pokemon, battler, ch
     pbBattleRestorePP(pokemon, battler, i, 10)
   end
   pbSEPlay("Use item in party")
-  scene.pbDisplay(_INTL("PP was restored."))
+  if battler
+    if battler.battle.pbOwnedByPlayer?(battler.index)
+      scene.pbDisplay(_INTL("All of {1}'s moves had their PP restored!", battler.pbThis(true)))
+    else
+      scene.pbDisplay(_INTL("{1}'s {2} had PP restored to all of its moves!",
+                            battler.battle.pbGetOwnerName(battler.index), battler.pbThis(true)))
+    end
+  else
+    scene.pbDisplay(_INTL("All of {1}'s moves had their PP restored!", pokemon.name))
+  end
 })
 
 ItemHandlers::BattleUseOnPokemon.add(:MAXELIXIR, proc { |item, pokemon, battler, choices, scene|
@@ -531,7 +562,16 @@ ItemHandlers::BattleUseOnPokemon.add(:MAXELIXIR, proc { |item, pokemon, battler,
     pbBattleRestorePP(pokemon, battler, i, pokemon.moves[i].total_pp)
   end
   pbSEPlay("Use item in party")
-  scene.pbDisplay(_INTL("PP was restored."))
+  if battler
+    if battler.battle.pbOwnedByPlayer?(battler.index)
+      scene.pbDisplay(_INTL("All of {1}'s moves had their PP restored!", battler.pbThis(true)))
+    else
+      scene.pbDisplay(_INTL("{1}'s {2} had PP restored to all of its moves!",
+                            battler.battle.pbGetOwnerName(battler.index), battler.pbThis(true)))
+    end
+  else
+    scene.pbDisplay(_INTL("All of {1}'s moves had their PP restored!", pokemon.name))
+  end
 })
 
 #===============================================================================
@@ -539,23 +579,34 @@ ItemHandlers::BattleUseOnPokemon.add(:MAXELIXIR, proc { |item, pokemon, battler,
 # For items used on a Pokémon in battle.
 #===============================================================================
 
+ItemHandlers::BattleUsableOnBattler.add(:REDFLUTE, proc { |item, battler|
+  next battler.effects[PBEffects::Attract] >= 0
+})
 ItemHandlers::BattleUseOnBattler.add(:REDFLUTE, proc { |item, battler, scene|
   battler.pbCureAttract
   scene.pbDisplay(_INTL("{1} got over its infatuation.", battler.pbThis))
 })
 
+ItemHandlers::BattleUsableOnBattler.add(:YELLOWFLUTE, proc { |item, battler|
+  next battler.effects[PBEffects::Confusion] > 0
+})
 ItemHandlers::BattleUseOnBattler.add(:YELLOWFLUTE, proc { |item, battler, scene|
   battler.pbCureConfusion
   scene.pbDisplay(_INTL("{1} snapped out of its confusion.", battler.pbThis))
 })
 
+ItemHandlers::BattleUsableOnBattler.copy(:YELLOWFLUTE, :PERSIMBERRY)
 ItemHandlers::BattleUseOnBattler.copy(:YELLOWFLUTE, :PERSIMBERRY)
 
+ItemHandlers::BattleUsableOnBattler.add(:XATTACK, proc { |item, battler|
+  next battler.pbCanRaiseStatStage?(:ATTACK, battler)
+})
 ItemHandlers::BattleUseOnBattler.add(:XATTACK, proc { |item, battler, scene|
   battler.pbRaiseStatStage(:ATTACK, (Settings::X_STAT_ITEMS_RAISE_BY_TWO_STAGES) ? 2 : 1, battler)
   battler.pokemon.changeHappiness("battleitem")
 })
 
+ItemHandlers::BattleUsableOnBattler.copy(:XATTACK, :XATTACK2, :XATTACK3, :XATTACK6)
 ItemHandlers::BattleUseOnBattler.add(:XATTACK2, proc { |item, battler, scene|
   battler.pbRaiseStatStage(:ATTACK, 2, battler)
   battler.pokemon.changeHappiness("battleitem")
@@ -571,13 +622,18 @@ ItemHandlers::BattleUseOnBattler.add(:XATTACK6, proc { |item, battler, scene|
   battler.pokemon.changeHappiness("battleitem")
 })
 
+ItemHandlers::BattleUsableOnBattler.add(:XDEFENSE, proc { |item, battler|
+  next battler.pbCanRaiseStatStage?(:DEFENSE, battler)
+})
 ItemHandlers::BattleUseOnBattler.add(:XDEFENSE, proc { |item, battler, scene|
   battler.pbRaiseStatStage(:DEFENSE, (Settings::X_STAT_ITEMS_RAISE_BY_TWO_STAGES) ? 2 : 1, battler)
   battler.pokemon.changeHappiness("battleitem")
 })
 
+ItemHandlers::BattleUsableOnBattler.copy(:XDEFENSE, :XDEFEND)
 ItemHandlers::BattleUseOnBattler.copy(:XDEFENSE, :XDEFEND)
 
+ItemHandlers::BattleUsableOnBattler.copy(:XDEFENSE, :XDEFENSE2, :XDEFEND2, :XDEFENSE3, :XDEFEND3, :XDEFENSE6, :XDEFEND6)
 ItemHandlers::BattleUseOnBattler.add(:XDEFENSE2, proc { |item, battler, scene|
   battler.pbRaiseStatStage(:DEFENSE, 2, battler)
   battler.pokemon.changeHappiness("battleitem")
@@ -599,13 +655,18 @@ ItemHandlers::BattleUseOnBattler.add(:XDEFENSE6, proc { |item, battler, scene|
 
 ItemHandlers::BattleUseOnBattler.copy(:XDEFENSE6, :XDEFEND6)
 
+ItemHandlers::BattleUsableOnBattler.add(:XSPATK, proc { |item, battler|
+  next battler.pbCanRaiseStatStage?(:SPECIAL_ATTACK, battler)
+})
 ItemHandlers::BattleUseOnBattler.add(:XSPATK, proc { |item, battler, scene|
   battler.pbRaiseStatStage(:SPECIAL_ATTACK, (Settings::X_STAT_ITEMS_RAISE_BY_TWO_STAGES) ? 2 : 1, battler)
   battler.pokemon.changeHappiness("battleitem")
 })
 
+ItemHandlers::BattleUsableOnBattler.copy(:XSPATK, :XSPECIAL)
 ItemHandlers::BattleUseOnBattler.copy(:XSPATK, :XSPECIAL)
 
+ItemHandlers::BattleUsableOnBattler.copy(:XSPATK, :XSPATK2, :XSPECIAL2, :XSPATK3, :XSPECIAL3, :XSPATK6, :XSPECIAL6)
 ItemHandlers::BattleUseOnBattler.add(:XSPATK2, proc { |item, battler, scene|
   battler.pbRaiseStatStage(:SPECIAL_ATTACK, 2, battler)
   battler.pokemon.changeHappiness("battleitem")
@@ -627,11 +688,15 @@ ItemHandlers::BattleUseOnBattler.add(:XSPATK6, proc { |item, battler, scene|
 
 ItemHandlers::BattleUseOnBattler.copy(:XSPATK6, :XSPECIAL6)
 
+ItemHandlers::BattleUsableOnBattler.add(:XSPDEF, proc { |item, battler|
+  next battler.pbCanRaiseStatStage?(:SPECIAL_DEFENSE, battler)
+})
 ItemHandlers::BattleUseOnBattler.add(:XSPDEF, proc { |item, battler, scene|
   battler.pbRaiseStatStage(:SPECIAL_DEFENSE, (Settings::X_STAT_ITEMS_RAISE_BY_TWO_STAGES) ? 2 : 1, battler)
   battler.pokemon.changeHappiness("battleitem")
 })
 
+ItemHandlers::BattleUsableOnBattler.copy(:XSPDEF, :XSPDEF2, :XSPDEF3, :XSPDEF6)
 ItemHandlers::BattleUseOnBattler.add(:XSPDEF2, proc { |item, battler, scene|
   battler.pbRaiseStatStage(:SPECIAL_DEFENSE, 2, battler)
   battler.pokemon.changeHappiness("battleitem")
@@ -647,11 +712,15 @@ ItemHandlers::BattleUseOnBattler.add(:XSPDEF6, proc { |item, battler, scene|
   battler.pokemon.changeHappiness("battleitem")
 })
 
+ItemHandlers::BattleUsableOnBattler.add(:XSPEED, proc { |item, battler|
+  next battler.pbCanRaiseStatStage?(:SPEED, battler)
+})
 ItemHandlers::BattleUseOnBattler.add(:XSPEED, proc { |item, battler, scene|
   battler.pbRaiseStatStage(:SPEED, (Settings::X_STAT_ITEMS_RAISE_BY_TWO_STAGES) ? 2 : 1, battler)
   battler.pokemon.changeHappiness("battleitem")
 })
 
+ItemHandlers::BattleUsableOnBattler.copy(:XSPEED, :XSPEED2, :XSPEED3, :XSPEED6)
 ItemHandlers::BattleUseOnBattler.add(:XSPEED2, proc { |item, battler, scene|
   battler.pbRaiseStatStage(:SPEED, 2, battler)
   battler.pokemon.changeHappiness("battleitem")
@@ -667,11 +736,15 @@ ItemHandlers::BattleUseOnBattler.add(:XSPEED6, proc { |item, battler, scene|
   battler.pokemon.changeHappiness("battleitem")
 })
 
+ItemHandlers::BattleUsableOnBattler.add(:XACCURACY, proc { |item, battler|
+  next battler.pbCanRaiseStatStage?(:ACCURACY, battler)
+})
 ItemHandlers::BattleUseOnBattler.add(:XACCURACY, proc { |item, battler, scene|
   battler.pbRaiseStatStage(:ACCURACY, (Settings::X_STAT_ITEMS_RAISE_BY_TWO_STAGES) ? 2 : 1, battler)
   battler.pokemon.changeHappiness("battleitem")
 })
 
+ItemHandlers::BattleUsableOnBattler.copy(:XACCURACY, :XACCURACY2, :XACCURACY3, :XACCURACY6)
 ItemHandlers::BattleUseOnBattler.add(:XACCURACY2, proc { |item, battler, scene|
   battler.pbRaiseStatStage(:ACCURACY, 2, battler)
   battler.pokemon.changeHappiness("battleitem")
@@ -687,6 +760,14 @@ ItemHandlers::BattleUseOnBattler.add(:XACCURACY6, proc { |item, battler, scene|
   battler.pokemon.changeHappiness("battleitem")
 })
 
+ItemHandlers::BattleUsableOnBattler.add(:MAXMUSHROOMS, proc { |item, battler|
+  can_raise = false
+  GameData::Stat.each_main_battle do |stat|
+    can_raise = true if battler.pbCanRaiseStatStage?(stat.id, battler)
+    break if can_raise
+  end
+  next can_raise
+})
 ItemHandlers::BattleUseOnBattler.add(:MAXMUSHROOMS, proc { |item, battler, scene|
   show_anim = true
   GameData::Stat.each_main_battle do |stat|
@@ -697,6 +778,9 @@ ItemHandlers::BattleUseOnBattler.add(:MAXMUSHROOMS, proc { |item, battler, scene
   battler.pokemon.changeHappiness("battleitem")
 })
 
+ItemHandlers::BattleUsableOnBattler.add(:DIREHIT, proc { |item, battler|
+  next battler.criticalHitRate >= 2
+})
 ItemHandlers::BattleUseOnBattler.add(:DIREHIT, proc { |item, battler, scene|
   battler.setCriticalHitRate(2)
   scene.pbCommonAnimation("CriticalHitRateUp", battler)
@@ -704,6 +788,9 @@ ItemHandlers::BattleUseOnBattler.add(:DIREHIT, proc { |item, battler, scene|
   battler.pokemon.changeHappiness("battleitem")
 })
 
+ItemHandlers::BattleUsableOnBattler.add(:DIREHIT2, proc { |item, battler|
+  next battler.criticalHitRate >= 2
+})
 ItemHandlers::BattleUseOnBattler.add(:DIREHIT2, proc { |item, battler, scene|
   battler.setCriticalHitRate(2)
   scene.pbCommonAnimation("CriticalHitRateUp", battler)
@@ -711,6 +798,9 @@ ItemHandlers::BattleUseOnBattler.add(:DIREHIT2, proc { |item, battler, scene|
   battler.pokemon.changeHappiness("battleitem")
 })
 
+ItemHandlers::BattleUsableOnBattler.add(:DIREHIT3, proc { |item, battler|
+  next battler.criticalHitRate >= 3
+})
 ItemHandlers::BattleUseOnBattler.add(:DIREHIT3, proc { |item, battler, scene|
   battler.setCriticalHitRate(3)
   scene.pbCommonAnimation("CriticalHitRateUp", battler)

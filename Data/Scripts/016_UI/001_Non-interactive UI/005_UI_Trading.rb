@@ -144,7 +144,6 @@ class PokemonTrade_Scene
     # Return Pokémon's color to normal and play cry
     delay = picturePoke.totalDuration
     picturePoke.moveColor(delay, 5, Color.new(248, 176, 240, 0))
-    # TODO: Show the shiny battle animation if the new Pokémon is shiny.
     cry = GameData::Species.cry_filename_from_pokemon(@pokemon2)
     picturePoke.setSE(delay, cry) if cry
     cry_length = (GameData::Species.cry_length(@pokemon2) * 20).ceil

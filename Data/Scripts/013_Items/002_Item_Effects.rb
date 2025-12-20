@@ -800,14 +800,14 @@ ItemHandlers::UsableOnPokemon.add(:ETHER, proc { |item, pkmn|
 })
 ItemHandlers::UseOnPokemon.add(:ETHER, proc { |item, qty, pkmn, screen|
   pbPlayDecisionSE
-  move = screen.choose_move(pkmn, _INTL("Restore which move?"))
+  move = screen.choose_move(pkmn, _INTL("Which move's PP do you want to restore?"))
   next false if move < 0
   if pbRestorePP(pkmn, move, 10) == 0
     screen.show_message(_INTL("It won't have any effect."))
     next false
   end
   pbSEPlay("Use item in party")
-  screen.show_message(_INTL("PP was restored."))
+  screen.show_message(_INTL("PP was restored!"))
   next true
 })
 
@@ -817,14 +817,14 @@ ItemHandlers::UseOnPokemon.copy(:ETHER, :LEPPABERRY)
 ItemHandlers::UsableOnPokemon.copy(:ETHER, :MAXETHER)
 ItemHandlers::UseOnPokemon.add(:MAXETHER, proc { |item, qty, pkmn, screen|
   pbPlayDecisionSE
-  move = screen.choose_move(pkmn, _INTL("Restore which move?"))
+  move = screen.choose_move(pkmn, _INTL("Which move's PP do you want to restore?"))
   next false if move < 0
   if pbRestorePP(pkmn, move, pkmn.moves[move].total_pp - pkmn.moves[move].pp) == 0
     screen.show_message(_INTL("It won't have any effect."))
     next false
   end
   pbSEPlay("Use item in party")
-  screen.show_message(_INTL("PP was restored."))
+  screen.show_message(_INTL("PP was restored!"))
   next true
 })
 
@@ -839,7 +839,7 @@ ItemHandlers::UseOnPokemon.add(:ELIXIR, proc { |item, qty, pkmn, screen|
     next false
   end
   pbSEPlay("Use item in party")
-  screen.show_message(_INTL("PP was restored."))
+  screen.show_message(_INTL("PP was restored!"))
   next true
 })
 
@@ -854,7 +854,7 @@ ItemHandlers::UseOnPokemon.add(:MAXELIXIR, proc { |item, qty, pkmn, screen|
     next false
   end
   pbSEPlay("Use item in party")
-  screen.show_message(_INTL("PP was restored."))
+  screen.show_message(_INTL("PP was restored!"))
   next true
 })
 
@@ -865,7 +865,7 @@ ItemHandlers::UsableOnPokemon.add(:PPUP, proc { |item, pkmn|
 })
 ItemHandlers::UseOnPokemon.add(:PPUP, proc { |item, qty, pkmn, screen|
   pbPlayDecisionSE
-  move = screen.choose_move(pkmn, _INTL("Boost PP of which move?"))
+  move = screen.choose_move(pkmn, _INTL("Which move's PP do you want to increase?"))
   next false if move < 0
   if pkmn.moves[move].total_pp <= 1 || pkmn.moves[move].ppup >= 3
     screen.show_message(_INTL("It won't have any effect."))
@@ -881,7 +881,7 @@ ItemHandlers::UseOnPokemon.add(:PPUP, proc { |item, qty, pkmn, screen|
 ItemHandlers::UsableOnPokemon.copy(:PPUP, :PPMAX)
 ItemHandlers::UseOnPokemon.add(:PPMAX, proc { |item, qty, pkmn, screen|
   pbPlayDecisionSE
-  move = screen.choose_move(pkmn, _INTL("Boost PP of which move?"))
+  move = screen.choose_move(pkmn, _INTL("Which move's PP do you want to increase?"))
   next false if move < 0
   if pkmn.moves[move].total_pp <= 1 || pkmn.moves[move].ppup >= 3
     screen.show_message(_INTL("It won't have any effect."))

@@ -2638,8 +2638,9 @@ Battle::AbilityEffects::EndOfRoundWeather.add(:ICEBODY,
 
 Battle::AbilityEffects::EndOfRoundWeather.add(:ICEFACE,
   proc { |ability, weather, battler, battle|
+    next if !battler.isSpecies?(:EISCUE) || battler.form != 1 || battler.effects[PBEffects::Transform]
     next if ![:Hail, :Snowstorm].include?(weather)
-    next if !battler.canRestoreIceFace || battler.form != 1
+    next if !battler.canRestoreIceFace
     battle.pbShowAbilitySplash(battler)
     if !Battle::Scene::USE_ABILITY_SPLASH
       battle.pbDisplay(_INTL("{1}'s {2} activated!", battler.pbThis, battler.abilityName))
@@ -3113,7 +3114,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:ELECTRICSURGE,
 Battle::AbilityEffects::OnSwitchIn.add(:EMBODYASPECTATTACK,
   proc { |ability, battler, battle, switch_in|
     next if battler.abilityUsedOnce?
-    next if !battler.isSpecies?(:OGERPON)
+    next if !battler.isSpecies?(:OGERPON) || battler.effects[PBEffects::Transform]
     battle.pbDisplay(_INTL("The {1} worn by {2} shone brilliantly!", battler.itemName, battler.pbThis(true)))
     battler.pbRaiseStatStageByAbility(:ATTACK, 1, battler)
     battler.markAbilityUsedOnce if Settings::MECHANICS_GENERATION >= 9
@@ -3123,7 +3124,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:EMBODYASPECTATTACK,
 Battle::AbilityEffects::OnSwitchIn.add(:EMBODYASPECTDEFENSE,
   proc { |ability, battler, battle, switch_in|
     next if battler.abilityUsedOnce?
-    next if !battler.isSpecies?(:OGERPON)
+    next if !battler.isSpecies?(:OGERPON) || battler.effects[PBEffects::Transform]
     battle.pbDisplay(_INTL("The {1} worn by {2} shone brilliantly!", battler.itemName, battler.pbThis(true)))
     battler.pbRaiseStatStageByAbility(:DEFENSE, 1, battler)
     battler.markAbilityUsedOnce if Settings::MECHANICS_GENERATION >= 9
@@ -3133,7 +3134,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:EMBODYASPECTDEFENSE,
 Battle::AbilityEffects::OnSwitchIn.add(:EMBODYASPECTSPDEF,
   proc { |ability, battler, battle, switch_in|
     next if battler.abilityUsedOnce?
-    next if !battler.isSpecies?(:OGERPON)
+    next if !battler.isSpecies?(:OGERPON) || battler.effects[PBEffects::Transform]
     battle.pbDisplay(_INTL("The {1} worn by {2} shone brilliantly!", battler.itemName, battler.pbThis(true)))
     battler.pbRaiseStatStageByAbility(:SPECIAL_DEFENSE, 1, battler)
     battler.markAbilityUsedOnce if Settings::MECHANICS_GENERATION >= 9
@@ -3143,7 +3144,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:EMBODYASPECTSPDEF,
 Battle::AbilityEffects::OnSwitchIn.add(:EMBODYASPECTSPEED,
   proc { |ability, battler, battle, switch_in|
     next if battler.abilityUsedOnce?
-    next if !battler.isSpecies?(:OGERPON)
+    next if !battler.isSpecies?(:OGERPON) || battler.effects[PBEffects::Transform]
     battle.pbDisplay(_INTL("The {1} worn by {2} shone brilliantly!", battler.itemName, battler.pbThis(true)))
     battler.pbRaiseStatStageByAbility(:SPEED, 1, battler)
     battler.markAbilityUsedOnce if Settings::MECHANICS_GENERATION >= 9
@@ -3254,7 +3255,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:HOSPITALITY,
 
 Battle::AbilityEffects::OnSwitchIn.add(:ICEFACE,
   proc { |ability, battler, battle, switch_in|
-    next if !battler.isSpecies?(:EISCUE) || battler.form != 1
+    next if !battler.isSpecies?(:EISCUE) || battler.form != 1 || battler.effects[PBEffects::Transform]
     next if ![:Hail, :Snowstorm].include?(battler.effectiveWeather)
     battle.pbShowAbilitySplash(battler)
     if !Battle::Scene::USE_ABILITY_SPLASH
