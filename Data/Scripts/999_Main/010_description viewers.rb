@@ -394,6 +394,11 @@ class DescriptionEditorItem
                               item_name_x, item_name_y + 64, :left, :black)
     # Item description
     @sprite_item_description.text = @text_box.value
+    # Move name (for machines)
+    if @item.is_machine?
+      @overlay.draw_themed_text(GameData::Move.get(@item.move).name,
+                                item_name_x, item_name_y + 96, :left, :black)
+    end
   end
 
   def update

@@ -2501,13 +2501,7 @@ Battle::AbilityEffects::OnEndOfUsingMove.add(:MAGICIAN,
     next if valid_targets.empty?
     battle.pbShowAbilitySplash(user)
     battler = valid_targets.first
-    user.item = battler.item
-    battler.item = nil
-    battler.effects[PBEffects::Unburden] = true if battler.hasActiveAbility?(:UNBURDEN)
-    if battle.wildBattle? && !user.initialItem && user.item == battler.initialItem
-      user.setInitialItem(user.item)
-      battler.setInitialItem(nil)
-    end
+    battle.swapHeldItems(user, battler)
     if Battle::Scene::USE_ABILITY_SPLASH
       battle.pbDisplay(_INTL("{1} stole {2}'s {3}!", user.pbThis, battler.pbThis(true), user.itemName))
     else
@@ -2578,13 +2572,7 @@ Battle::AbilityEffects::AfterMoveUseFromTarget.add(:PICKPOCKET,
       battle.pbHideAbilitySplash(target)
       next
     end
-    target.item = user.item
-    user.item = nil
-    user.effects[PBEffects::Unburden] = true if user.hasActiveAbility?(:UNBURDEN)
-    if battle.wildBattle? && !target.initialItem && target.item == user.initialItem
-      target.setInitialItem(target.item)
-      user.setInitialItem(nil)
-    end
+    battle.swapHeldItems(user, target)
     battle.pbDisplay(_INTL("{1} pickpocketed {2}'s {3}!", target.pbThis, user.pbThis(true), target.itemName))
     battle.pbHideAbilitySplash(target)
     target.pbHeldItemTriggerCheck
@@ -2838,7 +2826,6 @@ Battle::AbilityEffects::EndOfRoundGainItem.add(:BALLFETCH,
     next if battle.first_poke_ball.nil?
     battle.pbShowAbilitySplash(battler)
     battler.item = battle.first_poke_ball
-    battler.setInitialItem(battler.item) if !battler.initialItem
     battle.first_poke_ball = nil
     battle.pbDisplay(_INTL("{1} retrieved the thrown {2}!", battler.pbThis, battler.itemName))
     battle.pbHideAbilitySplash(battler)
@@ -2856,7 +2843,6 @@ Battle::AbilityEffects::EndOfRoundGainItem.add(:HARVEST,
     battle.pbShowAbilitySplash(battler)
     battler.item = battler.recycleItem
     battler.setRecycleItem(nil)
-    battler.setInitialItem(battler.item) if !battler.initialItem
     battle.pbDisplay(_INTL("{1} harvested one {2}!", battler.pbThis, battler.itemName))
     battle.pbHideAbilitySplash(battler)
     battler.pbHeldItemTriggerCheck
@@ -2882,10 +2868,6 @@ Battle::AbilityEffects::EndOfRoundGainItem.add(:PICKUP,
     fromBattler.effects[PBEffects::PickupItem] = nil
     fromBattler.effects[PBEffects::PickupUse]  = 0
     fromBattler.setRecycleItem(nil) if fromBattler.recycleItem == foundItem
-    if battle.wildBattle? && !battler.initialItem && fromBattler.initialItem == foundItem
-      battler.setInitialItem(foundItem)
-      fromBattler.setInitialItem(nil)
-    end
     battle.pbDisplay(_INTL("{1} found one {2}!", battler.pbThis, battler.itemName))
     battle.pbHideAbilitySplash(battler)
     battler.pbHeldItemTriggerCheck

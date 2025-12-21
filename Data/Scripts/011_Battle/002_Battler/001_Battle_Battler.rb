@@ -590,23 +590,21 @@ class Battle::Battler
   end
 
   def initialItem
-    return @battle.initialItems[@index & 1][@pokemonIndex]
+    return @battle.initialItem(idxOwnSide, @pokemonIndex)
   end
 
-  def setInitialItem(value)
-    item_data = GameData::Item.try_get(value)
-    new_item = (item_data) ? item_data.id : nil
-    @battle.initialItems[@index & 1][@pokemonIndex] = new_item
+  def knockOffItem
+    @battle.knockOffItem(idxOwnSide, @pokemonIndex)
   end
 
   def recycleItem
-    return @battle.recycleItems[@index & 1][@pokemonIndex]
+    return @battle.recycleItem(idxOwnSide, @pokemonIndex)
   end
 
   def setRecycleItem(value)
     item_data = GameData::Item.try_get(value)
     new_item = (item_data) ? item_data.id : nil
-    @battle.recycleItems[@index & 1][@pokemonIndex] = new_item
+    @battle.setRecycleItem(idxOwnSide, @pokemonIndex, new_item)
   end
 
   #-----------------------------------------------------------------------------

@@ -11,19 +11,11 @@ class Battle::Move::UserTakesTargetItem < Battle::Move
     return if target.unlosableItem?(target.item)
     return if user.unlosableItem?(target.item)
     return if target.hasActiveAbility?(:STICKYHOLD) && !target.beingMoldBroken?
-    itemName = target.itemName
-    user.item = target.item
-    # Permanently steal the item from wild Pokémon
+    @battle.swapHeldItems(user, target)
     # TODO: If target.wild? and Settings::MECHANICS_GENERATION >= 9, put the
     #       stolen item directly in the player's Bag instead of giving it to the
     #       user.
-    if target.wild? && !user.initialItem && target.item == target.initialItem
-      user.setInitialItem(target.item)
-      target.pbRemoveItem
-    else
-      target.pbRemoveItem(false)
-    end
-    @battle.pbDisplay(_INTL("{1} stole {2}'s {3}!", user.pbThis, target.pbThis(true), itemName))
+    @battle.pbDisplay(_INTL("{1} stole {2}'s {3}!", user.pbThis, target.pbThis(true), user.itemName))
     user.pbHeldItemTriggerCheck
   end
 end
@@ -55,16 +47,8 @@ class Battle::Move::TargetTakesUserItem < Battle::Move
   end
 
   def pbEffectAgainstTarget(user, target)
-    itemName = user.itemName
-    target.item = user.item
-    # Permanently steal the item from wild Pokémon
-    if user.wild? && !target.initialItem && user.item == user.initialItem
-      target.setInitialItem(user.item)
-      user.pbRemoveItem
-    else
-      user.pbRemoveItem(false)
-    end
-    @battle.pbDisplay(_INTL("{1} received {2} from {3}!", target.pbThis, itemName, user.pbThis(true)))
+    @battle.swapHeldItems(user, target)
+    @battle.pbDisplay(_INTL("{1} received {2} from {3}!", target.pbThis, target.itemName, user.pbThis(true)))
     target.pbHeldItemTriggerCheck
   end
 end
@@ -111,23 +95,10 @@ class Battle::Move::UserTargetSwapItems < Battle::Move
   end
 
   def pbEffectAgainstTarget(user, target)
-    oldUserItem = user.item
-    oldUserItemName = user.itemName
-    oldTargetItem = target.item
-    oldTargetItemName = target.itemName
-    user.item                             = oldTargetItem
-    user.effects[PBEffects::ChoiceBand]   = nil if !user.hasActiveAbility?(:GORILLATACTICS)
-    user.effects[PBEffects::Unburden]     = (!user.item && oldUserItem) if user.hasActiveAbility?(:UNBURDEN)
-    target.item                           = oldUserItem
-    target.effects[PBEffects::ChoiceBand] = nil if !target.hasActiveAbility?(:GORILLATACTICS)
-    target.effects[PBEffects::Unburden]   = (!target.item && oldTargetItem) if target.hasActiveAbility?(:UNBURDEN)
-    # Permanently steal the item from wild Pokémon
-    if target.wild? && !user.initialItem && oldTargetItem == target.initialItem
-      user.setInitialItem(oldTargetItem)
-    end
+    @battle.swapHeldItems(user, target)
     @battle.pbDisplay(_INTL("{1} switched items with its opponent!", user.pbThis))
-    @battle.pbDisplay(_INTL("{1} obtained {2}.", user.pbThis, oldTargetItemName)) if oldTargetItem
-    @battle.pbDisplay(_INTL("{1} obtained {2}.", target.pbThis, oldUserItemName)) if oldUserItem
+    @battle.pbDisplay(_INTL("{1} obtained {2}.", user.pbThis, user.itemName)) if user.item
+    @battle.pbDisplay(_INTL("{1} obtained {2}.", target.pbThis, target.itemName)) if target.item
     user.pbHeldItemTriggerCheck
     target.pbHeldItemTriggerCheck
   end
@@ -148,17 +119,15 @@ class Battle::Move::RestoreUserConsumedItem < Battle::Move
   end
 
   def pbEffectGeneral(user)
-    item = user.recycleItem
-    user.item = item
-    user.setInitialItem(item) if @battle.wildBattle? && !user.initialItem
+    user.item = user.recycleItem
     user.setRecycleItem(nil)
     user.effects[PBEffects::PickupItem] = nil
     user.effects[PBEffects::PickupUse]  = 0
-    itemName = GameData::Item.get(item).name
-    if itemName.starts_with_vowel?
-      @battle.pbDisplay(_INTL("{1} found an {2}!", user.pbThis, itemName))
+    item_name = user.itemName
+    if item_name.starts_with_vowel?
+      @battle.pbDisplay(_INTL("{1} found an {2}!", user.pbThis, item_name))
     else
-      @battle.pbDisplay(_INTL("{1} found a {2}!", user.pbThis, itemName))
+      @battle.pbDisplay(_INTL("{1} found a {2}!", user.pbThis, item_name))
     end
     user.pbHeldItemTriggerCheck
   end
@@ -186,7 +155,8 @@ class Battle::Move::RemoveTargetItem < Battle::Move
     return if !target.item || target.unlosableItem?(target.item)
     return if target.hasActiveAbility?(:STICKYHOLD) && !target.beingMoldBroken?
     itemName = target.itemName
-    target.pbRemoveItem(false)
+    target.pbRemoveItem
+    target.knockOffItem
     @battle.pbDisplay(_INTL("{1} dropped its {2}!", target.pbThis, itemName))
   end
 end

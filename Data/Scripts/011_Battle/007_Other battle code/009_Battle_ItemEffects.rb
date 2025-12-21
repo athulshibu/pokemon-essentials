@@ -1517,13 +1517,8 @@ Battle::ItemEffects::OnBeingHit.add(:STICKYBARB,
     user.item = target.item
     target.item = nil
     target.effects[PBEffects::Unburden] = true if target.hasActiveAbility?(:UNBURDEN)
-    if battle.wildBattle? && !user.opposes? &&
-       !user.initialItem && user.item == target.initialItem
-      user.setInitialItem(user.item)
-      target.setInitialItem(nil)
-    end
     battle.pbDisplay(_INTL("{1}'s {2} was transferred to {3}!",
-       target.pbThis, user.itemName, user.pbThis(true)))
+                           target.pbThis, user.itemName, user.pbThis(true)))
   }
 )
 
