@@ -271,7 +271,7 @@ Moves = 0,EXTREMESPEED,1,FLAMEWHEEL,1,HELPINGHAND,1,AGILITY,1,FIREFANG,1,RETALIA
 TutorMoves = AERIALACE,AGILITY,BODYSLAM,BULLDOZE,CLOSECOMBAT,CRUNCH,DIG,DOUBLEEDGE,DRAGONPULSE,ENDURE,FACADE,FIREBLAST,FIREFANG,FIRESPIN,FLAMECHARGE,FLAMETHROWER,FLAREBLITZ,GIGAIMPACT,HEATCRASH,HEATWAVE,HELPINGHAND,HYPERBEAM,HYPERVOICE,IRONHEAD,OUTRAGE,OVERHEAT,POWERGEM,PROTECT,PSYCHICFANGS,REST,REVERSAL,ROAR,ROCKBLAST,ROCKSLIDE,ROCKTOMB,SANDSTORM,SCARYFACE,SCORCHINGSANDS,SLEEPTALK,SMACKDOWN,SMARTSTRIKE,SNARL,SOLARBEAM,STEALTHROCK,STONEEDGE,SUBSTITUTE,SUNNYDAY,TAKEDOWN,THIEF,THUNDERFANG,WILDCHARGE,WILLOWISP
 Height = 2.0
 Weight = 168.0
-Pokedex = Snaps at its foes with fangs cloaked in blazing flame. Despite its bulk, it deftly feints every which way, leading opponents on a deceptively merry chase as it all but dances around them.
+Pokedex = Snaps at its foes with fangs cloaked in blazing flame. Despite its bulk, it deftly feints every which way, leading opponents on a deceptively merry chase.
 Generation = 8
 Flags = InheritFormWithEverStone
 #-------------------------------
@@ -460,7 +460,7 @@ TutorMoves = AGILITY,BULLETSEED,CHARGE,CHARGEBEAM,DOUBLEEDGE,ELECTRICTERRAIN,ELE
 EggMoves = LEECHSEED,RECYCLE,WORRYSEED
 Weight = 13.0
 Category = Sphere
-Pokedex = An enigmatic Pokémon that happens to bear a resemblance to a Poké Ball. When excited, it discharges the electric current it has stored in its belly, then lets out a great, uproarious laugh.
+Pokedex = An enigmatic Pokémon that happens to bear a resemblance to a Poké Ball. When excited, it discharges the electric current it has stored in its belly.
 Generation = 8
 Flags = EggInRegion_3,InheritFormWithEverStone
 Evolutions = ELECTRODE,Item,LEAFSTONE
@@ -472,7 +472,7 @@ Moves = 0,CHLOROBLAST,1,CHARGE,1,TACKLE,4,THUNDERSHOCK,6,STUNSPORE,9,BULLETSEED,
 TutorMoves = AGILITY,BULLETSEED,CHARGE,CHARGEBEAM,CURSE,DOUBLEEDGE,ELECTRICTERRAIN,ELECTROBALL,ELECTROWEB,ENDURE,ENERGYBALL,FACADE,FOULPLAY,GIGADRAIN,GIGAIMPACT,GRASSKNOT,GRASSYGLIDE,GRASSYTERRAIN,GYROBALL,HYPERBEAM,LEAFSTORM,PROTECT,RAINDANCE,REFLECT,REST,SCARYFACE,SEEDBOMB,SLEEPTALK,SOLARBEAM,SUBSTITUTE,SWIFT,TAKEDOWN,TAUNT,THIEF,THUNDER,THUNDERBOLT,THUNDERWAVE,VOLTSWITCH,WILDCHARGE
 Weight = 71.0
 Category = Sphere
-Pokedex = The tissue on the surface of its body is curiously similar in composition to an Apricorn. When irritated, this Pokémon lets loose an electric current equal to 20 lightning bolts.
+Pokedex = The surface tissue of its body is oddly similar in composition to an Apricorn. When irritated, this Pokémon looses an electric current equal to 20 lightning bolts.
 Generation = 8
 Flags = InheritFormWithEverStone
 #-------------------------------
@@ -663,7 +663,7 @@ TutorMoves = AERIALACE,BLASTBURN,BODYSLAM,BRICKBREAK,BULLDOZE,BURNINGJEALOUSY,CA
 Height = 1.6
 Weight = 69.8
 Category = Ghost Flame
-Pokedex = Said to purify lost, forsaken souls with its flames and guide them to the afterlife. I believe its form has been influenced by the energy of the sacred mountain towering at Hisui's center.
+Pokedex = Said to purify forsaken souls with its flames and guide them to the afterlife. Its form may have been influenced by the energy of a sacred mountain.
 Generation = 8
 #-------------------------------
 [PICHU,2]
@@ -833,7 +833,7 @@ TutorMoves = ACIDSPRAY,AERIALACE,AGILITY,BRICKBREAK,BULKUP,CALMMIND,CLOSECOMBAT,
 EggMoves = COUNTER,DOUBLEHIT,FAKEOUT,FEINT,NIGHTSLASH,QUICKGUARD,SWITCHEROO
 Weight = 27.0
 Color = Gray
-Pokedex = Its sturdy, curved claws are ideal for traversing precipitous cliffs. From the tips of these claws drips a venom that infiltrates the nerves of any prey caught in Sneasel's grasp.
+Pokedex = Its sturdy, curved claws are ideal for traversing precipitous cliffs. From the tips of these claws drips a venom that infiltrates the nerves of caught prey.
 Generation = 8
 Flags = EggInRegion_3,InheritFormWithEverStone
 Evolutions = SNEASLER,DayHoldItem,RAZORCLAW
@@ -1312,7 +1312,8 @@ BaseStats = 100,100,120,90,150,120
 Color = Blue
 Height = 7.0
 Weight = 850.0
-Pokedex = Radiant light caused Dialga to take on a form bearing a striking resemblance to the creator Pokémon. Dialga now wields such colossal strength that one must conclude this is its true form.
+Pokedex = Radiant light caused Dialga to take on a form bearing a striking resemblance to the creator Pokémon. Dialga now wields colossal strength.
+Generation = 8
 #-------------------------------
 [PALKIA,1]
 FormName = Origin Forme
@@ -1320,7 +1321,8 @@ BaseStats = 90,100,100,120,150,120
 Shape = Quadruped
 Height = 6.3
 Weight = 660.0
-Pokedex = It soars across the sky in a form that greatly resembles the creator of all things. Perhaps this imitation of appearance is Palkia's strategy for gaining Arceus's powers.
+Pokedex = It soars across the sky in a form that greatly resembles the creator of all things. This imitation of appearance may be its attempt to gain Arceus's powers.
+Generation = 8
 #-------------------------------
 [GIRATINA,1]
 FormName = Origin Forme
@@ -1424,7 +1426,7 @@ EVs = ATTACK,3
 Moves = 0,CEASELESSEDGE,1,SUCKERPUNCH,1,SLASH,1,MEGAHORN,1,TACKLE,1,TAILWHIP,1,WATERGUN,13,FOCUSENERGY,18,RAZORSHELL,21,FURYCUTTER,25,WATERPULSE,29,AERIALACE,34,AQUAJET,39,ENCORE,46,AQUATAIL,51,RETALIATE,58,SWORDSDANCE,63,HYDROPUMP
 TutorMoves = AERIALACE,AIRSLASH,AVALANCHE,BLIZZARD,BODYSLAM,BRICKBREAK,BULLDOZE,DARKPULSE,DIG,DRILLRUN,ENCORE,ENDURE,FACADE,FALSESWIPE,FLING,FLIPTURN,GIGAIMPACT,GRASSKNOT,HELPINGHAND,HYDROCANNON,HYDROPUMP,HYPERBEAM,ICEBEAM,ICYWIND,KNOCKOFF,LASHOUT,LIQUIDATION,PROTECT,RAINDANCE,REST,SCARYFACE,SLEEPTALK,SMARTSTRIKE,SNARL,SUBSTITUTE,SURF,SWIFT,SWORDSDANCE,TAKEDOWN,TAUNT,THIEF,THROATCHOP,VACUUMWAVE,WATERFALL,WATERPLEDGE,WATERPULSE,WHIRLPOOL,XSCISSOR
 Weight = 58.2
-Pokedex = Hard of heart and deft of blade, this rare form of Samurott is a product of the Pokémon's evolution in the region of Hisui. Its turbulent blows crash into foes like ceaseless pounding waves.
+Pokedex = Hard of heart and deft of blade, this rare form of Samurott's turbulent blows crash into foes like ceaseless pounding waves.
 Generation = 8
 #-------------------------------
 [AUDINO,1]
@@ -1452,7 +1454,7 @@ Shape = Bipedal
 Height = 1.2
 Weight = 19.2
 Category = Spinning
-Pokedex = I suspect that its well-developed legs are the result of a life spent on mountains covered in deep snow. The scent it exudes from its flower crown heartens those in proximity.
+Pokedex = Its well-developed legs are the result of a life spent on mountains covered in deep snow. The scent it exudes from its flower crown heartens those in proximity.
 Generation = 8
 #-------------------------------
 [BASCULIN,1]
@@ -1559,7 +1561,7 @@ Moves = 1,SCRATCH,1,LEER,4,TORMENT,8,HONECLAWS,12,SHADOWSNEAK,16,CURSE,20,TAUNT,
 TutorMoves = AGILITY,BURNINGJEALOUSY,CALMMIND,CONFUSERAY,CURSE,DARKPULSE,DIG,ENDURE,FACADE,FAKETEARS,FLING,FOCUSPUNCH,FOULPLAY,GIGAIMPACT,HEX,HYPERBEAM,ICYWIND,IMPRISON,KNOCKOFF,LASHOUT,NASTYPLOT,NIGHTSHADE,PAINSPLIT,PHANTOMFORCE,PROTECT,PSYCHUP,RAINDANCE,REST,ROAR,SHADOWBALL,SHADOWCLAW,SKITTERSMACK,SLEEPTALK,SLUDGEBOMB,SNARL,SPITE,SUBSTITUTE,SWIFT,TAKEDOWN,TAUNT,THIEF,TRICK,UTURN,WILLOWISP
 EggMoves = DETECT,EXTRASENSORY,MEMENTO
 Category = Spiteful Fox
-Pokedex = A once-departed soul, returned to life in Hisui. Derives power from resentment, which rises as energy atop its head and takes on the forms of foes. In this way, Zorua vents lingering malice.
+Pokedex = A once-departed soul, returned to life. Derives power from resentment, which rises as energy atop its head. In this way, Zorua vents lingering malice.
 Generation = 8
 Flags = EggInRegion_3,InheritFormWithEverStone
 #-------------------------------
@@ -1571,7 +1573,7 @@ Moves = 0,SHADOWCLAW,1,UTURN,1,SCRATCH,1,LEER,1,TORMENT,1,HONECLAWS,12,SHADOWSNE
 TutorMoves = AERIALACE,AGILITY,BODYSLAM,BRICKBREAK,BURNINGJEALOUSY,CALMMIND,CONFUSERAY,CRUNCH,CURSE,DARKPULSE,DIG,ENDURE,FACADE,FAKETEARS,FLAMETHROWER,FLING,FOCUSBLAST,FOCUSPUNCH,FOULPLAY,GIGAIMPACT,GRASSKNOT,HELPINGHAND,HEX,HYPERBEAM,HYPERVOICE,ICYWIND,IMPRISON,KNOCKOFF,LASHOUT,LOWKICK,LOWSWEEP,NASTYPLOT,NIGHTSHADE,PAINSPLIT,PHANTOMFORCE,POLTERGEIST,PROTECT,PSYCHIC,PSYCHUP,RAINDANCE,REST,ROAR,SCARYFACE,SHADOWBALL,SHADOWCLAW,SKITTERSMACK,SLEEPTALK,SLUDGEBOMB,SNARL,SPITE,SUBSTITUTE,SWIFT,SWORDSDANCE,TAKEDOWN,TAUNT,THIEF,THROATCHOP,TRICK,UTURN,WILLOWISP
 Weight = 73.0
 Category = Baneful Fox
-Pokedex = With its disheveled white fur, it looks like an embodiment of death. Heedless of its own safety, Zoroark attacks its nemeses with a bitter energy so intense, it lacerates Zoroark's own body.
+Pokedex = With its disheveled white fur, it looks like an embodiment of death. Heedless of its own safety, Zoroark attacks its nemeses with an intense bitter energy.
 Generation = 8
 Flags = InheritFormWithEverStone
 #-------------------------------
@@ -1623,7 +1625,7 @@ Height = 1.7
 Weight = 43.4
 Color = White
 Category = Battle Cry
-Pokedex = Screaming a bloodcurdling battle cry, this huge and ferocious bird Pokémon goes out on the hunt. It blasts lakes with shock waves, then scoops up any prey that float to the water's surface.
+Pokedex = Screaming a bloodcurdling battle cry, this huge and ferocious bird Pokémon goes out on the hunt. It blasts lakes with shock waves, then scoops up any floating prey.
 Generation = 8
 #-------------------------------
 [TORNADUS,1]
@@ -1956,7 +1958,7 @@ Moves = 0,ROCKSLIDE,1,WIDEGUARD,1,RAPIDSPIN,1,HARDEN,1,TACKLE,1,POWDERSNOW,9,CUR
 TutorMoves = AVALANCHE,BLIZZARD,BODYPRESS,BODYSLAM,BULLDOZE,CRUNCH,CURSE,DIG,DOUBLEEDGE,EARTHQUAKE,ENDURE,FACADE,GIGAIMPACT,GYROBALL,HEAVYSLAM,HIGHHORSEPOWER,HYPERBEAM,ICEBEAM,ICEFANG,ICICLESPEAR,ICYWIND,IRONDEFENSE,IRONHEAD,METEORBEAM,PROTECT,RAINDANCE,REST,ROCKBLAST,ROCKSLIDE,ROCKTOMB,SANDSTORM,SCARYFACE,SLEEPTALK,STEALTHROCK,STOMPINGTANTRUM,STONEEDGE,SUBSTITUTE,TAKEDOWN
 Height = 1.4
 Weight = 262.4
-Pokedex = The armor of ice covering its lower jaw puts steel to shame and can shatter rocks with ease. This Pokémon barrels along steep mountain paths, cleaving through the deep snow.
+Pokedex = The armor of ice covering its lower jaw puts steel to shame and can shatter rocks with ease. This Pokémon barrels along steep mountain paths.
 Generation = 8
 #-------------------------------
 [XERNEAS,1]
@@ -2025,7 +2027,7 @@ HiddenAbilities = SCRAPPY
 Moves = 0,TRIPLEARROWS,1,LEAFSTORM,1,UTURN,1,TACKLE,1,GROWL,1,LEAFAGE,9,PECK,12,SHADOWSNEAK,15,RAZORLEAF,20,SYNTHESIS,25,PLUCK,30,BULKUP,37,SUCKERPUNCH,44,LEAFBLADE,51,FEATHERDANCE,58,BRAVEBIRD
 TutorMoves = AERIALACE,AIRCUTTER,AIRSLASH,AURASPHERE,BATONPASS,BRAVEBIRD,BRICKBREAK,BULKUP,BULLETSEED,CLOSECOMBAT,COACHING,CONFUSERAY,DUALWINGBEAT,ENDURE,ENERGYBALL,FACADE,FALSESWIPE,FEATHERDANCE,FOCUSBLAST,FOCUSPUNCH,FRENZYPLANT,GIGADRAIN,GIGAIMPACT,GRASSKNOT,GRASSPLEDGE,GRASSYGLIDE,GRASSYTERRAIN,HAZE,HELPINGHAND,HYPERBEAM,KNOCKOFF,LEAFSTORM,LIGHTSCREEN,LOWKICK,LOWSWEEP,MAGICALLEAF,NASTYPLOT,NIGHTSHADE,PROTECT,RAINDANCE,REST,REVERSAL,ROCKTOMB,SCARYFACE,SEEDBOMB,SHADOWCLAW,SLEEPTALK,SMACKDOWN,SOLARBEAM,SUBSTITUTE,SUNNYDAY,SWIFT,SWORDSDANCE,TAILWIND,TAKEDOWN,TAUNT,UTURN
 Weight = 37.0
-Pokedex = The air stored inside the rachises of Decidueye's feathers insulates the Pokémon against Hisui's extreme cold. This is firm proof that evolution can be influenced by environment.
+Pokedex = Decidueye's feathers insulates the Pokémon against extreme cold. This is firm proof that evolution can be influenced by environment.
 Generation = 8
 #-------------------------------
 [ORICORIO,1]
@@ -2563,7 +2565,6 @@ Pokedex = Legend says that by using its power to see all events from past to fut
 FormName = Female
 BaseStats = 120,92,65,78,100,75
 Pokedex = It can afflict a target with terrifying illusions that are under its control. The deeper the sadness in its friends' souls, the paler Basculegion becomes.
-Generation = 8
 Flags = DefaultForm_3,InheritFormWithEverStone
 #-------------------------------
 [ENAMORUS,1]

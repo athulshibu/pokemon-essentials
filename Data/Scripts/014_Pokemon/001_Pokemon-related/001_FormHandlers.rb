@@ -332,6 +332,15 @@ MultipleForms.register(:ARCEUS, {
   }
 })
 
+MultipleForms.register(:BASCULIN, {
+  "getForm" => proc { |pkmn|
+    if pkmn.form_simple >= 2
+      next (pkmn.female?) ? 3 : 2
+    end
+    next pkmn.form_simple
+  }
+})
+
 MultipleForms.register(:DARMANITAN, {
   "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
     next 2 * (pkmn.form / 2)
@@ -486,8 +495,40 @@ MultipleForms.register(:XERNEAS, {
 })
 
 MultipleForms.register(:ZYGARDE, {
+  "changePokemonOnMegaEvolving" => proc { |battler, pkmn|
+    next if !GameData::Move.exists?(:NIHILLIGHT)
+    pkmn_move = nil
+    pkmn.moves.each_with_index do |move, i|
+      next if move.id != :COREENFORCER
+      move.id = :NIHILLIGHT
+      pkmn_move = move
+      break
+    end
+    if pkmn_move
+      battler.moves.each_with_index do |move, i|
+        next if move.id != :COREENFORCER
+        battler.moves[i] = Battle::Move.from_pokemon_move(battler.battle, pkmn_move)
+      end
+    end
+  },
   "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
-    next pkmn.form - 2 if pkmn.form >= 2 && (pkmn.fainted? || endBattle)
+    if pkmn.fainted? || endBattle
+      # NOTE: We have to change the Pokémon out of its Mega Evolution form here
+      #       rather than after the battle, because the form it Mega Evolves
+      #       from is a battle-only form that itself needs to be changed at the
+      #       same time. This only applies if the Pokémon was unfainted and Mega
+      #       Evolved at the end of battle; fainting during battle cancels Mega
+      #       Evolution normally.
+      new_form = pkmn.form
+      new_form -= 2 if new_form >= 4   # Mega Evolution
+      new_form -= 2 if new_form >= 2   # Complete Forme
+      next new_form
+    end
+  },
+  "changePokemonOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
+    if pkmn.fainted? || endBattle
+      pkmn.moves.each { |move| move.id = :COREENFORCER if move.id == :NIHILLIGHT }
+    end
   }
 })
 

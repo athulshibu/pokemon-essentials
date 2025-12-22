@@ -914,6 +914,18 @@ FunctionCode = DisableTargetUsingSameMoveConsecutively
 Flags = CanProtect,CanMirrorMove
 Description = The user torments and enrages the target, making it incapable of using the same move twice in a row.
 #-------------------------------
+[NIHILLIGHT]
+Name = Nihil Light
+Type = DRAGON
+Category = Special
+Power = 200
+Accuracy = 100
+TotalPP = 10
+Target = AllNearFoes
+FunctionCode = IgnoreTargetStatStagesNormalEffectiveAgainstFairy
+Flags = CanMirrorMove,CannotMetronome
+Description = The user unleashes a powerful light that defies all laws of nature. It ignores the targets' stat changes and can hit Fairy types.
+#-------------------------------
 [ETERNABEAM]
 Name = Eternabeam
 Type = DRAGON
