@@ -461,6 +461,7 @@ MultipleForms.register(:FURFROU, {
 
 MultipleForms.register(:ESPURR, {
   "getForm" => proc { |pkmn|
+    next if pkmn.form_simple >= 2   # Don't change form number if Mega Evolved
     next pkmn.gender
   }
 })
