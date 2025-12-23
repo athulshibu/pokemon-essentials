@@ -132,3 +132,17 @@ SaveData.register_conversion(:v22_convert_bag_object) do
     end
   end
 end
+
+#===============================================================================
+
+SaveData.register_conversion(:v22_add_new_options) do
+  essentials_version 22
+  display_title "Setting default values for new options"
+  to_value :pokemon_system do |pokemon_system|
+    pokemon_system.instance_eval do
+      @skip_move_learning = 0
+      @main_volume = 100
+      @pokemon_cry_volume = 100
+    end
+  end
+end

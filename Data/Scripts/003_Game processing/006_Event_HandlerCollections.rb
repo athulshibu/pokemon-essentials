@@ -73,10 +73,15 @@ end
 # Menus that use this module are:
 #-------------------------------------------------------------------------------
 # Pause menu
-# Party screen main interact menu
-# Pokégear main menu
-# Options screen
-# PC main menu
+# Party
+# Pokémon summary
+# Bag
+# Pokégear
+# Town Map
+# Main menu (Continue/New Game)
+# Options
+# Pokémon storage
+# PC menus
 # Various debug menus (main, Pokémon, battle, battle Pokémon)
 #===============================================================================
 module MenuHandlers

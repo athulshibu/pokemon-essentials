@@ -80,6 +80,8 @@ end
 #
 #===============================================================================
 class UI::PokemonSummaryVisuals < UI::BaseVisuals
+  attr_writer :mode
+
   GRAPHICS_FOLDER   = "Summary/"   # Subfolder in Graphics/UI
   TEXT_COLOR_THEMES = {   # Themes not in DEFAULT_TEXT_COLOR_THEMES
     :white        => [Color.new(248, 248, 248), Color.new(104, 104, 104)],
@@ -614,18 +616,29 @@ class UI::PokemonSummaryVisuals < UI::BaseVisuals
       draw_input_icon(22, Graphics.height - 106, Input::USE)
     when :moves
       text = nil
+      text2 = nil
       helper_x = Graphics.width - 4
       helper_y = Graphics.height - @bitmaps[:input_icons].height
       if @move_index   # Viewing move details
         text = _INTL("Rearrange") if ![:in_battle, :choose_move].include?(@mode)
       else   # Viewing page generally
         text = _INTL("Details")
+        if Settings::ALLOW_CHANGING_MOVES_IN_SUMMARY_SCREEN && @mode != :in_battle &&
+           (@pokemon.numMoves > 1 || @pokemon.can_relearn_move?)
+          text2 = _INTL("Change")
+        end
       end
       if text
-        helper_x -= @sprites[:overlay].bitmap.text_size(text).width
-        helper_x -= 6
-        helper_x -= @bitmaps[:input_icons].height
-        draw_input_icon(helper_x, helper_y, Input::USE, text, theme: :white)
+        draw_input_icon(helper_x, helper_y, Input::USE, text, align: :right, theme: :white)
+      end
+      if text2
+        if text
+          helper_x -= @sprites[:overlay].bitmap.text_size(text).width   # Text width
+          helper_x -= 6   # Spacing between icon and text for an input
+          helper_x -= @bitmaps[:input_icons].height   # Icon width
+          helper_x -= 24   # Spacing between inputs
+        end
+        draw_input_icon(helper_x, helper_y, Input::ACTION, text2, align: :right, theme: :white)
       end
     when :ribbons
       text = nil
@@ -639,10 +652,7 @@ class UI::PokemonSummaryVisuals < UI::BaseVisuals
         helper_y = Graphics.height - 88
       end
       if text
-        helper_x -= @sprites[:overlay].bitmap.text_size(text).width
-        helper_x -= 6
-        helper_x -= @bitmaps[:input_icons].height
-        draw_input_icon(helper_x, helper_y, Input::USE, text, theme: :white)
+        draw_input_icon(helper_x, helper_y, Input::USE, text, align: :right, theme: :white)
       end
     end
   end
@@ -1137,7 +1147,13 @@ class UI::PokemonSummaryVisuals < UI::BaseVisuals
         end
       end
     when Input::ACTION
-      @pokemon.play_cry if !@pokemon.egg?
+      if @page == :moves && Settings::ALLOW_CHANGING_MOVES_IN_SUMMARY_SCREEN &&
+         @mode != :in_battle && (@pokemon.numMoves > 1 || @pokemon.can_relearn_move?)
+        pbPlayDecisionSE
+        return :moves_menu
+      else
+        @pokemon.play_cry if !@pokemon.egg?
+      end
     when Input::BACK
       pbPlayCloseMenuSE
       return :quit
@@ -1211,9 +1227,9 @@ class UI::PokemonSummaryVisuals < UI::BaseVisuals
   # This is used for both general navigating through the list of moves (allowing
   # swapping of moves) and for choosing a move to forget when trying to learn a
   # new one.
-  def navigate_moves
+  def navigate_moves(initial_index = 0)
     # Setup
-    @move_index ||= 0
+    @move_index ||= initial_index
     @swap_move_index = -1
     @sprites[:pokemon].visible = false if @sprites[:pokemon]
     @sprites[:pokemon_icon].pokemon = @pokemon
@@ -1235,14 +1251,17 @@ class UI::PokemonSummaryVisuals < UI::BaseVisuals
       end
     end
     # Clean up
-    if @mode != :choose_move
-      @sprites[:move_cursor].visible = false
-      @sprites[:pokemon].visible  = true
-      @sprites[:pokemon_icon].visible = false
-    end
     ret = @move_index
-    @move_index = nil
+    clean_up_navigate_moves
     return ret
+  end
+
+  def clean_up_navigate_moves
+    return if @mode == :choose_move
+    @sprites[:move_cursor].visible = false
+    @sprites[:pokemon].visible  = true
+    @sprites[:pokemon_icon].visible = false
+    @move_index = nil
   end
 
   #-----------------------------------------------------------------------------
@@ -1467,9 +1486,20 @@ class UI::PokemonSummary < UI::BaseScreen
 
   #-----------------------------------------------------------------------------
 
+  def mode=(value)
+    @mode = value
+    @visuals.mode = value
+  end
+
   # Shows a choice menu using the MenuHandlers options below.
   ACTIONS.add(:interact_menu, {
     :menu      => :summary_screen_interact,
+    :condition => proc { |screen| next screen.mode != :in_battle }
+  })
+
+  # Shows a choice menu using the MenuHandlers options below.
+  ACTIONS.add(:moves_menu, {
+    :menu      => :summary_screen_moves_interact,
     :condition => proc { |screen| next screen.mode != :in_battle }
   })
 
@@ -1576,6 +1606,45 @@ class UI::PokemonSummary < UI::BaseScreen
 
   #-----------------------------------------------------------------------------
 
+  ACTIONS.add(:forget_move, {
+    :effect => proc { |screen|
+#      screen.show_message(_INTL("Which move should be forgotten?"))
+      old_mode = screen.mode
+      screen.mode = :choose_move
+      move_index = 0
+      loop do
+        move_index = screen.visuals.navigate_moves(move_index)
+        break if move_index < 0
+        next if !screen.show_confirm_message(_INTL("Are you sure {1} should forget {2}?",
+                                                   screen.pokemon.name, screen.pokemon.moves[move_index].name))
+        # Delete the move
+        move_name = screen.pokemon.moves[move_index].name
+        screen.pokemon.forget_move_at_index(move_index)
+        screen.mode = old_mode
+        screen.visuals.clean_up_navigate_moves
+        screen.refresh
+        screen.show_message(_INTL("{1} has forgotten {2}.", screen.pokemon.name, move_name))
+        break
+      end
+      if move_index < 0   # Cancelled forgetting a move
+        screen.mode = old_mode
+        screen.visuals.clean_up_navigate_moves
+        screen.refresh
+      end
+    }
+  })
+
+  ACTIONS.add(:remember_move, {
+    :effect => proc { |screen|
+      screen.visuals.fade_out
+      UI::MoveReminder.new(screen.pokemon).main
+      screen.refresh
+      screen.visuals.fade_in
+    }
+  })
+
+  #-----------------------------------------------------------------------------
+
   def main
     return choose_move if @mode == :choose_move
     super
@@ -1624,6 +1693,26 @@ MenuHandlers.add(:summary_screen_interact, :marking, {
 })
 
 MenuHandlers.add(:summary_screen_interact, :cancel, {
+  "name"      => _INTL("Cancel"),
+  "order"     => 9999
+})
+
+#===============================================================================
+#
+#===============================================================================
+MenuHandlers.add(:summary_screen_moves_interact, :forget_move, {
+  "name"      => _INTL("Forget move"),
+  "order"     => 10,
+  "condition" => proc { |screen| next screen.pokemon.numMoves > 1 }
+})
+
+MenuHandlers.add(:summary_screen_moves_interact, :remember_move, {
+  "name"      => _INTL("Remember move"),
+  "order"     => 20,
+  "condition" => proc { |screen| next screen.pokemon.can_relearn_move? }
+})
+
+MenuHandlers.add(:summary_screen_moves_interact, :cancel, {
   "name"      => _INTL("Cancel"),
   "order"     => 9999
 })

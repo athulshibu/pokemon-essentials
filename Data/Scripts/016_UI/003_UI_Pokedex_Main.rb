@@ -676,10 +676,7 @@ class UI::PokedexVisuals < UI::BaseVisuals
   def draw_input_helpers
     search_text = _INTL("Search")
     image_x = Graphics.width - 4
-    image_x -= @sprites[:overlay].bitmap.text_size(search_text).width
-    image_x -= 6
-    image_x -= @bitmaps[:input_icons].height
-    draw_input_icon(image_x, 2, Input::ACTION, search_text, theme: :white)
+    draw_input_icon(image_x, 2, Input::ACTION, search_text, align: :right, theme: :white)
   end
 
   def draw_completion_info

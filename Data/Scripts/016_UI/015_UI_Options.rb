@@ -6,16 +6,21 @@ class PokemonSystem
   attr_accessor :runstyle
   attr_accessor :sendtoboxes
   attr_accessor :givenicknames
+  attr_accessor :skip_move_learning
   attr_accessor :textinput
+  attr_reader   :language
+
+  attr_reader   :main_volume
   attr_reader   :bgmvolume
   attr_reader   :sevolume
-  attr_writer   :pokemon_cry_volume
+  attr_accessor :pokemon_cry_volume
+
   attr_reader   :textspeed
   attr_accessor :battlescene
   attr_reader   :textskin
   attr_reader   :frame
   attr_reader   :screensize
-  attr_reader   :language
+
   attr_writer   :controls
 
   def initialize
@@ -23,6 +28,7 @@ class PokemonSystem
     @runstyle           = 0     # Default movement speed (0=walk, 1=run)
     @sendtoboxes        = 0     # Send to Boxes (0=manual, 1=automatic)
     @givenicknames      = 0     # Give nicknames (0=give, 1=don't give)
+    @skip_move_learning = 0     # Skip nove learning (0=off, 1=on)
     @textinput          = 0     # Text input mode (0=cursor, 1=keyboard)
     @language           = 0     # Language (see also Settings::LANGUAGES)
     @main_volume        = 100
@@ -42,10 +48,6 @@ class PokemonSystem
     if Settings::LANGUAGES[@language]
       MessageTypes.load_message_files(Settings::LANGUAGES[@language][1])
     end
-  end
-
-  def main_volume
-    return @main_volume || 100
   end
 
   def main_volume=(value)
@@ -82,10 +84,6 @@ class PokemonSystem
     playingBGS = $game_system.getPlayingBGS
     $game_system.bgs_pause
     $game_system.bgs_resume(playingBGS)
-  end
-
-  def pokemon_cry_volume
-    return @pokemon_cry_volume || 100
   end
 
   def textspeed=(value)
@@ -852,10 +850,22 @@ MenuHandlers.add(:options_menu, :give_nicknames, {
   "set_proc"    => proc { |value, _screen| $PokemonSystem.givenicknames = value }
 })
 
+MenuHandlers.add(:options_menu, :skip_move_learning, {
+  "page"        => :gameplay,
+  "name"        => _INTL("Skip Move Learning"),
+  "order"       => 50,
+  "type"        => :array,
+  "parameters"  => [_INTL("Off"), _INTL("On")],
+  "description" => _INTL("Choose whether to prevent Pokémon learning new moves when they level up."),
+  "condition"   => proc { next Settings::ALLOW_CHANGING_MOVES_IN_SUMMARY_SCREEN },
+  "get_proc"    => proc { next $PokemonSystem.skip_move_learning },
+  "set_proc"    => proc { |value, _screen| $PokemonSystem.skip_move_learning = value }
+})
+
 MenuHandlers.add(:options_menu, :text_input_style, {
   "page"        => :gameplay,
   "name"        => _INTL("Text Entry"),
-  "order"       => 50,
+  "order"       => 60,
   "type"        => :array,
   "parameters"  => [_INTL("Cursor"), _INTL("Free type")],
   "description" => _INTL("Choose how you want to enter text."),
@@ -866,7 +876,7 @@ MenuHandlers.add(:options_menu, :text_input_style, {
 MenuHandlers.add(:options_menu, :language, {
   "page"        => :gameplay,
   "name"        => _INTL("Language"),
-  "order"       => 60,
+  "order"       => 70,
   "type"        => (Settings::LANGUAGES.length == 2) ? :array : :array_one,
   "parameters"  => Settings::LANGUAGES.map { |lang| lang[0] },
   "description" => _INTL("Choose the game's language."),

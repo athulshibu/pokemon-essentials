@@ -327,7 +327,7 @@ class UI::MoveReminder < UI::BaseScreen
     loop do
       on_start_main_loop
       command = @visuals.navigate
-      break if command == :quit && (@mode == @normal ||
+      break if command == :quit && (@mode == :normal ||
                show_confirm_message(_INTL("Give up trying to teach a new move to {1}?", @pokemon.name)))
       perform_action(command)
       if @moves.empty?
