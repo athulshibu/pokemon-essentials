@@ -14,6 +14,9 @@ class Game_Player < Game_Character
   # Time in seconds for one cycle of bobbing (playing 4 charset frames) while
   # surfing or diving.
   SURF_BOB_DURATION = 1.5
+  # Time in seconds for a bump into an object to take place. 0.5 is double the
+  # time taken to walk 1 step.
+  BUMP_DURATION = 0.5
 
   def initialize(*arg)
     super(*arg)
@@ -33,6 +36,10 @@ class Game_Player < Game_Character
   def screen_z(height = 0)
     ret = super
     return ret + 1
+  end
+
+  def pattern
+    return @bump_pattern || super
   end
 
   def has_follower?
@@ -117,10 +124,20 @@ class Game_Player < Game_Character
   #-----------------------------------------------------------------------------
 
   def bump_into_object
-    return if @bump_time_start && (System.uptime - @bump_time_start < @move_time)
-    pbSEPlay("Player bump") if !@move_route_forcing
+    return if @move_route_forcing
+    return if @bump_time_start && (System.uptime - @bump_time_start < BUMP_DURATION)
+    pbSEPlay("Player bump")
     $stats.bump_count += 1
     @bump_time_start = System.uptime
+  end
+
+  def end_bump_into_object
+    @bump_time_start = nil
+    @bump_pattern = nil
+  end
+
+  def bumping_into_object?
+    return !@bump_time_start.nil?
   end
 
   def add_move_distance_to_stats(distance = 1)
@@ -138,6 +155,7 @@ class Game_Player < Game_Character
     turn_generic(dir, true) if turn_enabled
     if !$game_temp.encounter_triggered
       if can_move_in_direction?(dir)
+        end_bump_into_object
         x_offset = (dir == 4) ? -1 : (dir == 6) ? 1 : 0
         y_offset = (dir == 8) ? -1 : (dir == 2) ? 1 : 0
         # Jump over ledges
@@ -176,6 +194,7 @@ class Game_Player < Game_Character
     old_direction = @direction
     super(dir)
     if @direction != old_direction && !@move_route_forcing && !pbMapInterpreterRunning?
+      end_bump_into_object
       EventHandlers.trigger(:on_player_change_direction)
       $game_temp.encounter_triggered = false if !keep_enc_indicator
     end
@@ -515,6 +534,7 @@ class Game_Player < Game_Character
   end
 
   def update_pattern
+    # Bobbing up and down on/in water
     if $PokemonGlobal&.surfing || $PokemonGlobal&.diving
       bob_pattern = (4 * System.uptime / SURF_BOB_DURATION).to_i % 4
       @pattern = bob_pattern if !@lock_pattern
@@ -524,6 +544,17 @@ class Game_Player < Game_Character
     else
       @bob_height = 0
       super
+    end
+    # Bumping into an object
+    if bumping_into_object? && !$PokemonGlobal&.surfing && !$PokemonGlobal&.diving
+      pattern_time = BUMP_DURATION / 2   # 2 frames per step animation
+      bump_time = System.uptime - @bump_time_start
+      if bump_time >= BUMP_DURATION
+        end_bump_into_object
+      else
+        bump_frame = (bump_time / pattern_time).floor
+        @bump_pattern = (bump_frame + 1) % 4
+      end
     end
   end
 
