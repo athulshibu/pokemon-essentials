@@ -417,8 +417,12 @@ module Settings
   # fragment. A language will use the language data files from the Data folder
   # called messages_FRAGMENT_core.dat and messages_FRAGMENT_game.dat (if they
   # exist).
+  # NOTE: Some messages in battle are different if the display name of the
+  #       selected language is "Français". See def self.more_possessive_messages?
+  #       if you want to make another language use those different messages.
   LANGUAGES = [
 #    ["English", "english"],
+#    ["Français", "francais"],
 #    ["Deutsch", "deutsch"]
   ]
 

@@ -306,9 +306,13 @@ Battle::ItemEffects::HPHeal.add(:BERRYJUICE,
     battle.pbCommonAnimation("UseItem", battler) if !forced
     battler.pbRecoverHP(20)
     if forced
-      battle.pbDisplay(_INTL("{1} HP was restored.", battler.pbOfThis))
+      battle.pbDisplay(_INTL("{1}'s HP was restored.", battler.pbThis))
     else
-      battle.pbDisplay(_INTL("{1} restored its health using its {2}!", battler.pbThis, itemName))
+      if Translation.more_possessive_messages?
+        battle.pbDisplay(_INTL("{1} {2} restored its health!", battler.pbOfThis, itemName))
+      else
+        battle.pbDisplay(_INTL("{1} restored its health using its {2}!", battler.pbThis, itemName))
+      end
     end
     next true
   }
@@ -402,9 +406,13 @@ Battle::ItemEffects::HPHeal.add(:ORANBERRY,
     itemName = GameData::Item.get(item).name
     if forced
       PBDebug.log("[Item triggered] Forced consuming of #{itemName}")
-      battle.pbDisplay(_INTL("{1} HP was restored.", battler.pbOfThis))
+      battle.pbDisplay(_INTL("{1}'s HP was restored.", battler.pbThis))
     else
-      battle.pbDisplay(_INTL("{1} restored a little HP using its {2}!", battler.pbThis, itemName))
+      if Translation.more_possessive_messages?
+        battle.pbDisplay(_INTL("{1} {2} restored its health!", battler.pbOfThis, itemName))
+      else
+        battle.pbDisplay(_INTL("{1} restored a little HP using its {2}!", battler.pbThis, itemName))
+      end
     end
     next true
   }
@@ -439,9 +447,13 @@ Battle::ItemEffects::HPHeal.add(:SITRUSBERRY,
     itemName = GameData::Item.get(item).name
     if forced
       PBDebug.log("[Item triggered] Forced consuming of #{itemName}")
-      battle.pbDisplay(_INTL("{1} HP was restored.", battler.pbOfThis))
+      battle.pbDisplay(_INTL("{1}'s HP was restored.", battler.pbThis))
     else
-      battle.pbDisplay(_INTL("{1} restored its health using its {2}!", battler.pbThis, itemName))
+      if Translation.more_possessive_messages?
+        battle.pbDisplay(_INTL("{1} {2} restored its health!", battler.pbOfThis, itemName))
+      else
+        battle.pbDisplay(_INTL("{1} restored its health using its {2}!", battler.pbThis, itemName))
+      end
     end
     next true
   }
@@ -558,21 +570,25 @@ Battle::ItemEffects::StatusCure.add(:MENTALHERB,
       if forced
         battle.pbDisplay(_INTL("{1} got over its infatuation.", battler.pbThis))
       else
-        battle.pbDisplay(_INTL("{1} cured its infatuation status using its {2}!",
-                               battler.pbThis, itemName))
+        if Translation.more_possessive_messages?
+          battle.pbDisplay(_INTL("{1} {2} cured its infatuation status!", battler.pbOfThis, itemName))
+        else
+          battle.pbDisplay(_INTL("{1} cured its infatuation status using its {2}!",
+                                 battler.pbThis, itemName))
+        end
       end
       battler.pbCureAttract
     end
-    battle.pbDisplay(_INTL("{1} taunt wore off!", battler.pbOfThis)) if battler.effects[PBEffects::Taunt] > 0
+    battle.pbDisplay(_INTL("{1}'s taunt wore off!", battler.pbThis)) if battler.effects[PBEffects::Taunt] > 0
     battler.effects[PBEffects::Taunt] = 0
-    battle.pbDisplay(_INTL("{1} encore ended!", battler.pbOfThis)) if battler.effects[PBEffects::Encore] > 0
+    battle.pbDisplay(_INTL("{1}'s encore ended!", battler.pbThis)) if battler.effects[PBEffects::Encore] > 0
     battler.effects[PBEffects::Encore]     = 0
     battler.effects[PBEffects::EncoreMove] = nil
-    battle.pbDisplay(_INTL("{1} torment wore off!", battler.pbOfThis)) if battler.effects[PBEffects::Torment]
+    battle.pbDisplay(_INTL("{1}'s torment wore off!", battler.pbThis)) if battler.effects[PBEffects::Torment]
     battler.effects[PBEffects::Torment] = false
     battle.pbDisplay(_INTL("{1} is no longer disabled!", battler.pbThis)) if battler.effects[PBEffects::Disable] > 0
     battler.effects[PBEffects::Disable] = 0
-    battle.pbDisplay(_INTL("{1} Heal Block wore off!", battler.pbOfThis)) if battler.effects[PBEffects::HealBlock] > 0
+    battle.pbDisplay(_INTL("{1}'s Heal Block wore off!", battler.pbThis)) if battler.effects[PBEffects::HealBlock] > 0
     battler.effects[PBEffects::HealBlock] = 0
     next true
   }
@@ -1564,9 +1580,13 @@ Battle::ItemEffects::OnBeingHitPositiveBerry.add(:ENIGMABERRY,
     battle.pbHideAbilitySplash(battler) if ripening
     battler.pbRecoverHP(amt)
     if forced
-      battle.pbDisplay(_INTL("{1} HP was restored.", battler.pbOfThis))
+      battle.pbDisplay(_INTL("{1}'s HP was restored.", battler.pbThis))
     else
-      battle.pbDisplay(_INTL("{1} restored its health using its {2}!", battler.pbThis, itemName))
+      if Translation.more_possessive_messages?
+        battle.pbDisplay(_INTL("{1} {2} restored its health!", battler.pbOfThis, itemName))
+      else
+        battle.pbDisplay(_INTL("{1} restored its health using its {2}!", battler.pbThis, itemName))
+      end
     end
     next true
   }
@@ -1687,8 +1707,11 @@ Battle::ItemEffects::AfterMoveUseFromUser.add(:SHELLBELL,
     targets.each { |b| totalDamage += b.damageState.totalHPLost }
     next if totalDamage <= 0
     user.pbRecoverHP(totalDamage / 8)
-    battle.pbDisplay(_INTL("{1} restored a little HP using its {2}!",
-       user.pbThis, user.itemName))
+    if Translation.more_possessive_messages?
+      battle.pbDisplay(_INTL("{1} {2} restored a little HP!", user.pbOfThis, user.itemName))
+    else
+      battle.pbDisplay(_INTL("{1} restored a little HP using its {2}!", user.pbThis, user.itemName))
+    end
   }
 )
 
@@ -1767,7 +1790,11 @@ Battle::ItemEffects::OnEndOfUsingMoveStatRestore.add(:WHITEHERB,
     if forced
       battle.pbDisplay(_INTL("{1} status returned to normal!", battler.pbOfThis))
     else
-      battle.pbDisplay(_INTL("{1} returned its status to normal using its {2}!", battler.pbThis, itemName))
+      if Translation.more_possessive_messages?
+        battle.pbDisplay(_INTL("{1} {2} returned its status to normal!", battler.pbOfThis, itemName))
+      else
+        battle.pbDisplay(_INTL("{1} returned its status to normal using its {2}!", battler.pbThis, itemName))
+      end
     end
     next true
   }
@@ -1977,8 +2004,11 @@ Battle::ItemEffects::EndOfRoundHealing.add(:BLACKSLUDGE,
       next if !battler.canHeal?
       battle.pbCommonAnimation("UseItem", battler)
       battler.pbRecoverHP(battler.totalhp / 16)
-      battle.pbDisplay(_INTL("{1} restored a little HP using its {2}!",
-         battler.pbThis, battler.itemName))
+      if Translation.more_possessive_messages?
+        battle.pbDisplay(_INTL("{1} {2} restored a little HP!", battler.pbOfThis, battler.itemName))
+      else
+        battle.pbDisplay(_INTL("{1} restored a little HP using its {2}!", battler.pbThis, battler.itemName))
+      end
     elsif battler.takesIndirectDamage?
       battle.pbCommonAnimation("UseItem", battler)
       battler.pbTakeEffectDamage(battler.totalhp / 8) do |hp_lost|
@@ -1993,8 +2023,11 @@ Battle::ItemEffects::EndOfRoundHealing.add(:LEFTOVERS,
     next if !battler.canHeal?
     battle.pbCommonAnimation("UseItem", battler)
     battler.pbRecoverHP(battler.totalhp / 16)
-    battle.pbDisplay(_INTL("{1} restored a little HP using its {2}!",
-       battler.pbThis, battler.itemName))
+    if Translation.more_possessive_messages?
+      battle.pbDisplay(_INTL("{1} {2} restored a little HP!", battler.pbOfThis, battler.itemName))
+    else
+      battle.pbDisplay(_INTL("{1} restored a little HP using its {2}!", battler.pbThis, battler.itemName))
+    end
   }
 )
 

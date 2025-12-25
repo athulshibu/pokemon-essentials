@@ -362,9 +362,17 @@ class Battle::Move::BindTarget < Battle::Move
     msg = _INTL("{1} was trapped in the vortex!", target.pbThis)
     case @id
     when :BIND
-      msg = _INTL("{1} was squeezed by {2}!", target.pbThis, user.pbThis(true))
+      if Translation.more_possessive_messages?
+        msg = _INTL("{1} is subject to {2} squeezing!", target.pbThis, user.pbOfThis(true))
+      else
+        msg = _INTL("{1} was squeezed by {2}!", target.pbThis, user.pbThis(true))
+      end
     when :CLAMP
-      msg = _INTL("{1} clamped {2}!", user.pbThis, target.pbThis(true))
+      if Translation.more_possessive_messages?
+        msg = _INTL("{1} is subject to {2} clamping!", target.pbThis, user.pbOfThis(true))
+      else
+        msg = _INTL("{1} clamped {2}!", user.pbThis, target.pbThis(true))
+      end
     when :FIRESPIN
       msg = _INTL("{1} was trapped in the fiery vortex!", target.pbThis)
     when :INFESTATION
@@ -641,7 +649,7 @@ class Battle::Move::TargetActsLast < Battle::Move
     end
     target.effects[PBEffects::Quash]    = highestQuash + 1
     target.effects[PBEffects::MoveNext] = false
-    @battle.pbDisplay(_INTL("{1} move was postponed!", target.pbOfThis))
+    @battle.pbDisplay(_INTL("{1}'s move was postponed!", target.pbThis))
   end
 end
 

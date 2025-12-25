@@ -409,7 +409,7 @@ class Battle::Move::HealingMove < Battle::Move
 
   def pbMoveFailed?(user, targets)
     if user.hp == user.totalhp
-      @battle.pbDisplay(_INTL("{1} HP is full!", user.pbOfThis))
+      @battle.pbDisplay(_INTL("{1}'s HP is full!", user.pbThis))
       return true
     end
     return false
@@ -418,7 +418,7 @@ class Battle::Move::HealingMove < Battle::Move
   def pbEffectGeneral(user)
     amt = pbHealAmount(user)
     user.pbRecoverHP(amt)
-    @battle.pbDisplay(_INTL("{1} HP was restored.", user.pbOfThis))
+    @battle.pbDisplay(_INTL("{1}'s HP was restored.", user.pbThis))
   end
 end
 
@@ -622,8 +622,8 @@ class Battle::Move::PledgeMove < Battle::Move
   def pbEffectGeneral(user)
     user.effects[PBEffects::FirstPledge] = nil
     return if !@pledgeSetup
-    @battle.pbDisplay(_INTL("{1} is waiting for {2} move...",
-                            user.pbThis, @pledgeOtherUser.pbOfThis(true)))
+    @battle.pbDisplay(_INTL("{1} is waiting for {2}'s move...",
+                            user.pbThis, @pledgeOtherUser.pbThis(true)))
     @pledgeOtherUser.effects[PBEffects::FirstPledge] = @function_code
     @pledgeOtherUser.effects[PBEffects::MoveNext]    = true
     user.lastMoveFailed = true   # Treated as a failure for Stomping Tantrum

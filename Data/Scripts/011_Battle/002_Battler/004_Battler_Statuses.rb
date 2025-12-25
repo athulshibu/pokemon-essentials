@@ -168,7 +168,7 @@ class Battle::Battler
     # Safeguard immunity
     if pbOwnSide.effects[PBEffects::Safeguard] > 0 && !self_inflicted && move &&
        !(user && user.hasActiveAbility?(:INFILTRATOR))
-      @battle.pbDisplay(_INTL("{1} team is protected by Safeguard!", pbOfThis)) if showMessages
+      @battle.pbDisplay(_INTL("{1}'s team is protected by Safeguard!", pbThis)) if showMessages
       return false
     end
     return true
@@ -443,7 +443,7 @@ class Battle::Battler
       case oldStatus
       when :SLEEP     then @battle.pbDisplay(_INTL("{1} woke up!", pbThis))
       when :POISON    then @battle.pbDisplay(_INTL("{1} was cured of its poisoning.", pbThis))
-      when :BURN      then @battle.pbDisplay(_INTL("{1} burn was healed.", pbOfThis))
+      when :BURN      then @battle.pbDisplay(_INTL("{1}'s burn was healed.", pbThis))
       when :PARALYSIS then @battle.pbDisplay(_INTL("{1} was cured of paralysis.", pbThis))
       when :FROZEN    then @battle.pbDisplay(_INTL("{1} thawed out!", pbThis))
       end
@@ -485,7 +485,7 @@ class Battle::Battler
     end
     if pbOwnSide.effects[PBEffects::Safeguard] > 0 && !selfInflicted &&
        !(user && user.hasActiveAbility?(:INFILTRATOR))
-      @battle.pbDisplay(_INTL("{1} team is protected by Safeguard!", pbOfThis)) if showMessages
+      @battle.pbDisplay(_INTL("{1}'s team is protected by Safeguard!", pbThis)) if showMessages
       return false
     end
     return true

@@ -446,7 +446,7 @@ class Battle::Move::GiveUserStatusToTarget < Battle::Move
       msg = _INTL("{1} was cured of its poisoning.", user.pbThis)
     when :BURN
       target.pbBurn(user)
-      msg = _INTL("{1} burn was healed.", user.pbOfThis)
+      msg = _INTL("{1}'s burn was healed.", user.pbThis)
     when :PARALYSIS
       target.pbParalyze(user)
       msg = _INTL("{1} was cured of paralysis.", user.pbThis)
@@ -517,11 +517,7 @@ class Battle::Move::CureUserPartyStatus < Battle::Move
 
   def pbAromatherapyHeal(pkmn, battler = nil)
     oldStatus = (battler) ? battler.status : pkmn.status
-    if oldStatus == :BURN
-      curedName = (battler) ? battler.pbOfThis : pkmn.name
-    else
-      curedName = (battler) ? battler.pbThis : pkmn.name
-    end
+    curedName = (battler) ? battler.pbThis : pkmn.name
     if battler
       battler.pbCureStatus(false)
     else
@@ -534,7 +530,7 @@ class Battle::Move::CureUserPartyStatus < Battle::Move
     when :POISON
       @battle.pbDisplay(_INTL("{1} was cured of its poisoning.", curedName))
     when :BURN
-      @battle.pbDisplay(_INTL("{1} burn was healed.", curedName))
+      @battle.pbDisplay(_INTL("{1}'s burn was healed.", curedName))
     when :PARALYSIS
       @battle.pbDisplay(_INTL("{1} was cured of paralysis.", curedName))
     when :FROZEN
@@ -843,7 +839,7 @@ class Battle::Move::SetUserTypesBasedOnEnvironment < Battle::Move
   def pbEffectGeneral(user)
     user.pbChangeTypes(@newType)
     typeName = GameData::Type.get(@newType).name
-    @battle.pbDisplay(_INTL("{1} type changed to {2}!", user.pbOfThis, typeName))
+    @battle.pbDisplay(_INTL("{1}'s type changed to {2}!", user.pbThis, typeName))
   end
 end
 
@@ -885,7 +881,7 @@ class Battle::Move::SetUserTypesToResistLastAttack < Battle::Move
     newType = @newTypes[@battle.pbRandom(@newTypes.length)]
     user.pbChangeTypes(newType)
     typeName = GameData::Type.get(newType).name
-    @battle.pbDisplay(_INTL("{1} type changed to {2}!", user.pbOfThis, typeName))
+    @battle.pbDisplay(_INTL("{1}'s type changed to {2}!", user.pbThis, typeName))
   end
 end
 
@@ -919,8 +915,8 @@ class Battle::Move::SetUserTypesToTargetTypes < Battle::Move
 
   def pbEffectAgainstTarget(user, target)
     user.pbChangeTypes(target)
-    @battle.pbDisplay(_INTL("{1} type changed to match {2}!",
-                            user.pbOfThis, target.pbOfThis(true)))
+    @battle.pbDisplay(_INTL("{1}'s type changed to match {2}'s!",
+                            user.pbThis, target.pbThis(true)))
   end
 end
 
@@ -956,7 +952,7 @@ class Battle::Move::SetUserTypesToUserMoveType < Battle::Move
     newType = @newTypes[@battle.pbRandom(@newTypes.length)]
     user.pbChangeTypes(newType)
     typeName = GameData::Type.get(newType).name
-    @battle.pbDisplay(_INTL("{1} type changed to {2}!", user.pbOfThis, typeName))
+    @battle.pbDisplay(_INTL("{1}'s type changed to {2}!", user.pbThis, typeName))
   end
 end
 
@@ -978,7 +974,7 @@ class Battle::Move::SetTargetTypesToPsychic < Battle::Move
   def pbEffectAgainstTarget(user, target)
     target.pbChangeTypes(:PSYCHIC)
     typeName = GameData::Type.get(:PSYCHIC).name
-    @battle.pbDisplay(_INTL("{1} type changed to {2}!", target.pbOfThis, typeName))
+    @battle.pbDisplay(_INTL("{1}'s type changed to {2}!", target.pbThis, typeName))
   end
 end
 
@@ -1000,7 +996,7 @@ class Battle::Move::SetTargetTypesToWater < Battle::Move
   def pbEffectAgainstTarget(user, target)
     target.pbChangeTypes(:WATER)
     typeName = GameData::Type.get(:WATER).name
-    @battle.pbDisplay(_INTL("{1} type changed to {2}!", target.pbOfThis, typeName))
+    @battle.pbDisplay(_INTL("{1}'s type changed to {2}!", target.pbThis, typeName))
   end
 end
 

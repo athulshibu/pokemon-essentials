@@ -400,9 +400,9 @@ ItemHandlers::BattleUseOnPokemon.copy(:ANTIDOTE, :PECHABERRY)
 ItemHandlers::BattleUseOnPokemon.add(:BURNHEAL, proc { |item, pokemon, battler, choices, scene|
   pokemon.heal_status
   battler&.pbCureStatus(false)
-  name = (battler) ? battler.pbOfThis : pokemon.name
+  name = (battler) ? battler.pbThis : pokemon.name
   scene.pbRefresh
-  scene.pbDisplay(_INTL("{1} burn was healed.", name))
+  scene.pbDisplay(_INTL("{1}'s burn was healed.", name))
 })
 
 ItemHandlers::BattleUseOnPokemon.copy(:BURNHEAL, :RAWSTBERRY)

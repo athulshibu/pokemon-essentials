@@ -46,7 +46,11 @@ class Battle::Battler
       @battle.pbHideAbilitySplash(target)
       pbItemHPHealCheck
     else
-      msg = _INTL("{1} had its energy drained!", target.pbThis) if nil_or_empty?(msg)
+      if Translation.more_possessive_messages?
+        msg = _INTL("{1} energy was drained!", target.pbThis) if nil_or_empty?(msg)
+      else
+        msg = _INTL("{1} had its energy drained!", target.pbThis) if nil_or_empty?(msg)
+      end
       @battle.pbDisplay(msg)
       if canHeal?
         amt = (amt * 1.3).floor if hasActiveItem?(:BIGROOT)

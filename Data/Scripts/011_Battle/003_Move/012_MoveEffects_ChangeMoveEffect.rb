@@ -77,7 +77,7 @@ class Battle::Move::RandomlyDamageOrHealTarget < Battle::Move
   def pbEffectAgainstTarget(user, target)
     return if @presentDmg > 0
     target.pbRecoverHP(target.totalhp / 4)
-    @battle.pbDisplay(_INTL("{1} HP was restored.", target.pbOfThis))
+    @battle.pbDisplay(_INTL("{1}'s HP was restored.", target.pbThis))
   end
 
   def pbShowAnimation(id, user, targets, hitNum = 0, showAnimation = true)
@@ -122,7 +122,7 @@ class Battle::Move::HealAllyOrDamageFoe < Battle::Move
   def pbEffectAgainstTarget(user, target)
     return if !@healing
     target.pbRecoverHP(target.totalhp / 2)
-    @battle.pbDisplay(_INTL("{1} HP was restored.", target.pbOfThis))
+    @battle.pbDisplay(_INTL("{1}'s HP was restored.", target.pbThis))
   end
 
   def pbShowAnimation(id, user, targets, hitNum = 0, showAnimation = true)
@@ -582,7 +582,7 @@ class Battle::Move::PowerDependsOnUserStockpile < Battle::Move
   def pbEffectAfterAllHits(user, target)
     return if user.fainted? || user.effects[PBEffects::Stockpile] == 0
     return if target.damageState.unaffected
-    @battle.pbDisplay(_INTL("{1} stockpiled effect wore off!", user.pbOfThis))
+    @battle.pbDisplay(_INTL("{1}'s stockpiled effect wore off!", user.pbThis))
     return if @battle.pbAllFainted?(target.idxOwnSide)
     showAnim = true
     if user.effects[PBEffects::StockpileDef] > 0 &&
@@ -629,9 +629,9 @@ class Battle::Move::HealUserDependingOnUserStockpile < Battle::Move
     when 3 then hpGain = user.totalhp
     end
     if user.pbRecoverHP(hpGain) > 0
-      @battle.pbDisplay(_INTL("{1} HP was restored.", user.pbOfThis))
+      @battle.pbDisplay(_INTL("{1}'s HP was restored.", user.pbThis))
     end
-    @battle.pbDisplay(_INTL("{1} stockpiled effect wore off!", user.pbOfThis))
+    @battle.pbDisplay(_INTL("{1}'s stockpiled effect wore off!", user.pbThis))
     showAnim = true
     if user.effects[PBEffects::StockpileDef] > 0 &&
        user.pbCanLowerStatStage?(:DEFENSE, user, self)

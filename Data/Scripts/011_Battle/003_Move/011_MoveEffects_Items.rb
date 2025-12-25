@@ -19,7 +19,7 @@ class Battle::Move::UserTakesTargetItem < Battle::Move
     else
       @battle.swapHeldItems(user, target)
     end
-    @battle.pbDisplay(_INTL("{1} stole {2} {3}!", user.pbThis, target.pbOfThis(true), user.itemName))
+    @battle.pbDisplay(_INTL("{1} stole {2}'s {3}!", user.pbThis, target.pbThis(true), user.itemName))
     user.pbHeldItemTriggerCheck
   end
 end
@@ -52,7 +52,11 @@ class Battle::Move::TargetTakesUserItem < Battle::Move
 
   def pbEffectAgainstTarget(user, target)
     @battle.swapHeldItems(user, target)
-    @battle.pbDisplay(_INTL("{1} received {2} from {3}!", target.pbThis, target.itemName, user.pbThis(true)))
+    if Translation.more_possessive_messages?
+      @battle.pbDisplay(_INTL("{1} received {2} {3}!", target.pbThis, user.pbOfThis(true), target.itemName))
+    else
+      @battle.pbDisplay(_INTL("{1} received {2} from {3}!", target.pbThis, target.itemName, user.pbThis(true)))
+    end
     target.pbHeldItemTriggerCheck
   end
 end

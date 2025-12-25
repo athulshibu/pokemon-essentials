@@ -298,8 +298,13 @@ class Battle::Battler
     # Infatuation
     if @effects[PBEffects::Attract] >= 0
       @battle.pbCommonAnimation("Attract", self)
-      @battle.pbDisplay(_INTL("{1} is in love with {2}!", pbThis,
-                              @battle.battlers[@effects[PBEffects::Attract]].pbThis(true)))
+      if Translation.more_possessive_messages?
+        @battle.pbDisplay(_INTL("{1} is in love with {2}!", pbThis,
+                                @battle.battlers[@effects[PBEffects::Attract]].pbOfThis(true)))
+      else
+        @battle.pbDisplay(_INTL("{1} is in love with {2}!", pbThis,
+                                @battle.battlers[@effects[PBEffects::Attract]].pbThis(true)))
+      end
       if @battle.pbRandom(100) < 50
         @battle.pbDisplay(_INTL("{1} is immobilized by love!", pbThis))
         PBDebug.log("[Move failed] #{pbThis} is immobilized by love")
@@ -647,7 +652,7 @@ class Battle::Battler
     elsif move.pbTarget(user).num_targets > 1 || target.effects[PBEffects::TwoTurnAttack]
       @battle.pbDisplay(_INTL("{1} avoided the attack!", target.pbThis))
     elsif !move.pbMissMessage(user, target)
-      @battle.pbDisplay(_INTL("{1} attack missed!", user.pbOfThis))
+      @battle.pbDisplay(_INTL("{1}'s attack missed!", user.pbThis))
     end
   end
 end

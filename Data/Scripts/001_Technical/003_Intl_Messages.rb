@@ -510,6 +510,10 @@ class Translation
     return "."
   end
 
+  def self.more_possessive_messages?
+    return ["Français"].include?(Settings::LANGUAGES[$PokemonSystem.language][0])
+  end
+
   def initialize(filename = nil, delay_load = false)
     @default_core_messages = nil
     @default_game_messages = nil

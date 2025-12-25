@@ -733,7 +733,7 @@ Battle::AbilityEffects::StatusCure.add(:OBLIVIOUS,
     if battler.effects[PBEffects::Taunt] > 0 && Settings::MECHANICS_GENERATION >= 6
       battler.effects[PBEffects::Taunt] = 0
       if Battle::Scene::USE_ABILITY_SPLASH
-        battler.battle.pbDisplay(_INTL("{1} Taunt wore off!", battler.pbOfThis))
+        battler.battle.pbDisplay(_INTL("{1}'s Taunt wore off!", battler.pbThis))
       else
         battler.battle.pbDisplay(_INTL("{1} {2} made its taunt wear off!",
                                        battler.pbOfThis, battler.abilityName))
@@ -1990,8 +1990,8 @@ Battle::AbilityEffects::OnBeingHit.add(:ANGERPOINT,
     if Battle::Scene::USE_ABILITY_SPLASH
       battle.pbDisplay(_INTL("{1} maxed its {2}!", target.pbThis, GameData::Stat.get(:ATTACK).name))
     else
-      battle.pbDisplay(_INTL("{1} {2} maxed its {3}!",
-                             target.pbOfThis, target.abilityName, GameData::Stat.get(:ATTACK).name))
+      battle.pbDisplay(_INTL("{1}'s {2} maxed its {3}!",
+                             target.pbThis, target.abilityName, GameData::Stat.get(:ATTACK).name))
     end
     battle.pbHideAbilitySplash(target)
   }
@@ -2503,10 +2503,10 @@ Battle::AbilityEffects::OnEndOfUsingMove.add(:MAGICIAN,
     battler = valid_targets.first
     battle.swapHeldItems(user, battler)
     if Battle::Scene::USE_ABILITY_SPLASH
-      battle.pbDisplay(_INTL("{1} stole {2} {3}!", user.pbThis, battler.pbOfThis(true), user.itemName))
+      battle.pbDisplay(_INTL("{1} stole {2}'s {3}!", user.pbThis, battler.pbThis(true), user.itemName))
     else
-      battle.pbDisplay(_INTL("{1} stole {2} {3} with {4}!",
-                             user.pbThis, battler.pbOfThis(true), user.itemName, user.abilityName))
+      battle.pbDisplay(_INTL("{1} stole {2}'s {3} with {4}!",
+                             user.pbThis, battler.pbThis(true), user.itemName, user.abilityName))
     end
     battle.pbHideAbilitySplash(user)
     user.pbHeldItemTriggerCheck
@@ -2544,8 +2544,8 @@ Battle::AbilityEffects::AfterMoveUseFromTarget.add(:COLORCHANGE,
     typeName = GameData::Type.get(move.calcType).name
     battle.pbShowAbilitySplash(target)
     target.pbChangeTypes(move.calcType)
-    battle.pbDisplay(_INTL("{1} type changed to {2} because of its {3}!",
-                           target.pbOfThis, typeName, target.abilityName))
+    battle.pbDisplay(_INTL("{1}'s type changed to {2} because of its {3}!",
+                           target.pbThis, typeName, target.abilityName))
     battle.pbHideAbilitySplash(target)
   }
 )
@@ -2600,7 +2600,7 @@ Battle::AbilityEffects::EndOfRoundWeather.add(:DRYSKIN,
       battle.pbShowAbilitySplash(battler)
       battler.pbRecoverHP(battler.totalhp / 8)
       if Battle::Scene::USE_ABILITY_SPLASH
-        battle.pbDisplay(_INTL("{1} HP was restored.", battler.pbOfThis))
+        battle.pbDisplay(_INTL("{1}'s HP was restored.", battler.pbThis))
       else
         battle.pbDisplay(_INTL("{1} {2} restored its HP.", battler.pbOfThis, battler.abilityName))
       end
@@ -2616,7 +2616,7 @@ Battle::AbilityEffects::EndOfRoundWeather.add(:ICEBODY,
     battle.pbShowAbilitySplash(battler)
     battler.pbRecoverHP(battler.totalhp / 16)
     if Battle::Scene::USE_ABILITY_SPLASH
-      battle.pbDisplay(_INTL("{1} HP was restored.", battler.pbOfThis))
+      battle.pbDisplay(_INTL("{1}'s HP was restored.", battler.pbThis))
     else
       battle.pbDisplay(_INTL("{1} {2} restored its HP.", battler.pbOfThis, battler.abilityName))
     end
@@ -2645,7 +2645,7 @@ Battle::AbilityEffects::EndOfRoundWeather.add(:RAINDISH,
     battle.pbShowAbilitySplash(battler)
     battler.pbRecoverHP(battler.totalhp / 16)
     if Battle::Scene::USE_ABILITY_SPLASH
-      battle.pbDisplay(_INTL("{1} HP was restored.", battler.pbOfThis))
+      battle.pbDisplay(_INTL("{1}'s HP was restored.", battler.pbThis))
     else
       battle.pbDisplay(_INTL("{1} {2} restored its HP.", battler.pbOfThis, battler.abilityName))
     end
@@ -3688,7 +3688,7 @@ Battle::AbilityEffects::OnTerrainChange.add(:MIMICRY,
     next if !new_type
     battle.pbShowAbilitySplash(battler)
     battler.pbChangeTypes(new_type)
-    battle.pbDisplay(_INTL("{1} type changed to {2}!", battler.pbOfThis, new_type_name))
+    battle.pbDisplay(_INTL("{1}'s type changed to {2}!", battler.pbThis, new_type_name))
     battle.pbHideAbilitySplash(battler)
   }
 )

@@ -227,7 +227,7 @@ class Battle::Battler
       @battle.pbShowAbilitySplash(self)
       if canHeal? && pbRecoverHP(@totalhp / 4) > 0
         if Battle::Scene::USE_ABILITY_SPLASH
-          @battle.pbDisplay(_INTL("{1} HP was restored.", pbOfThis))
+          @battle.pbDisplay(_INTL("{1}'s HP was restored.", pbThis))
         else
           @battle.pbDisplay(_INTL("{1} {2} restored its HP.", pbOfThis, abilityName))
         end
@@ -363,7 +363,7 @@ class Battle::Battler
       @battle.pbShowAbilitySplash(self)
       pbRecoverHP(@totalhp / 3)
       if Battle::Scene::USE_ABILITY_SPLASH
-        @battle.pbDisplay(_INTL("{1} HP was restored.", pbOfThis))
+        @battle.pbDisplay(_INTL("{1}'s HP was restored.", pbThis))
       else
         @battle.pbDisplay(_INTL("{1} {2} restored its HP.", pbOfThis, abilityName))
       end
@@ -519,7 +519,7 @@ class Battle::Battler
     if amt > 0
       if forced
         PBDebug.log("[Item triggered] Forced consuming of #{used_item_name}")
-        @battle.pbDisplay(_INTL("{1} HP was restored.", pbOfThis))
+        @battle.pbDisplay(_INTL("{1}'s HP was restored.", pbThis))
       else
         @battle.pbDisplay(_INTL("{1} restored its health using its {2}!", pbThis, used_item_name))
       end

@@ -159,7 +159,7 @@ class Battle
     if @field.terrain == :Grassy && battler.affectedByTerrain? && battler.canHeal?
       PBDebug.log("[Lingering effect] Grassy Terrain heals #{battler.pbThis(true)}")
       battler.pbRecoverHP(battler.totalhp / 16)
-      pbDisplay(_INTL("{1} HP was restored.", battler.pbOfThis))
+      pbDisplay(_INTL("{1}'s HP was restored.", battler.pbThis))
     end
   end
 
@@ -224,7 +224,7 @@ class Battle
           pbShowAbilitySplash(battler)
           battler.pbRecoverHP(battler.totalhp / 8)
           if Scene::USE_ABILITY_SPLASH
-            pbDisplay(_INTL("{1} HP was restored.", battler.pbOfThis))
+            pbDisplay(_INTL("{1}'s HP was restored.", battler.pbThis))
           else
             pbDisplay(_INTL("{1} {2} restored its HP.", battler.pbOfThis, battler.abilityName))
           end
@@ -368,7 +368,7 @@ class Battle
     end
     # Taunt
     pbEORCountDownBattlerEffect(priority, PBEffects::Taunt) do |battler|
-      pbDisplay(_INTL("{1} taunt wore off!", battler.pbOfThis))
+      pbDisplay(_INTL("{1}'s taunt wore off!", battler.pbThis))
     end
     # Encore
     priority.each do |battler|
@@ -378,10 +378,10 @@ class Battle
         battler.effects[PBEffects::Encore] -= 1
         if battler.effects[PBEffects::Encore] == 0 || battler.moves[idxEncoreMove].pp == 0
           battler.effects[PBEffects::Encore] = 0
-          pbDisplay(_INTL("{1} encore ended!", battler.pbOfThis))
+          pbDisplay(_INTL("{1}'s encore ended!", battler.pbThis))
         end
       else
-        PBDebug.log("[End of effect] #{battler.pbOfThis} encore ended (encored move no longer known)")
+        PBDebug.log("[End of effect] #{battler.pbThis}'s encore ended (encored move no longer known)")
         battler.effects[PBEffects::Encore]     = 0
         battler.effects[PBEffects::EncoreMove] = nil
       end
