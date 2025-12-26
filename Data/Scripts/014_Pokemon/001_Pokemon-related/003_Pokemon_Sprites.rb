@@ -234,7 +234,7 @@ class PokemonSpeciesIconSprite < Sprite
     @species       = species
     @gender        = 0
     @form          = 0
-    @shiny         = 0
+    @shiny         = false
     @frames_count  = 0
     @current_frame = 0
     refresh

@@ -604,7 +604,7 @@ class UI::PartyVisuals < UI::BaseVisuals
       if @index >= Settings::MAX_PARTY_SIZE
         @index -= 1
         @index = @party.length - 1 if @index < Settings::MAX_PARTY_SIZE && !@party[@index]
-        @index = num_sprites - 1 if !@party[@index]   # In case party is empty
+        @index = num_sprites - 1 if @index < Settings::MAX_PARTY_SIZE && !@party[@index]   # In case party is empty
       else
         loop do
           @index -= 2
