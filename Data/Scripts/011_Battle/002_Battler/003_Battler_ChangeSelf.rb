@@ -47,7 +47,7 @@ class Battle::Battler
       pbItemHPHealCheck
     else
       if Translation.more_possessive_messages?
-        msg = _INTL("{1} energy was drained!", target.pbThis) if nil_or_empty?(msg)
+        msg = _INTL("{1} energy was drained!", target.pbOfThis) if nil_or_empty?(msg)
       else
         msg = _INTL("{1} had its energy drained!", target.pbThis) if nil_or_empty?(msg)
       end
