@@ -313,17 +313,18 @@ class Battle::Move
       if user.pokemon.isSpecies?(:FARFETCHD) && user.pokemon.form == 1
         user.pokemon.evolution_counter += 1
       end
+      crit_color = Battle::Scene::MESSAGE_BASE_CRITICAL_COLOR.to_rgb24 + "," + Battle::Scene::MESSAGE_SHADOW_CRITICAL_COLOR.to_rgb24
       if target.damageState.affection_critical
         if numTargets > 1
-          @battle.pbDisplay(_INTL("{1} landed a critical hit on {2}, wishing to be praised!",
-                                  user.pbThis, target.pbThis(true)))
+          @battle.pbDisplay(_INTL("{1} <c3={2}>landed a critical hit</c3> on {3}, wishing to be praised!",
+                                  user.pbThis, crit_color, target.pbThis(true)))
         else
-          @battle.pbDisplay(_INTL("{1} landed a critical hit, wishing to be praised!", user.pbThis))
+          @battle.pbDisplay(_INTL("{1} <c3={2}>landed a critical hit</c3>, wishing to be praised!", user.pbThis, crit_color))
         end
       elsif numTargets > 1
-        @battle.pbDisplay(_INTL("A critical hit on {1}!", target.pbThis(true)))
+        @battle.pbDisplay(_INTL("<c3={1}>A critical hit</c3> on {2}!", crit_color, target.pbThis(true)))
       else
-        @battle.pbDisplay(_INTL("A critical hit!"))
+        @battle.pbDisplay(_INTL("<c3={1}>A critical hit!</c3>", crit_color))
       end
     end
     # Effectiveness message, for moves with 1 hit
