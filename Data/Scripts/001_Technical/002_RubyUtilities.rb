@@ -54,6 +54,19 @@ class String
   def numeric?
     return !self[/\A[+-]?\d+(?:\.\d+)?\Z/].nil?
   end
+
+  def format_number
+    return self if !numeric?
+    str = self.split(".")
+    tho_separator = '\1' + Translation.thousands_separator
+    str[0] = "0" if str[0].nil?
+    str[0] = str[0].reverse.gsub(/(\d{3})(?=\d)/, tho_separator).reverse
+    if str[1]
+      dec_separator = Translation.decimal_separator
+      return str[0] + dec_separator + str[1]
+    end
+    return str[0]
+  end
 end
 
 #===============================================================================
@@ -63,8 +76,7 @@ class Numeric
   # Turns a number into a string formatted like 12,345,678. Some languages use
   # different characters as the thousands separator.
   def to_s_formatted
-    separator = '\1' + Translation.thousands_separator
-    return self.to_s.reverse.gsub(/(\d{3})(?=\d)/, separator).reverse
+    return self.to_s.format_number
   end
 
   def to_word

@@ -632,9 +632,11 @@ class UI::PokedexEntryVisuals < UI::BaseVisuals
       height = @species_data.height
       if Translation.imperial_measurements?
         inches = (height / 0.254).round
-        draw_text(_ISPRINTF("{1:d}'{2:02d}''", inches / 12, inches % 12), value_x, value_y, align: :right)
+        inch = sprintf("%02d", inches % 12)
+        draw_text(_INTL("{1}'{2}''", (inches / 12).to_s_formatted, inch), value_x, value_y, align: :right)
       else
-        draw_text(_ISPRINTF("{1:.1f} m", height / 10.0), value_x, value_y, align: :right)
+        hei = sprintf("%.1f", height / 10.0)
+        draw_text(_INTL("{1} m", hei.format_number), value_x, value_y, align: :right)
       end
     else
       if Translation.imperial_measurements?
@@ -653,15 +655,17 @@ class UI::PokedexEntryVisuals < UI::BaseVisuals
       weight = @species_data.weight
       if Translation.imperial_measurements?
         pounds = (weight / 0.45359).round
-        draw_text(_ISPRINTF("{1:4.1f} lbs.", pounds / 10.0), value_x, value_y, align: :right)
+        wei = sprintf("%.1f", pounds / 10.0)
+        draw_text(_INTL("{1} lbs.", wei.format_number), value_x, value_y, align: :right)
       else
-        draw_text(_ISPRINTF("{1:.1f} kg", weight / 10.0), value_x, value_y, align: :right)
+        wei = sprintf("%.1f", weight / 10.0)
+        draw_text(_INTL("{1} kg", wei.format_number), value_x, value_y, align: :right)
       end
     else
       if Translation.imperial_measurements?
-        draw_text(_ISPRINTF("????.? lbs."), value_x, value_y, align: :right)
+        draw_text(_INTL("????.? lbs."), value_x, value_y, align: :right)
       else
-        draw_text(_ISPRINTF("????.? kg"), value_x, value_y, align: :right)
+        draw_text(_INTL("????.? kg"), value_x, value_y, align: :right)
       end
     end
   end

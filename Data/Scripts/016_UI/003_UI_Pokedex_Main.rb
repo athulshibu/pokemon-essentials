@@ -730,11 +730,13 @@ class UI::PokedexVisuals < UI::BaseVisuals
     if imperial_offset
       min_height = (min_height >= HEIGHT_INTERVALS.last) ? (HEIGHT_INTERVALS.last / 10) * 12 : (min_height / 0.254).round
       max_height = (max_height >= HEIGHT_INTERVALS.last) ? (HEIGHT_INTERVALS.last / 10) * 12 : (max_height / 0.254).round
-      draw_text(sprintf("%d'%02d''", min_height / 12, min_height % 12), 166, 228, align: :center, theme: :search, outline: :outline)
-      draw_text(sprintf("%d'%02d''", max_height / 12, max_height % 12), 294, 228, align: :center, theme: :search, outline: :outline)
+      min_inch = sprintf("%02d", min_height % 12)
+      max_inch = sprintf("%02d", max_height % 12)
+      draw_text(sprintf("%d'%s''", min_height / 12, min_inch), 166, 228, align: :center, theme: :search, outline: :outline)
+      draw_text(sprintf("%d'%s''", max_height / 12, max_inch), 294, 228, align: :center, theme: :search, outline: :outline)
     else
-      draw_text(sprintf("%.1f", min_height / 10.0), 166, 228, align: :center, theme: :search, outline: :outline)
-      draw_text(sprintf("%.1f", max_height / 10.0), 294, 228, align: :center, theme: :search, outline: :outline)
+      draw_text(sprintf("%.1f", min_height / 10.0).format_number, 166, 228, align: :center, theme: :search, outline: :outline)
+      draw_text(sprintf("%.1f", max_height / 10.0).format_number, 294, 228, align: :center, theme: :search, outline: :outline)
     end
     draw_image(@bitmaps[:height_weight], 344, 214,
                0, (imperial_offset) ? 44 : 0, 32, 44)
@@ -746,8 +748,8 @@ class UI::PokedexVisuals < UI::BaseVisuals
       min_weight = (min_weight >= WEIGHT_INTERVALS.last) ? WEIGHT_INTERVALS.last * 10 : (min_weight / 0.45359).round
       max_weight = (max_weight >= WEIGHT_INTERVALS.last) ? WEIGHT_INTERVALS.last * 10 : (max_weight / 0.45359).round
     end
-    draw_text(sprintf("%.1f", min_weight / 10.0), 166, 280, align: :center, theme: :search, outline: :outline)
-    draw_text(sprintf("%.1f", max_weight / 10.0), 294, 280, align: :center, theme: :search, outline: :outline)
+    draw_text(sprintf("%.1f", min_weight / 10.0).format_number, 166, 280, align: :center, theme: :search, outline: :outline)
+    draw_text(sprintf("%.1f", max_weight / 10.0).format_number, 294, 280, align: :center, theme: :search, outline: :outline)
     draw_image(@bitmaps[:height_weight], 344, 266,
                32, (imperial_offset) ? 44 : 0, 32, 44)
     # Draw color
@@ -890,17 +892,19 @@ class UI::PokedexVisuals < UI::BaseVisuals
       if is_weight
         min_value = (min_value >= intervals.last) ? intervals.last * 10 : (min_value / 0.45359).round
         max_value = (max_value >= intervals.last) ? intervals.last * 10 : (max_value / 0.45359).round
-        min_text = sprintf("%.1f", min_value / 10.0)
-        max_text = sprintf("%.1f", max_value / 10.0)
+        min_text = sprintf("%.1f", min_value / 10.0).format_number
+        max_text = sprintf("%.1f", max_value / 10.0).format_number
       else   # Height
         min_value = (min_value >= intervals.last) ? (intervals.last / 10) * 12 : (min_value / 0.254).round
         max_value = (max_value >= intervals.last) ? (intervals.last / 10) * 12 : (max_value / 0.254).round
-        min_text = _ISPRINTF("{1:d}'{2:02d}''", min_value / 12, min_value % 12)
-        max_text = _ISPRINTF("{1:d}'{2:02d}''", max_value / 12, max_value % 12)
+        min_inch = sprintf("%02d", min_value % 12)
+        max_inch = sprintf("%02d", max_value % 12)
+        min_text = sprintf("%d'%s''", min_value / 12, min_inch)
+        max_text = sprintf("%d'%s''", max_value / 12, max_inch)
       end
     else
-      min_text = sprintf("%.1f", min_value / 10.0)
-      max_text = sprintf("%.1f", max_value / 10.0)
+      min_text = sprintf("%.1f", min_value / 10.0).format_number
+      max_text = sprintf("%.1f", max_value / 10.0).format_number
     end
     draw_text(min_text, 286, 66, align: :center, theme: :search, outline: :outline)
     draw_text(max_text, 414, 66, align: :center, theme: :search, outline: :outline)

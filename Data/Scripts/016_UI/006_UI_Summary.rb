@@ -1114,9 +1114,9 @@ class UI::PokemonSummaryVisuals < UI::BaseVisuals
       return :go_to_next_pokemon
     end
     # Check for movement to a new page
-    if Input.trigger?(Input::LEFT)
+    if Input.repeat?(Input::LEFT)
       go_to_previous_page
-    elsif Input.trigger?(Input::RIGHT)
+    elsif Input.repeat?(Input::RIGHT)
       go_to_next_page
     end
     # Check for interaction
