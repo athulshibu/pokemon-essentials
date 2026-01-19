@@ -876,7 +876,7 @@ def getLineBrokenChunks(bitmap, value, width, dims, plain = false)
     textcols = []
     if ccheck[/</] && !plain
       ccheck.scan(re) { textcols.push(Color.new_from_rgb($1)) }
-      words = ccheck.split(reNoMatch) # must have no matches because split can include match
+      words = ccheck.split(reNoMatch)   # must have no matches because split can include match
     else
       words = [ccheck]
     end
