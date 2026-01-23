@@ -385,6 +385,12 @@ module AnimationEditor::ParticleDataHelper
   #   - none: Do nothing.
   #   - interp: Add MoveXYZ (calc duration/value at end).
   def set_interpolation(particle, property, frame, type)
+    # Ensure frame has a command to interpolate
+    orig_frame = frame
+    particle[property].each do |cmd|
+      break if cmd[0] > orig_frame
+      frame = cmd[0]
+    end
     # Find relevant command
     set_now = nil
     move_starting_now = nil
