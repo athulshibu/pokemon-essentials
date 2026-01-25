@@ -73,6 +73,10 @@ class AnimationEditor
       PARTICLE_LIST_X, PARTICLE_LIST_Y, PARTICLE_LIST_WIDTH, PARTICLE_LIST_HEIGHT,
       @viewport, @anim[:particles]
     )
+    # Batch edits
+    @components[:batch_edits] = AnimationEditor::BatchEdits.new(
+      BATCH_EDITS_X, BATCH_EDITS_Y, BATCH_EDITS_WIDTH, BATCH_EDITS_HEIGHT
+    )
     # Pop-up windows
     @components[:help] = UIControls::ListedContainer.new(
       HELP_X, HELP_Y, HELP_WIDTH, HELP_HEIGHT, @pop_up_viewport
@@ -112,7 +116,6 @@ class AnimationEditor
   def particle_index
     return @components[:timeline].particle_index
   end
-
 
   def color_scheme=(value)
     return if @color_scheme == value
@@ -168,14 +171,15 @@ class AnimationEditor
     help_window.add_label(:text2, _INTL("Esc - Close any pop-up window (such as this one)."))
     help_window.add_label(:text3, _INTL("Space - Play the animation, or stop it if it is playing."))
     help_window.add_label(:text4, _INTL("Up/Down/Left/Right - Move the selected particle in the canvas."))
-    help_window.add_label(:text5, _INTL("Delete - Remove the command selected in the timeline."))
-    help_window.add_label(:text6, _INTL("Insert - Add a command at the selected point in the timeline."))
-    help_window.add_underlined_label(:text7, _INTL("Mouse controls"))
-    help_window.add_label(:text8, _INTL("Left click - Select/change something."))
-    help_window.add_label(:text9, _INTL("Left click and drag - Move a command in the timeline, move a particle in the canvas, move through keyframes in the time bar."))
-    help_window.add_label(:text10, _INTL("Right click - Change the type of interpolation between two commands."))
-    help_window.add_label(:text11, _INTL("Scroll wheel - Scroll up/down in the list of particles."))
-    help_window.add_label(:text12, "")
+    help_window.add_label(:text5, _INTL("Shift + Up/Down/Left/Right - Move the selected particle in the canvas faster."))
+    help_window.add_label(:text6, _INTL("Delete - Remove the command selected in the timeline."))
+    help_window.add_label(:text7, _INTL("Insert - Add a command at the selected point in the timeline."))
+    help_window.add_underlined_label(:text8, _INTL("Mouse controls"))
+    help_window.add_label(:text9, _INTL("Left click - Select/change something."))
+    help_window.add_label(:text10, _INTL("Left click and drag - Move a command in the timeline, move a particle in the canvas, move through keyframes in the time bar."))
+    help_window.add_label(:text11, _INTL("Right click - Change the type of interpolation between two commands."))
+    help_window.add_label(:text12, _INTL("Scroll wheel - Scroll up/down in the list of particles."))
+    help_window.add_label(:text13, "")
     help_window.add_fitted_button(:close, _INTL("Close"))
     help_window.visible = false
   end
@@ -350,7 +354,7 @@ class AnimationEditor
       [CANVAS_X, CANVAS_Y, CANVAS_WIDTH, CANVAS_HEIGHT],
       [PLAY_CONTROLS_X, PLAY_CONTROLS_Y, PLAY_CONTROLS_WIDTH, PLAY_CONTROLS_HEIGHT],
       [BATTLERS_LAYOUT_X, BATTLERS_LAYOUT_Y, BATTLERS_LAYOUT_WIDTH, BATTLERS_LAYOUT_HEIGHT],
-      [RIGHT_PANE_X, RIGHT_PANE_Y, RIGHT_PANE_WIDTH, RIGHT_PANE_HEIGHT],
+      [BATCH_EDITS_X, BATCH_EDITS_Y, BATCH_EDITS_WIDTH, BATCH_EDITS_HEIGHT],
       [PARTICLE_LIST_X, PARTICLE_LIST_Y, PARTICLE_LIST_WIDTH, PARTICLE_LIST_HEIGHT]
     ].each do |rect|
       @screen_bitmap.bitmap.border_rect(*rect, CONTAINER_BORDER, bg_color, contrast_color, middle_color)

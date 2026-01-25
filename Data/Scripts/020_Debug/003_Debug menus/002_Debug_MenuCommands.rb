@@ -1274,7 +1274,7 @@ MenuHandlers.add(:debug_menu, :editors_menu, {
   "description" => _INTL("Edit battle animations, terrain tags, map data, etc.")
 })
 
-MenuHandlers.add(:debug_menu, :use_pc, {
+MenuHandlers.add(:debug_menu, :new_animation_editor, {
   "name"        => _INTL("New battle animation editor"),
   "parent"      => :editors_menu,
   "description" => _INTL("Edit the battle animations."),

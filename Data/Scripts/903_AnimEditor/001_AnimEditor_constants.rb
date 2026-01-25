@@ -3,7 +3,7 @@
 #===============================================================================
 class AnimationEditor
   CONTAINER_BORDER = 3
-  WINDOW_WIDTH     = Settings::SCREEN_WIDTH + (256 * 2) + (CONTAINER_BORDER * 6)   # 256 is MENU_BAR_WIDTH and RIGHT_PANE_WIDTH
+  WINDOW_WIDTH     = Settings::SCREEN_WIDTH + (256 * 2) + (CONTAINER_BORDER * 6)   # 256 is MENU_BAR_WIDTH and BATCH_EDITS_WIDTH
   WINDOW_HEIGHT    = Settings::SCREEN_HEIGHT + 540 + (CONTAINER_BORDER * 4)   # 540 is arbitrary but large
   WINDOW_HEIGHT    = [WINDOW_HEIGHT, Graphics.display_height - 100].min   # 100 is ~ height of window title bar and taskbar
   WINDOW_HEIGHT    = [WINDOW_HEIGHT, Settings::SCREEN_HEIGHT + 150 + (CONTAINER_BORDER * 4)].max   # 150 is arbitrary; shows 4 particle rows

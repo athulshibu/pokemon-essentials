@@ -101,6 +101,41 @@ class AnimationEditor
     end
   end
 
+  def apply_changed_batch_edits_value(property, value)
+    case property
+    when :all_time_shift_left
+      @anim[:particles].each do |particle|
+        AnimationEditor::ParticleDataHelper.remove_frame(particle, 0)
+      end
+      refresh_component(:timeline)
+    when :all_time_shift_right
+      @anim[:particles].each do |particle|
+        AnimationEditor::ParticleDataHelper.insert_frame(particle, 0)
+      end
+      refresh_component(:timeline)
+    when :one_time_shift_left
+      AnimationEditor::ParticleDataHelper.remove_frame(@anim[:particles][particle_index], 0)
+      @components[:timeline].change_particle_commands(particle_index)
+    when :one_time_shift_right
+      AnimationEditor::ParticleDataHelper.insert_frame(@anim[:particles][particle_index], 0)
+      @components[:timeline].change_particle_commands(particle_index)
+    when :row_time_shift_left
+      part_idx, row = @components[:timeline].particle_index_and_property
+      if row
+        AnimationEditor::ParticleDataHelper.remove_frame(@anim[:particles][part_idx], 0, row)
+        @components[:timeline].change_particle_commands(particle_index)
+      end
+    when :row_time_shift_right
+      part_idx, row = @components[:timeline].particle_index_and_property
+      if row
+        AnimationEditor::ParticleDataHelper.insert_frame(@anim[:particles][part_idx], 0, row)
+        @components[:timeline].change_particle_commands(particle_index)
+      end
+    end
+    refresh_component(:canvas)
+    @components[:play_controls].duration = @components[:timeline].duration
+  end
+
   def apply_changed_timeline_value(property, value)
     case property
     when :add_particle
@@ -388,6 +423,7 @@ class AnimationEditor
     when :battlers_layout      then apply_changed_battlers_layout_value(property, value)
     when :play_controls        then apply_changed_play_controls_value(property, value)
     when :canvas               then apply_changed_canvas_value(property, value)
+    when :batch_edits          then apply_changed_batch_edits_value(property, value)
     when :timeline             then apply_changed_timeline_value(property, value)
     when :editor_settings      then apply_changed_editor_settings_value(property, value)
     when :animation_properties then apply_changed_animation_properties_value(property, value)
