@@ -214,6 +214,12 @@ class UIControls::ListedContainer < UIControls::BaseContainer
     add_label(id, text, true)
   end
 
+  def add_underlined_label(id, label)
+    ctrl = UIControls::Label.new(*control_size, @viewport, label)
+    ctrl.underlined = true
+    add_control(id, ctrl)
+  end
+
   def add_header_label(id, label)
     ctrl = UIControls::Label.new(*control_size, @viewport, label)
     ctrl.header = true

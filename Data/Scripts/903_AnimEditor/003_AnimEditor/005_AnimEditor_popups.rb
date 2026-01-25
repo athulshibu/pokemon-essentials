@@ -79,6 +79,32 @@ class AnimationEditor
 
   #-----------------------------------------------------------------------------
 
+  def help_window
+    # Show pop-up window
+    help_window = @components[:help]
+    help_window.visible = true
+    @pop_up_bg_bitmap.visible = true
+    bg_bitmap = create_pop_up_window(HELP_WIDTH, HELP_HEIGHT)
+    # Interaction loop
+    ret = nil
+    loop do
+      Graphics.update
+      Input.update
+      help_window.update
+      break if help_window.changed? && help_window.values.has_key?(:close)
+      help_window.clear_changed
+      break if !help_window.busy? && Input.triggerex?(:ESCAPE)
+      help_window.repaint
+    end
+    # Dispose and return
+    bg_bitmap.dispose
+    @pop_up_bg_bitmap.visible = false
+    help_window.clear_changed
+    help_window.visible = false
+  end
+
+  #-----------------------------------------------------------------------------
+
   def edit_editor_settings
     # Show pop-up window
     editor_settings = @components[:editor_settings]
@@ -88,7 +114,6 @@ class AnimationEditor
     # Set control values
     refresh_component(:editor_settings)
     # Interaction loop
-    ret = nil
     loop do
       Graphics.update
       Input.update
@@ -123,7 +148,6 @@ class AnimationEditor
     # Set control values
     refresh_component(:animation_properties)
     # Interaction loop
-    ret = nil
     loop do
       Graphics.update
       Input.update
@@ -159,7 +183,6 @@ class AnimationEditor
     # Set control values
     refresh_component(:particle_properties, idx_particle)
     # Interaction loop
-    ret = nil
     loop do
       Graphics.update
       Input.update

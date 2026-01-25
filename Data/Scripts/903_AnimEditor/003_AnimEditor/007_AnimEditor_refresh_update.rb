@@ -201,17 +201,19 @@ class AnimationEditor
       idx_particle, property = @components[:timeline].particle_index_and_property
       if property
         particle = @anim[:particles][idx_particle]
-        value = AnimationEditor::ParticleDataHelper.get_keyframe_particle_value(particle, property, keyframe)[0]
-        new_cmds = AnimationEditor::ParticleDataHelper.add_command(particle, property, keyframe, value)
-        if new_cmds
-          particle[property] = new_cmds
-          # NOTE: Intentionally not adding @settings[:default_interpolation]
-          #       here, because the inserted command will have the same value as
-          #       the one before it and won't need interpolating anyway.
-        else
-          particle.delete(property)
+        if !AnimationEditor::ParticleDataHelper.has_command_at?(particle, property, keyframe)
+          value = AnimationEditor::ParticleDataHelper.get_keyframe_particle_value(particle, property, keyframe)[0]
+          new_cmds = AnimationEditor::ParticleDataHelper.add_command(particle, property, keyframe, value)
+          if new_cmds
+            particle[property] = new_cmds
+            # NOTE: Intentionally not adding @settings[:default_interpolation]
+            #       here, because the inserted command will have the same value as
+            #       the one before it and won't need interpolating anyway.
+          else
+            particle.delete(property)
+          end
+          refresh
         end
-        refresh
       end
     elsif Input.triggerex?(:DELETE)
       idx_particle, property = @components[:timeline].particle_index_and_property

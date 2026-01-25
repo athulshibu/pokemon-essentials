@@ -74,6 +74,9 @@ class AnimationEditor
       @viewport, @anim[:particles]
     )
     # Pop-up windows
+    @components[:help] = UIControls::ListedContainer.new(
+      HELP_X, HELP_Y, HELP_WIDTH, HELP_HEIGHT, @pop_up_viewport
+    )
     [:editor_settings, :animation_properties, :particle_properties].each do |pop_up|
       @components[pop_up] = UIControls::ListedContainer.new(
         ANIM_PROPERTIES_X + 4, ANIM_PROPERTIES_Y, ANIM_PROPERTIES_WIDTH - 8, ANIM_PROPERTIES_HEIGHT, @pop_up_viewport
@@ -156,12 +159,37 @@ class AnimationEditor
 
   #-----------------------------------------------------------------------------
 
-  # TODO: The fitted buttons added in these three methods are 24 pixels tall,
+  # TODO: The fitted buttons added in these four methods are 24 pixels tall,
   #       not 20 as I'd prefer them to be.
+  def set_help_window_contents
+    help_window = @components[:help]
+    help_window.add_header_label(:header, _INTL("Help"))
+    help_window.add_underlined_label(:text1, _INTL("Keyboard controls"))
+    help_window.add_label(:text2, _INTL("Esc - Close any pop-up window (such as this one)."))
+    help_window.add_label(:text3, _INTL("Space - Play the animation, or stop it if it is playing."))
+    help_window.add_label(:text4, _INTL("Up/Down/Left/Right - Move the selected particle in the canvas."))
+    help_window.add_label(:text5, _INTL("Delete - Remove the command selected in the timeline."))
+    help_window.add_label(:text6, _INTL("Insert - Add a command at the selected point in the timeline."))
+    help_window.add_underlined_label(:text7, _INTL("Mouse controls"))
+    help_window.add_label(:text8, _INTL("Left click - Select/change something."))
+    help_window.add_label(:text9, _INTL("Left click and drag - Move a command in the timeline, move a particle in the canvas, move through keyframes in the time bar."))
+    help_window.add_label(:text10, _INTL("Right click - Change the type of interpolation between two commands."))
+    help_window.add_label(:text11, _INTL("Scroll wheel - Scroll up/down in the list of particles."))
+    help_window.add_label(:text12, "")
+    help_window.add_fitted_button(:close, _INTL("Close"))
+    help_window.visible = false
+  end
+
   def set_editor_settings_contents
     editor_settings = @components[:editor_settings]
     editor_settings.add_header_label(:header, _INTL("Editor settings"))
+
+    interps = {}
+    GameData::Animation::INTERPOLATION_TYPES.each_pair { |name, id| interps[id] = name }
+    editor_settings.add_labelled_dropdown_list(:default_interpolation, _INTL("Default interpolation"), interps, :linear)
     editor_settings.add_labelled_dropdown_list(:color_scheme, _INTL("Color scheme"), color_scheme_options, :light)
+
+    editor_settings.add_underlined_label(:canvas_header, _INTL("Canvas graphics"))
     editor_settings.add_labelled_dropdown_list(:canvas_bg, _INTL("Background graphic"), {}, "")
     editor_settings.add_labelled_dropdown_list(:user_sprite_name, _INTL("User graphic"), {}, "")
     ctrl = editor_settings.get_control(:user_sprite_name)
@@ -169,9 +197,7 @@ class AnimationEditor
     editor_settings.add_labelled_dropdown_list(:target_sprite_name, _INTL("Target graphic"), {}, "")
     ctrl = editor_settings.get_control(:target_sprite_name)
     ctrl.max_rows = 20
-    interps = {}
-    GameData::Animation::INTERPOLATION_TYPES.each_pair { |name, id| interps[id] = name }
-    editor_settings.add_labelled_dropdown_list(:default_interpolation, _INTL("Default interpolation"), interps, :linear)
+
     editor_settings.add_fitted_button(:close, _INTL("Close"))
     editor_settings.visible = false
   end
@@ -179,44 +205,55 @@ class AnimationEditor
   def set_animation_properties_contents
     anim_properties = @components[:animation_properties]
     anim_properties.add_header_label(:header, _INTL("Animation properties"))
-    anim_properties.add_labelled_checkbox(:usable, _INTL("Can be used in battle?"), true)
+
+    anim_properties.add_underlined_label(:identity_label, _INTL("Identity"))
     anim_properties.add_labelled_dropdown_list(:type, _INTL("Animation type"), {
       :move   => _INTL("Move"),
       :common => _INTL("Common")
     }, :move)
-    anim_properties.add_labelled_checkbox(:opp_variant, _INTL("User is opposing?"), false)
     anim_properties.add_labelled_text_box_dropdown_list(:move, "", [], "")
     move_ctrl = anim_properties.get_control(:move)
     move_ctrl.max_rows = 20
     anim_properties.add_labelled_number_text_box(:version, _INTL("Version"), 0, 99, 0)
     anim_properties.add_labelled_text_box(:name, _INTL("Name"), "")
     anim_properties.add_labelled_text_box(:pbs_path, _INTL("PBS filepath"), "")
+
+    anim_properties.add_underlined_label(:user_and_target_label, _INTL("User and target"))
     anim_properties.add_labelled_checkbox(:has_user, _INTL("Involves a user?"), true)
+    anim_properties.add_labelled_checkbox(:opp_variant, _INTL("User is on far side?"), false)
     anim_properties.add_labelled_checkbox(:has_target, _INTL("Involves a target?"), true)
+
+    anim_properties.add_underlined_label(:completion_label, _INTL("Completion"))
+    anim_properties.add_labelled_checkbox(:usable, _INTL("Can be used in battle?"), true)
+
     anim_properties.add_fitted_button(:close, _INTL("Close"))
     anim_properties.visible = false
   end
 
   def set_particle_properties_contents
     part_properties = @components[:particle_properties]
-    part_properties.add_header_label(:header, _INTL("Edit particle properties"))
+    part_properties.add_header_label(:header, _INTL("Particle properties"))
+
     part_properties.add_labelled_text_box(:name, _INTL("Name"), "")
     part_properties.get_control(:name).set_blacklist("", "User", "Target", "SE")
     part_properties.add_labelled_label(:graphic_name, _INTL("Graphic"), "")
     part_properties.add_labelled_fitted_button(:graphic, "", _INTL("Change"))
     part_properties.add_labelled_dropdown_list(:focus, _INTL("Focus"), {}, :undefined)
-    part_properties.add_label(:opposing_label, _INTL("> If on opposing side..."))
+
+    part_properties.add_underlined_label(:opposing_label, _INTL("If on opposing side..."))
     part_properties.add_labelled_checkbox(:foe_invert_x, _INTL("Invert X"), false)
     part_properties.add_labelled_checkbox(:foe_invert_y, _INTL("Invert Y"), false)
     part_properties.add_labelled_checkbox(:foe_flip, _INTL("Flip sprite"), false)
-    part_properties.add_label(:property_override_label, _INTL("> Override properties..."))
+
+    part_properties.add_underlined_label(:property_override_label, _INTL("Override properties"))
     part_properties.add_labelled_number_text_box(:random_frame_max, _INTL("Random frame (max)"), 0, 99, 0)
     part_properties.add_labelled_dropdown_list(:angle_override, _INTL("Smart angle"), {
       :none                   => _INTL("None"),
       :initial_angle_to_focus => _INTL("Initial angle to focus"),
       :always_point_at_focus  => _INTL("Always point at focus")
     }, :none)
-    part_properties.add_label(:emitter_label, _INTL("> Emitter properties..."))
+
+    part_properties.add_underlined_label(:emitter_label, _INTL("Emitter properties"))
     part_properties.add_labelled_dropdown_list(:spawner, _INTL("Emitter type"), {
       :none                        => _INTL("None"),
       :random_direction            => _INTL("Random direction"),
@@ -224,6 +261,7 @@ class AnimationEditor
       :random_up_direction_gravity => _INTL("Random up dir. gravity")
     }, :none)
     part_properties.add_labelled_number_text_box(:spawn_quantity, _INTL("Emit amount"), 1, 99, 1)
+
     part_properties.add_fitted_button(:duplicate, _INTL("Duplicate this particle"))
     part_properties.add_fitted_button(:delete, _INTL("Delete this particle"))
     part_properties.add_fitted_button(:close, _INTL("Close"))
@@ -290,6 +328,7 @@ class AnimationEditor
 
   def set_components_contents
     # Pop-up windows
+    set_help_window_contents
     set_editor_settings_contents
     set_animation_properties_contents
     set_particle_properties_contents

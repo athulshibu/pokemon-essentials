@@ -9,7 +9,7 @@ class AnimationEditor
     when :save
       save
     when :help
-      # TODO: Show help pop-up window.
+      help_window
     when :name
       edit_animation_properties
       @components[:menu_bar].anim_name = get_animation_display_name
