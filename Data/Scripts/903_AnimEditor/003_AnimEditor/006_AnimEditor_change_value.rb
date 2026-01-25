@@ -178,6 +178,26 @@ class AnimationEditor
         # NOTE: value is actually [particle_index, value].
         edit_particle_properties(value[0])
       end
+    when :move_command
+      # NOTE: value is actually [particle_index, [property, src_keyframe, dst_keyframe]].
+      part_idx = value[0]
+      prop = value[1][0]
+      src_keyframe = value[1][1]
+      dst_keyframe = value[1][2]
+      if prop == :main   # SE
+        [:se, :user_cry, :target_cry].each do |se_prop|
+          AnimationEditor::ParticleDataHelper.move_command(
+            @anim[:particles][part_idx], se_prop, src_keyframe, dst_keyframe
+          )
+        end
+      else
+        AnimationEditor::ParticleDataHelper.move_command(
+          @anim[:particles][part_idx], prop, src_keyframe, dst_keyframe
+        )
+      end
+      @components[:timeline].change_particle_commands(part_idx)
+      refresh_component(:canvas)
+      @components[:play_controls].duration = @components[:timeline].duration
     else
       if GameData::Animation::INTERPOLATION_TYPES.any? { |name, id| id == property }
         # Change interpolation
@@ -214,9 +234,9 @@ class AnimationEditor
         else
           particle.delete(property)
         end
-        @components[:play_controls].duration = @components[:timeline].duration
         @components[:timeline].change_particle_commands(value[0])
         refresh_component(:canvas)
+        @components[:play_controls].duration = @components[:timeline].duration
       end
     end
   end
