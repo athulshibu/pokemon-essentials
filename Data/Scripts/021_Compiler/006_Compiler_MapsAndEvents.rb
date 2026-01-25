@@ -105,7 +105,10 @@ module Compiler
 
   def import_new_maps
     mapfiles = new_maps_to_import
-    return false if !mapfiles
+    if !mapfiles
+      Console.echoln_li(_INTL("None found"))
+      return false
+    end
     # Get maxOrder to add new maps at
     maxOrder = 0
     mapinfos = pbLoadMapInfos
@@ -132,6 +135,9 @@ module Compiler
       $game_temp.map_infos = nil
       Console.echoln_li_done(_INTL("{1} map(s) imported", count))
       Console.echo_warn(_INTL("RMXP data was altered. Close RMXP now without saving to ensure changes are applied."))
+    else
+      Console.echoln_li(_INTL("{1} map(s) found, {2} imported", mapfiles.length, count))
+      Console.echo_warn(_INTL("Some maps couldn't be imported for some reason."))
     end
     return imported
   end
