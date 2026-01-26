@@ -20,8 +20,11 @@ class AnimationEditor
     initialize_bitmaps
     initialize_components
     @captured = nil
+    @undo_history = []
+    @redo_history = []
     set_components_contents
     self.color_scheme = @settings[:color_scheme]
+    add_to_change_history
     refresh
   end
 
@@ -167,19 +170,21 @@ class AnimationEditor
   def set_help_window_contents
     help_window = @components[:help]
     help_window.add_header_label(:header, _INTL("Help"))
-    help_window.add_underlined_label(:text1, _INTL("Keyboard controls"))
-    help_window.add_label(:text2, _INTL("Esc - Close any pop-up window (such as this one)."))
-    help_window.add_label(:text3, _INTL("Space - Play the animation, or stop it if it is playing."))
-    help_window.add_label(:text4, _INTL("Up/Down/Left/Right - Move the selected particle in the canvas."))
-    help_window.add_label(:text5, _INTL("Shift + Up/Down/Left/Right - Move the selected particle in the canvas faster."))
-    help_window.add_label(:text6, _INTL("Delete - Remove the command selected in the timeline."))
-    help_window.add_label(:text7, _INTL("Insert - Add a command at the selected point in the timeline."))
-    help_window.add_underlined_label(:text8, _INTL("Mouse controls"))
-    help_window.add_label(:text9, _INTL("Left click - Select/change something."))
-    help_window.add_label(:text10, _INTL("Left click and drag - Move a command in the timeline, move a particle in the canvas, move through keyframes in the time bar."))
-    help_window.add_label(:text11, _INTL("Right click - Change the type of interpolation between two commands."))
-    help_window.add_label(:text12, _INTL("Scroll wheel - Scroll up/down in the list of particles."))
-    help_window.add_label(:text13, "")
+    help_window.add_underlined_label(:section_keyboard, _INTL("Keyboard controls"))
+    help_window.add_label(:text_esc, _INTL("Esc - Close any pop-up window (such as this one)."))
+    help_window.add_label(:text_space, _INTL("Space - Play the animation, or stop it if it is playing."))
+    help_window.add_label(:text_arrows, _INTL("Up/Down/Left/Right - Move the selected particle in the canvas."))
+    help_window.add_label(:text_shift_arrows, _INTL("Shift + Up/Down/Left/Right - Move the selected particle in the canvas faster."))
+    help_window.add_label(:text_delete, _INTL("Delete - Remove the command selected in the timeline."))
+    help_window.add_label(:text_insert, _INTL("Insert - Add a command at the selected point in the timeline."))
+    help_window.add_label(:text_undo, _INTL("Ctrl + Z - Undo."))
+    help_window.add_label(:text_redo, _INTL("Ctrl + Y - Redo."))
+    help_window.add_underlined_label(:section_mouse, _INTL("Mouse controls"))
+    help_window.add_label(:text_left_click, _INTL("Left click - Select/change something."))
+    help_window.add_label(:text_left_drag, _INTL("Left click and drag - Move a command in the timeline, move a particle in the canvas, move through keyframes in the time bar."))
+    help_window.add_label(:text_right_click, _INTL("Right click - Change the type of interpolation between two commands."))
+    help_window.add_label(:text_scroll_wheel, _INTL("Scroll wheel - Scroll up/down in the list of particles."))
+    help_window.add_label(:close_gap, "")
     help_window.add_fitted_button(:close, _INTL("Close"))
     help_window.visible = false
   end

@@ -98,40 +98,57 @@ class AnimationEditor
       @components[:timeline].change_particle_commands(particle_index)
       refresh_component(:timeline)
       refresh_component(:canvas)
+    when :on_mouse_release
+      add_to_change_history
     end
   end
 
   def apply_changed_batch_edits_value(property, value)
     case property
-    when :all_time_shift_left
+    when :undo
+      undo_change
+      @components[:play_controls].duration = @components[:timeline].duration
+      return
+    when :redo
+      redo_change
+      @components[:play_controls].duration = @components[:timeline].duration
+      return
+    when :shift_all_left, :shift_all_after_left
+      frame = (property == :shift_all_left) ? 0 : keyframe
       @anim[:particles].each do |particle|
-        AnimationEditor::ParticleDataHelper.remove_frame(particle, 0)
+        AnimationEditor::ParticleDataHelper.remove_frame(particle, frame)
       end
       refresh_component(:timeline)
-    when :all_time_shift_right
+    when :shift_all_right, :shift_all_after_right
+      frame = (property == :shift_all_right) ? 0 : keyframe
       @anim[:particles].each do |particle|
-        AnimationEditor::ParticleDataHelper.insert_frame(particle, 0)
+        AnimationEditor::ParticleDataHelper.insert_frame(particle, frame)
       end
       refresh_component(:timeline)
-    when :one_time_shift_left
-      AnimationEditor::ParticleDataHelper.remove_frame(@anim[:particles][particle_index], 0)
+    when :shift_one_left, :shift_one_after_left
+      frame = (property == :shift_one_left) ? 0 : keyframe
+      AnimationEditor::ParticleDataHelper.remove_frame(@anim[:particles][particle_index], frame)
       @components[:timeline].change_particle_commands(particle_index)
-    when :one_time_shift_right
-      AnimationEditor::ParticleDataHelper.insert_frame(@anim[:particles][particle_index], 0)
+    when :shift_one_right, :shift_one_after_right
+      frame = (property == :shift_one_right) ? 0 : keyframe
+      AnimationEditor::ParticleDataHelper.insert_frame(@anim[:particles][particle_index], frame)
       @components[:timeline].change_particle_commands(particle_index)
-    when :row_time_shift_left
+    when :shift_row_left, :shift_row_after_left
       part_idx, row = @components[:timeline].particle_index_and_property
-      if row
-        AnimationEditor::ParticleDataHelper.remove_frame(@anim[:particles][part_idx], 0, row)
-        @components[:timeline].change_particle_commands(particle_index)
-      end
-    when :row_time_shift_right
+      return if !row
+      frame = (property == :shift_row_left) ? 0 : keyframe
+      AnimationEditor::ParticleDataHelper.remove_frame(@anim[:particles][part_idx], frame, row)
+      @components[:timeline].change_particle_commands(particle_index)
+    when :shift_row_right, :shift_row_after_right
       part_idx, row = @components[:timeline].particle_index_and_property
-      if row
-        AnimationEditor::ParticleDataHelper.insert_frame(@anim[:particles][part_idx], 0, row)
-        @components[:timeline].change_particle_commands(particle_index)
-      end
+      return if !row
+      frame = (property == :shift_row_right) ? 0 : keyframe
+      AnimationEditor::ParticleDataHelper.insert_frame(@anim[:particles][part_idx], frame, row)
+      @components[:timeline].change_particle_commands(particle_index)
+    else
+      return
     end
+    add_to_change_history
     refresh_component(:canvas)
     @components[:play_controls].duration = @components[:timeline].duration
   end
@@ -141,6 +158,7 @@ class AnimationEditor
     when :add_particle
       new_idx = particle_index + 1
       AnimationEditor::ParticleDataHelper.add_particle(@anim[:particles], new_idx)
+      add_to_change_history
       @components[:timeline].add_particle(new_idx)
       @components[:timeline].particle_index = new_idx
       refresh
@@ -148,6 +166,7 @@ class AnimationEditor
       idx1 = particle_index
       idx2 = idx1 - 1
       AnimationEditor::ParticleDataHelper.swap_particles(@anim[:particles], idx1, idx2)
+      add_to_change_history
       @components[:timeline].swap_particles(idx1, idx2)
       @components[:timeline].particle_index = idx2
       refresh
@@ -155,10 +174,11 @@ class AnimationEditor
       idx1 = particle_index
       idx2 = idx1 + 1
       AnimationEditor::ParticleDataHelper.swap_particles(@anim[:particles], idx1, idx2)
+      add_to_change_history
       @components[:timeline].swap_particles(idx1, idx2)
       @components[:timeline].particle_index = idx2
       refresh
-    when :main   # Particle properties
+    when :main   # Particle properties/SE
       if @anim[:particles][value[0]][:name] == "SE"
         # NOTE: value is actually [particle index, [button ID, index of SE]].
         #       Keyframe is the currently selected keyframe.
@@ -168,6 +188,7 @@ class AnimationEditor
           if new_filename != ""
             particle = @anim[:particles][value[0]]
             AnimationEditor::ParticleDataHelper.add_se_command(particle, keyframe, new_filename, new_volume, new_pitch)
+            add_to_change_history
             @components[:timeline].change_particle_commands(value[0])
             @components[:play_controls].duration = @components[:timeline].duration
           end
@@ -190,6 +211,7 @@ class AnimationEditor
             if new_filename != old_filename || new_volume != old_volume || new_pitch != old_pitch
               AnimationEditor::ParticleDataHelper.delete_se_command(particle, keyframe, old_filename)
               AnimationEditor::ParticleDataHelper.add_se_command(particle, keyframe, new_filename, new_volume, new_pitch)
+              add_to_change_history
               @components[:timeline].change_particle_commands(value[0])
             end
           end
@@ -205,6 +227,7 @@ class AnimationEditor
               old_filename = old_file[3]
             end
             AnimationEditor::ParticleDataHelper.delete_se_command(particle, keyframe, old_filename)
+            add_to_change_history
             @components[:timeline].change_particle_commands(value[0])
             @components[:play_controls].duration = @components[:timeline].duration
           end
@@ -230,6 +253,7 @@ class AnimationEditor
           @anim[:particles][part_idx], prop, src_keyframe, dst_keyframe
         )
       end
+      add_to_change_history
       @components[:timeline].change_particle_commands(part_idx)
       refresh_component(:canvas)
       @components[:play_controls].duration = @components[:timeline].duration
@@ -245,6 +269,7 @@ class AnimationEditor
         AnimationEditor::ParticleDataHelper.set_interpolation(
           @anim[:particles][part_idx], prop, clicked_keyframe, interp_type
         )
+        add_to_change_history
         @components[:timeline].change_particle_commands(part_idx)
         refresh_component(:canvas)
       else
@@ -269,6 +294,7 @@ class AnimationEditor
         else
           particle.delete(property)
         end
+        add_to_change_history
         @components[:timeline].change_particle_commands(value[0])
         refresh_component(:canvas)
         @components[:play_controls].duration = @components[:timeline].duration
@@ -302,8 +328,7 @@ class AnimationEditor
       refresh_component(:animation_properties)
       refresh_component(:canvas)
     when :pbs_path
-      txt = value.gsub!(/\.txt$/, "")
-      @anim[property] = txt
+      @anim[property] = value.gsub!(/\.txt$/, "")
     when :has_user
       @anim[:no_user] = !value
       if @anim[:no_user]
@@ -399,21 +424,24 @@ class AnimationEditor
         refresh
       end
     else
-      # TODO: If any of these change, does anything special need to be done
-      #       relating to values or other controls?
-              # when :name
-              # when :graphic_name
-              # when :focus
-              # when :random_frame_max
-              # when :spawner
-              # when :angle_override
-              # when :foe_invert_x
-              # when :foe_invert_y
-              # when :foe_flip
-      @anim[:particles][idx_particle][property] = value
-      refresh_component(:particle_properties, idx_particle)
-      refresh_component(:canvas)
-      refresh_component(:timeline)   # If focus changes
+      if @anim[:particles][idx_particle][property] != value
+        # TODO: If any of these change, does anything special need to be done
+        #       relating to values or other controls?
+                # when :name
+                # when :graphic_name
+                # when :focus
+                # when :random_frame_max
+                # when :spawner
+                # when :angle_override
+                # when :foe_invert_x
+                # when :foe_invert_y
+                # when :foe_flip
+        @anim[:particles][idx_particle][property] = value
+        add_to_change_history
+        refresh_component(:particle_properties, idx_particle)
+        refresh_component(:canvas)
+        refresh_component(:timeline)   # If focus changes
+      end
     end
   end
 

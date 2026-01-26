@@ -10,6 +10,9 @@
 #       this.
 #===============================================================================
 class AnimationEditor::ListedParticle < UIControls::BaseContainer
+  attr_reader   :particle
+  attr_accessor :groups_expanded
+
   # TODO: Add mask and crop properties.
   PROPERTY_GROUPS = {
     :position_group       => [:x, :y, :z],

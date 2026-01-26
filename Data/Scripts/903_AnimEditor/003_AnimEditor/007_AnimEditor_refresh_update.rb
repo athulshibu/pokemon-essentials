@@ -2,6 +2,36 @@
 #
 #===============================================================================
 class AnimationEditor
+  def add_to_change_history
+    @redo_history.clear
+    new_snapshot = Marshal.load(Marshal.dump(@anim))
+    if @undo_history.last != new_snapshot
+      @undo_history.push(new_snapshot)
+      refresh_component_values(:batch_edits)
+    end
+  end
+
+  def undo_change
+    return if @undo_history.length <= 1
+    @redo_history.push(@undo_history.pop)
+    reapply_particles
+  end
+
+  def redo_change
+    return if @redo_history.empty?
+    @undo_history.push(@redo_history.pop)
+    reapply_particles
+  end
+
+  def reapply_particles
+    @anim = Marshal.load(Marshal.dump(@undo_history.last))
+    @components[:canvas].anim = @anim
+    @components[:timeline].set_particles(@anim[:particles])
+    refresh
+  end
+
+  #-----------------------------------------------------------------------------
+
   def refresh_editor_settings_options
     ctrls = @components[:editor_settings]
     # Color scheme
@@ -158,6 +188,17 @@ class AnimationEditor
     when :canvas
       component.keyframe = keyframe
       component.selected_particle = particle_index
+    when :batch_edits
+      if @undo_history.length > 1
+        component.get_control(:undo).enable
+      else
+        component.get_control(:undo).disable
+      end
+      if @redo_history.length > 0
+        component.get_control(:redo).enable
+      else
+        component.get_control(:redo).disable
+      end
     when :timeline
       # Disable the "move particle up/down" buttons if the selected particle
       # can't move that way (or there is no selected particle)
@@ -226,6 +267,12 @@ class AnimationEditor
           particle.delete(property)
         end
         refresh
+      end
+    elsif Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
+      if Input.triggerex?(:Z)
+        undo_change
+      elsif Input.triggerex?(:Y)
+        redo_change
       end
     end
   end

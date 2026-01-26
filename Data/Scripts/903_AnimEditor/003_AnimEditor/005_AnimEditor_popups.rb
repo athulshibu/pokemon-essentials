@@ -135,6 +135,7 @@ class AnimationEditor
     @pop_up_bg_bitmap.visible = false
     editor_settings.clear_changed
     editor_settings.visible = false
+    add_to_change_history
   end
 
   #-----------------------------------------------------------------------------
@@ -168,6 +169,7 @@ class AnimationEditor
     @pop_up_bg_bitmap.visible = false
     anim_properties.clear_changed
     anim_properties.visible = false
+    add_to_change_history
   end
 
   #-----------------------------------------------------------------------------
@@ -209,6 +211,7 @@ class AnimationEditor
       apply_changed_value(:particle_properties, :delete, [idx_particle, true])
     end
     part_properties.clear_changed
+    add_to_change_history
   end
 
   #-----------------------------------------------------------------------------

@@ -13,6 +13,7 @@
 #       9999+ = UI
 #===============================================================================
 class AnimationEditor::Canvas < Sprite
+  attr_writer :anim
   attr_reader :sprites    # Only used while playing the animation
   attr_reader :values
 
@@ -643,6 +644,10 @@ class AnimationEditor::Canvas < Sprite
   end
 
   def on_mouse_release
+    # NOTE: We set this value now for the sake of recording a snapshot in the
+    #       undo history.
+    @values ||= {}
+    @values[:on_mouse_release] = true
     @captured = nil
   end
 
