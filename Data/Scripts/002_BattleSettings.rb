@@ -6,6 +6,10 @@ module Settings
   # UI.
   #-----------------------------------------------------------------------------
 
+  # The background graphic moves sideways at the start of battle, along with the
+  # side bases and the trainer(s)/Pokémon. If this is true, the background will
+  # not move (the bases/trainers/Pokémon still will).
+  DISABLE_SLIDING_BACKGROUND = false
   # Whether the main color of a move's name in the Fight menu in battle matches
   # the pixel at coordinate (10,34) in cursor_fight.png for that move's type
   # (true), or whether the move name's color is the default black (false).
