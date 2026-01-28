@@ -145,6 +145,9 @@ class AnimationEditor
       frame = (property == :shift_row_right) ? 0 : keyframe
       AnimationEditor::ParticleDataHelper.insert_frame(@anim[:particles][part_idx], frame, row)
       @components[:timeline].change_particle_commands(particle_index)
+    when :offset_commands
+      batch_edit_commands
+      return
     else
       return
     end
@@ -445,6 +448,45 @@ class AnimationEditor
     end
   end
 
+  def apply_changed_command_batch_editor_value(property, value)
+    editor = @components[:command_batch_editor]
+    case property
+    when :select_all_particles
+      editor.get_control(:particles).select_all
+    when :select_no_particles
+      editor.get_control(:particles).deselect_all
+    when :apply
+      target_particles = editor.get_control(:particles).value
+      start_frame = editor.get_control(:start_keyframe).value
+      end_frame = editor.get_control(:end_keyframe).value
+      if end_frame < start_frame
+        start_frame, end_frame = end_frame, start_frame
+      end
+      properties = []
+      AnimationEditor::ListedParticle::PROPERTY_GROUPS.each_value do |props|
+        props.each do |prop|
+          next if [:color, :tone].include?(prop)
+          properties.push(prop) if GameData::Animation.property_can_interpolate?(prop)
+        end
+      end
+      # Make the changes
+      properties.each do |property|
+        ctrl = editor.get_control(property)
+        next if ctrl.value == 0
+        vals = AnimationEditor::PROPERTY_RANGES[property] || [0, 0]
+        @anim[:particles].each_with_index do |particle, i|
+          next if !target_particles[i]
+          particle[property].each do |cmd|
+            next if cmd[0] + cmd[1] < start_frame || cmd[0] + cmd[1] > end_frame
+            cmd[2] += ctrl.value
+            cmd[2] = cmd[2].clamp(*vals)
+          end
+        end
+      end
+      refresh
+    end
+  end
+
   def apply_changed_value(component_sym, property, value)
     case component_sym
     when :menu_bar             then apply_changed_menu_bar_value(property, value)
@@ -456,6 +498,7 @@ class AnimationEditor
     when :editor_settings      then apply_changed_editor_settings_value(property, value)
     when :animation_properties then apply_changed_animation_properties_value(property, value)
     when :particle_properties  then apply_changed_particle_properties_value(property, value)
+    when :command_batch_editor then apply_changed_command_batch_editor_value(property, value)
     end
   end
 end

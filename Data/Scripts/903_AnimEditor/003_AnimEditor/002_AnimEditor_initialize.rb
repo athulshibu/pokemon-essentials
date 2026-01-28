@@ -90,6 +90,10 @@ class AnimationEditor
       )
       @components[pop_up].label_offset_x = 170
     end
+    # Command batch editor
+    @components[:command_batch_editor] = UIControls::BaseContainer.new(
+      BATCH_EDITOR_X, BATCH_EDITOR_Y, BATCH_EDITOR_WINDOW_WIDTH, BATCH_EDITOR_WINDOW_HEIGHT, @pop_up_viewport
+    )
     # Graphic chooser pop-up window
     @components[:graphic_chooser] = UIControls::ListedContainer.new(
       GRAPHIC_CHOOSER_X, GRAPHIC_CHOOSER_Y, GRAPHIC_CHOOSER_WINDOW_WIDTH, GRAPHIC_CHOOSER_WINDOW_HEIGHT, @pop_up_viewport
@@ -277,6 +281,108 @@ class AnimationEditor
     part_properties.visible = false
   end
 
+  def set_command_batch_editor_contents
+    editor = @components[:command_batch_editor]
+    # Title
+    editor.add_control_at(:title,
+      editor.x + BATCH_EDITOR_PARTICLE_LIST_X,
+      editor.y,
+      UIControls::Label.new(editor.width, BATCH_EDITOR_ROW_HEIGHT, editor.viewport, _INTL("Apply offset to particle commands"))
+    )
+    editor.get_control(:title).header = true
+    # Particle list
+    editor.add_control_at(:particles_label,
+      editor.x + BATCH_EDITOR_PARTICLE_LIST_X,
+      editor.y + BATCH_EDITOR_PARTICLE_LIST_Y,
+      UIControls::Label.new(BATCH_EDITOR_PARTICLE_LIST_WIDTH, BATCH_EDITOR_ROW_HEIGHT, editor.viewport, _INTL("Particles:"))
+    )
+    editor.add_control_at(:particles,
+      editor.x + BATCH_EDITOR_PARTICLE_LIST_X,
+      editor.y + BATCH_EDITOR_PARTICLE_LIST_Y + BATCH_EDITOR_ROW_HEIGHT,
+      UIControls::CheckboxList.new(
+        BATCH_EDITOR_PARTICLE_LIST_WIDTH, BATCH_EDITOR_PARTICLE_LIST_HEIGHT,
+        editor.viewport, [], BATCH_EDITOR_PARTICLE_LIST_ROW_HEIGHT
+      )
+    )
+    # Buttons beneath particle list
+    list = editor.get_control(:particles)
+    button_width = (list.width - BATCH_EDITOR_SPACING) / 2
+    [[:select_all_particles, _INTL("Select all")],
+     [:select_no_particles, _INTL("Select none")]].each_with_index do |btn, i|
+      editor.add_control_at(btn[0],
+        list.x + i * (button_width + BATCH_EDITOR_SPACING),
+        list.y + list.height + BATCH_EDITOR_SPACING,
+        UIControls::Button.new(button_width, BATCH_EDITOR_BUTTON_HEIGHT, editor.viewport, btn[1])
+      )
+    end
+    # Keyframe range
+    label_x = list.x + list.width + (BATCH_EDITOR_SPACING * 2)
+    label_y = editor.y + BATCH_EDITOR_PARTICLE_LIST_Y
+    keyframe_boxes_spacing = 32
+    to_label_x_offset = 8   # Distance after the first NumberTextBox to draw the "~"
+    editor.add_control_at(:keyframes_label,
+      label_x,
+      label_y,
+      UIControls::Label.new(BATCH_EDITOR_LABEL_WIDTH, BATCH_EDITOR_ROW_HEIGHT, editor.viewport, _INTL("Keyframes:"))
+    )
+    editor.add_control_at(:keyframes_to_label,
+      label_x + BATCH_EDITOR_LABEL_WIDTH + BATCH_EDITOR_NUMBER_BOX_WIDTH + to_label_x_offset,
+      label_y,
+      UIControls::Label.new(BATCH_EDITOR_LABEL_WIDTH, BATCH_EDITOR_ROW_HEIGHT, editor.viewport, "~")
+    )
+    [:start_keyframe, :end_keyframe].each_with_index do |ctrl, i|
+      editor.add_control_at(ctrl,
+        label_x + BATCH_EDITOR_LABEL_WIDTH + (i * (BATCH_EDITOR_NUMBER_BOX_WIDTH + keyframe_boxes_spacing)),
+        label_y,
+        UIControls::NumberTextBox.new(BATCH_EDITOR_NUMBER_BOX_WIDTH, BATCH_EDITOR_ROW_HEIGHT, editor.viewport, 0, 999, 0)
+      )
+    end
+    # Each interpolable value
+    label_y += BATCH_EDITOR_ROW_HEIGHT * 2
+    plus_label_x_offset = 15   # Distance before a NumberTextBox to draw the "+"
+    properties = []
+    AnimationEditor::ListedParticle::PROPERTY_GROUPS.each_value do |props|
+      props.each do |prop|
+        next if [:color, :tone].include?(prop)
+        properties.push(prop) if GameData::Animation.property_can_interpolate?(prop)
+      end
+    end
+    properties.each do |property|
+      editor.add_control_at((property.to_s + "_label").to_sym,
+        label_x,
+        label_y,
+        UIControls::Label.new(
+          BATCH_EDITOR_LABEL_WIDTH, BATCH_EDITOR_ROW_HEIGHT,
+          editor.viewport, GameData::Animation.property_display_name(property) + ":"
+        )
+      )
+      editor.add_control_at((property.to_s + "_plus_label").to_sym,
+        label_x + BATCH_EDITOR_LABEL_WIDTH - plus_label_x_offset,
+        label_y,
+        UIControls::Label.new(BATCH_EDITOR_LABEL_WIDTH, BATCH_EDITOR_ROW_HEIGHT, editor.viewport, "+")
+      )
+      editor.add_control_at(property,
+        label_x + BATCH_EDITOR_LABEL_WIDTH,
+        label_y,
+        UIControls::NumberTextBox.new(BATCH_EDITOR_NUMBER_BOX_WIDTH, BATCH_EDITOR_ROW_HEIGHT, editor.viewport, -9999, 9999, 0)
+      )
+      label_y += BATCH_EDITOR_ROW_HEIGHT
+    end
+    # Close button
+    editor.add_control_at(:close,
+      editor.x + editor.width - BATCH_EDITOR_PARTICLE_LIST_X - BATCH_EDITOR_APPLY_BUTTON_WIDTH,
+      editor.y + editor.height - (BATCH_EDITOR_SPACING - 1) - BATCH_EDITOR_BUTTON_HEIGHT,
+      UIControls::Button.new(BATCH_EDITOR_APPLY_BUTTON_WIDTH, BATCH_EDITOR_BUTTON_HEIGHT, editor.viewport, _INTL("Close"))
+    )
+    # Apply button
+    editor.add_control_at(:apply,
+      editor.get_control(:close).x - BATCH_EDITOR_SPACING - BATCH_EDITOR_APPLY_BUTTON_WIDTH,
+      editor.get_control(:close).y,
+      UIControls::Button.new(BATCH_EDITOR_APPLY_BUTTON_WIDTH, BATCH_EDITOR_BUTTON_HEIGHT, editor.viewport, _INTL("Apply"))
+    )
+    editor.visible = false
+  end
+
   def set_graphic_chooser_contents
     graphic_chooser = @components[:graphic_chooser]
     graphic_chooser.add_header_label(:header, _INTL("Choose a file"))
@@ -341,6 +447,7 @@ class AnimationEditor
     set_editor_settings_contents
     set_animation_properties_contents
     set_particle_properties_contents
+    set_command_batch_editor_contents
     set_graphic_chooser_contents
     set_audio_chooser_contents
   end

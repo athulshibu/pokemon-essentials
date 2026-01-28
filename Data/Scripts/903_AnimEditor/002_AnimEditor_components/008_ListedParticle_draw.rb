@@ -140,17 +140,9 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
       @rows[row][LIST_CONTROL] = ctrl
       return
     when :x, :y, :z, :zoom_x, :zoom_y, :angle, :opacity, :frame
-      vals = {   # Min, max, default value
-        :x       => [ -999,  999,   0],
-        :y       => [ -999,  999,   0],
-        :z       => [  -50,   50,   0],
-        :zoom_x  => [    0, 1000, 100],
-        :zoom_y  => [    0, 1000, 100],
-        :angle   => [-1080, 1080,   0],
-        :opacity => [    0,  255, 255],
-        :frame   => [    0,   99,   0]
-      }[row] || [0, 0, 0]
-      ctrl = UIControls::NumberTextBox.new(ctrl_width, ctrl_height, @list_viewport, *vals)
+      vals = AnimationEditor::PROPERTY_RANGES[row] || [0, 0]
+      default = GameData::Animation::PARTICLE_KEYFRAME_DEFAULT_VALUES[row] || 0
+      ctrl = UIControls::NumberTextBox.new(ctrl_width, ctrl_height, @list_viewport, *vals, default)
     when :flip
       ctrl = UIControls::Checkbox.new(ctrl_width, ctrl_height, @list_viewport, false)
     when :visible

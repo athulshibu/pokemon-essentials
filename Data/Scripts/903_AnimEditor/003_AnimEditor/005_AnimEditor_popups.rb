@@ -216,6 +216,45 @@ class AnimationEditor
 
   #-----------------------------------------------------------------------------
 
+  def batch_edit_commands
+    # Show pop-up window
+    batch_editor = @components[:command_batch_editor]
+    batch_editor.visible = true
+    @pop_up_bg_bitmap.visible = true
+    bg_bitmap = create_pop_up_window(BATCH_EDITOR_WINDOW_WIDTH, BATCH_EDITOR_WINDOW_HEIGHT)
+    # Set control values
+    refresh_component(:command_batch_editor)
+    # Interaction loop
+    loop do
+      Graphics.update
+      Input.update
+      batch_editor.update
+      if batch_editor.changed?
+        break if batch_editor.values.has_key?(:close)
+        break if batch_editor.values.has_key?(:apply)
+        batch_editor.values.each_pair do |property, value|
+          apply_changed_value(:command_batch_editor, property, value)
+          @pop_up_bg_bitmap.visible = true
+        end
+        batch_editor.clear_changed
+      end
+      break if !batch_editor.busy? && Input.triggerex?(:ESCAPE)
+      batch_editor.repaint
+    end
+    # Dispose and return
+    bg_bitmap.dispose
+    @pop_up_bg_bitmap.visible = false
+    batch_editor.visible = false
+    # Apply changes
+    if batch_editor.values&.has_key?(:apply)
+      apply_changed_value(:command_batch_editor, :apply, true)
+    end
+    batch_editor.clear_changed
+    add_to_change_history
+  end
+
+  #-----------------------------------------------------------------------------
+
   def choose_graphic_file(selected)
     selected ||= ""
     sprite_folder = "Graphics/Battle animations"

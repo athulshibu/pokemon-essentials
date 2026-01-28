@@ -76,7 +76,7 @@ class AnimationPlayer
 
   # Return value is in seconds.
   def total_duration
-    ret = AnimationPlayer::Helper.get_duration(particles) / 20.0
+    ret = AnimationPlayer::Helper.get_duration(particles) / AnimationPlayer::ParticleSprite::FRAMES_PER_SECOND
     ret *= slowdown
     return ret
   end
@@ -221,7 +221,7 @@ class AnimationPlayer
       # Set movements
       particle_sprite.add_move_process(:x,
         (life_start + delay) * slowdown, lifetime * slowdown,
-        start_x + (start_x_speed * lifetime / 20.0), :linear)
+        start_x + (start_x_speed * lifetime / AnimationPlayer::ParticleSprite::FRAMES_PER_SECOND), :linear)
       if [:random_direction_gravity, :random_up_direction_gravity].include?(spawner_type)
         particle_sprite.add_move_process(:y,
           (life_start + delay) * slowdown, lifetime * slowdown,
@@ -229,7 +229,7 @@ class AnimationPlayer
       else
         particle_sprite.add_move_process(:y,
           (life_start + delay) * slowdown, lifetime * slowdown,
-          start_y + (start_y_speed * lifetime / 20.0), :linear)
+          start_y + (start_y_speed * lifetime / AnimationPlayer::ParticleSprite::FRAMES_PER_SECOND), :linear)
       end
     end
   end

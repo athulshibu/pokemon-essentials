@@ -69,5 +69,14 @@ class AnimationEditor::BatchEdits < UIControls::BaseContainer
     add_control_at(:shift_row_after_right, CONTROL_X + (LEFT_RIGHT_BUTTON_WIDTH + BUTTON_SPACING) * 3, ctrl_y + BUTTON_Y_OFFSET,
                    UIControls::Button.new(LEFT_RIGHT_BUTTON_WIDTH, BUTTON_HEIGHT, @viewport, "|>"))
     ctrl_y += LINE_SPACING
+    # Command values header
+    add_control_at(:command_values_label, LABEL_X, ctrl_y,
+                  UIControls::Label.new(@width, LINE_SPACING, @viewport, _INTL("Command values")))
+    get_control(:command_values_label).underlined = true
+    ctrl_y += LINE_SPACING
+    # Edit command values button
+    add_control_at(:offset_commands, LABEL_X, ctrl_y + BUTTON_Y_OFFSET,
+                   UIControls::Button.new(100, BUTTON_HEIGHT, @viewport, _INTL("Apply offset")))
+    ctrl_y += LINE_SPACING
   end
 end

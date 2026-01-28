@@ -8,6 +8,20 @@ class AnimationEditor
   WINDOW_HEIGHT    = [WINDOW_HEIGHT, Graphics.display_height - 100].min   # 100 is ~ height of window title bar and taskbar
   WINDOW_HEIGHT    = [WINDOW_HEIGHT, Settings::SCREEN_HEIGHT + 150 + (CONTAINER_BORDER * 4)].max   # 150 is arbitrary; shows 4 particle rows
 
+  # Minimum and maximum values the editor allows for certain properties. Only
+  # properties that can be interpolated are here, and not :color or :tone
+  # because those have string values.
+  PROPERTY_RANGES = {   # Min, max
+    :x       => [ -999,  999],
+    :y       => [ -999,  999],
+    :z       => [  -50,   50],
+    :zoom_x  => [    0, 1000],
+    :zoom_y  => [    0, 1000],
+    :angle   => [-9999, 9999],
+    :opacity => [    0,  255],
+    :frame   => [    0,   99]
+  }
+
   #-----------------------------------------------------------------------------
 
   # This list of animations was gathered manually by looking at all instances of

@@ -141,7 +141,8 @@ class AnimationEditor::PlayControls < UIControls::BaseContainer
                    UIControls::Label.new(200, LABEL_HEIGHT, self.viewport, _INTL("Duration")))
     # Duration value
     add_control_at(:duration_value, DURATION_VALUE_X, DURATION_VALUE_Y,
-                   UIControls::Label.new(200, LABEL_HEIGHT, self.viewport, _INTL("{1}s", @duration / 20.0)))
+                   UIControls::Label.new(200, LABEL_HEIGHT, self.viewport,
+                                         _INTL("{1}s", @duration / AnimationPlayer::ParticleSprite::FRAMES_PER_SECOND)))
     @controls[:duration_value].x -= @controls[:duration_value].text_width
   end
 
@@ -156,7 +157,7 @@ class AnimationEditor::PlayControls < UIControls::BaseContainer
       get_control(:play).enable
     end
     ctrl = get_control(:duration_value)
-    ctrl.text = _INTL("{1}s", @duration / 20.0)
+    ctrl.text = _INTL("{1}s", @duration / AnimationPlayer::ParticleSprite::FRAMES_PER_SECOND)
     ctrl.x = DURATION_VALUE_X - ctrl.text_width
     refresh
   end

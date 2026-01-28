@@ -565,7 +565,7 @@ class AnimationEditor::Timeline < UIControls::BaseContainer
         )
       end
       if (this_keyframe % 5) == 0 && draw_x >= -KEYFRAME_SPACING
-        text = (this_keyframe / 20.0).to_s
+        text = this_keyframe.to_s
         draw_text(@sprites[:time_bar].bitmap, draw_x + 1, 0, text)
       end
       this_keyframe += 1

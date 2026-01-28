@@ -170,6 +170,29 @@ class AnimationEditor
     ctrls.refresh
   end
 
+  def refresh_command_batch_editor_options
+    editor = @components[:command_batch_editor]
+    # Set list of particles and deselect them all
+    particle_names = @anim[:particles].map { |part| part[:name] }
+    # TODO: Ensure the SE particle is always last. Else make particle_names a
+    #       hash and make CheckboxList support a hash.
+    particle_names.delete("SE")
+    editor.get_control(:particles).values = particle_names
+    editor.get_control(:particles).deselect_all
+    # Set keyframe range to cover entire animation
+    editor.get_control(:start_keyframe).value = 0
+    editor.get_control(:end_keyframe).value = @components[:timeline].duration
+    # Set all value boxes to 0
+    properties = []
+    AnimationEditor::ListedParticle::PROPERTY_GROUPS.each_value do |props|
+      props.each do |prop|
+        next if [:color, :tone].include?(prop)
+        properties.push(prop) if GameData::Animation.property_can_interpolate?(prop)
+      end
+    end
+    properties.each { |property| editor.get_control(property).value = 0 }
+  end
+
   def refresh_component_values(component_sym, extra_value = nil)
     component = @components[component_sym]
     case component_sym
@@ -219,6 +242,8 @@ class AnimationEditor
       refresh_animation_property_options
     when :particle_properties
       refresh_particle_property_options(extra_value)
+    when :command_batch_editor
+      refresh_command_batch_editor_options
     end
   end
 
