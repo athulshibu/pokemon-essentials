@@ -316,16 +316,16 @@ class AnimationEditor::AnimationSelector
     when 0
       @components.get_control(:moves).set_highlighted
       @components.get_control(:commons).set_not_highlighted
-      @components.get_control(:moves_list).values = @move_list
+      @components.get_control(:moves_list).options = @move_list
       @components.get_control(:moves_label).text = _INTL("Moves")
     when 1
       @components.get_control(:moves).set_not_highlighted
       @components.get_control(:commons).set_highlighted
-      @components.get_control(:moves_list).values = @common_list
+      @components.get_control(:moves_list).options = @common_list
       @components.get_control(:moves_label).text = _INTL("Common animations")
     end
     # Put the correct list into the animations list
-    @components.get_control(:animations_list).values = selected_move_animations
+    @components.get_control(:animations_list).options = selected_move_animations
     # Enable/disable buttons depending on what is selected
     if @components.get_control(:animations_list).value
       @components.get_control(:edit).enable
@@ -397,7 +397,7 @@ class AnimationEditor::AnimationSelector
   def update
     @components.update
     if @components.changed?
-      @components.values.each_pair do |property, value|
+      @components.changed_controls.each_pair do |property, value|
         apply_button_press(property)
       end
       @components.clear_changed

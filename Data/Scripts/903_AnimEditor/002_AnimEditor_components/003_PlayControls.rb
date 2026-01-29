@@ -194,12 +194,12 @@ class AnimationEditor::PlayControls < UIControls::BaseContainer
       get_control(:loop).visible = false
       get_control(:unloop).visible = true
       @looping = true
-      @values.delete(key)   # Don't need to announce this has changed
+      @changed_controls.delete(key)   # Don't need to announce this has changed
     when :unloop
       get_control(:unloop).visible = false
       get_control(:loop).visible = true
       @looping = false
-      @values.delete(key)   # Don't need to announce this has changed
+      @changed_controls.delete(key)   # Don't need to announce this has changed
     else
       if key.to_s[/slowdown/]
         # A slowdown button was pressed; apply its effect now
@@ -212,16 +212,16 @@ class AnimationEditor::PlayControls < UIControls::BaseContainer
             c.set_not_highlighted
           end
         end
-        @values.delete(key)   # Don't need to announce this has changed
+        @changed_controls.delete(key)   # Don't need to announce this has changed
       end
     end
   end
 
   def update
     super
-    if @values
-      @values.keys.each { |key| make_control_change(key) }
-      @values = nil if @values.empty?
+    if @changed_controls
+      @changed_controls.keys.each { |key| make_control_change(key) }
+      @changed_controls = nil if @changed_controls.empty?
     end
   end
 end

@@ -339,7 +339,6 @@ module Compiler
                       blend[2], FileLineData.linereport)
         end
       end
-
     end
   end
 

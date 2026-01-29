@@ -13,7 +13,7 @@ class UIControls::BaseContainer
   attr_reader   :visible
   attr_reader   :viewport
   attr_reader   :controls
-  attr_reader   :values
+  attr_reader   :changed_controls
 
   include UIControls::StyleMixin
 
@@ -129,11 +129,11 @@ class UIControls::BaseContainer
   end
 
   def changed?
-    return !@values.nil?
+    return !@changed_controls.nil?
   end
 
   def clear_changed
-    @values = nil
+    @changed_controls = nil
   end
 
   def get_control(id)
@@ -173,8 +173,8 @@ class UIControls::BaseContainer
     # Check for updated controls
     @controls.each_pair do |id, c|
       next if !c.changed?
-      @values ||= {}
-      @values[id] = c.value
+      @changed_controls ||= {}
+      @changed_controls[id] = c.value
       c.clear_changed
     end
     # Redraw controls if needed

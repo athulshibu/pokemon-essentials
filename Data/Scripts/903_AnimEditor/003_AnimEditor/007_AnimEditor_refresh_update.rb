@@ -42,15 +42,15 @@ class AnimationEditor
     files.map! { |file| file[0].gsub(/_bg$/, "") }
     files.delete_if { |file| !pbResolveBitmap("Graphics/Battlebacks/" + file.sub(/_eve$/, "").sub(/_night$/, "") + "_message") }
     files.map! { |file| [file, file] }
-    ctrls.get_control(:canvas_bg).values = files.to_h
+    ctrls.get_control(:canvas_bg).options = files.to_h
     ctrls.get_control(:canvas_bg).value = @settings[:canvas_bg]
     # User and target sprite graphics
     files = get_all_files_in_folder("Graphics/Pokemon/Front", [".png", ".jpg", ".jpeg"])
     files.delete_if { |file| !GameData::Species.exists?(file[0]) }
     files.map! { |file| [file[0], file[0]] }
-    ctrls.get_control(:user_sprite_name).values = files.to_h
+    ctrls.get_control(:user_sprite_name).options = files.to_h
     ctrls.get_control(:user_sprite_name).value = @settings[:user_sprite_name]
-    ctrls.get_control(:target_sprite_name).values = files.to_h
+    ctrls.get_control(:target_sprite_name).options = files.to_h
     ctrls.get_control(:target_sprite_name).value = @settings[:target_sprite_name]
     # Default interpolation
     ctrls.get_control(:default_interpolation).value = @settings[:default_interpolation] || :linear
@@ -65,12 +65,12 @@ class AnimationEditor
       move_list.push(["STRUGGLE", _INTL("Struggle")]) if move_list.none? { |val| val[0] == "STRUGGLE" }
       move_list.sort! { |a, b| a[1] <=> b[1] }
       ctrls.get_control(:move_label).text = _INTL("Move")
-      ctrls.get_control(:move).values = move_list.to_h
+      ctrls.get_control(:move).options = move_list.to_h
       ctrls.get_control(:move).value = @anim[:move]
       ctrls.get_control(:type).value = :move
     when :common, :opp_common
       ctrls.get_control(:move_label).text = _INTL("Common animation")
-      ctrls.get_control(:move).values = COMMON_ANIMATIONS.sort
+      ctrls.get_control(:move).options = COMMON_ANIMATIONS.sort
       ctrls.get_control(:type).value = :common
     end
     ctrls.get_control(:opp_variant).value = ([:opp_move, :opp_common].include?(@anim[:type]))
@@ -125,7 +125,7 @@ class AnimationEditor
     if @anim[:no_target]
       GameData::Animation::FOCUS_TYPES_WITH_TARGET.each { |f| focus_values.delete(f) }
     end
-    ctrls.get_control(:focus).values = focus_values
+    ctrls.get_control(:focus).options = focus_values
     # Spawner quantity
     if !this_particle[:spawner] || this_particle[:spawner] == :none
       ctrls.get_control(:spawn_quantity).disable
@@ -177,7 +177,7 @@ class AnimationEditor
     # TODO: Ensure the SE particle is always last. Else make particle_names a
     #       hash and make CheckboxList support a hash.
     particle_names.delete("SE")
-    editor.get_control(:particles).values = particle_names
+    editor.get_control(:particles).options = particle_names
     editor.get_control(:particles).deselect_all
     # Set keyframe range to cover entire animation
     editor.get_control(:start_keyframe).value = 0
@@ -202,7 +202,7 @@ class AnimationEditor
       user_indices = { 0 => "0" }
       user_indices[2] = "2" if @settings[:side_sizes][0] >= 2
       user_indices[4] = "4" if @settings[:side_sizes][0] >= 3
-      component.get_control(:user_index).values = user_indices
+      component.get_control(:user_index).options = user_indices
       component.get_control(:user_index).value = @settings[:user_index]
       component.get_control(:target_indices).value = @settings[:target_indices].join(",")
       component.get_control(:user_opposes).value = @settings[:user_opposes]
@@ -311,10 +311,10 @@ class AnimationEditor
       component.update
       @captured = sym if component.busy?
       if component.changed?
-        if component.respond_to?("values")
-          values = component.values
-          if values
-            values.each_pair do |property, value|
+        if component.respond_to?("changed_controls")
+          changed_ctrls = component.changed_controls
+          if changed_ctrls
+            changed_ctrls.each_pair do |property, value|
               apply_changed_value(sym, property, value)
             end
           end

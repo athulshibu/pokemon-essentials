@@ -91,7 +91,7 @@ class AnimationEditor
       Graphics.update
       Input.update
       help_window.update
-      break if help_window.changed? && help_window.values.has_key?(:close)
+      break if help_window.changed? && help_window.changed_controls.has_key?(:close)
       help_window.clear_changed
       break if !help_window.busy? && Input.triggerex?(:ESCAPE)
       help_window.repaint
@@ -119,8 +119,8 @@ class AnimationEditor
       Input.update
       editor_settings.update
       if editor_settings.changed?
-        break if editor_settings.values.has_key?(:close)
-        editor_settings.values.each_pair do |property, value|
+        break if editor_settings.changed_controls.has_key?(:close)
+        editor_settings.changed_controls.each_pair do |property, value|
           apply_changed_value(:editor_settings, property, value)
           create_pop_up_window(ANIM_PROPERTIES_WIDTH, ANIM_PROPERTIES_HEIGHT, bg_bitmap)
           @pop_up_bg_bitmap.visible = true
@@ -154,8 +154,8 @@ class AnimationEditor
       Input.update
       anim_properties.update
       if anim_properties.changed?
-        break if anim_properties.values.has_key?(:close)
-        anim_properties.values.each_pair do |property, value|
+        break if anim_properties.changed_controls.has_key?(:close)
+        anim_properties.changed_controls.each_pair do |property, value|
           apply_changed_value(:animation_properties, property, value)
           @pop_up_bg_bitmap.visible = true
         end
@@ -190,9 +190,9 @@ class AnimationEditor
       Input.update
       part_properties.update
       if part_properties.changed?
-        break if part_properties.values.has_key?(:close)
-        break if part_properties.values.has_key?(:delete)
-        part_properties.values.each_pair do |property, value|
+        break if part_properties.changed_controls.has_key?(:close)
+        break if part_properties.changed_controls.has_key?(:delete)
+        part_properties.changed_controls.each_pair do |property, value|
           apply_changed_value(:particle_properties, property, [idx_particle, value])
           idx_particle += 1 if property == :duplicate
           @pop_up_bg_bitmap.visible = true
@@ -207,7 +207,7 @@ class AnimationEditor
     @pop_up_bg_bitmap.visible = false
     part_properties.visible = false
     # Delete particle
-    if part_properties.values&.has_key?(:delete)
+    if part_properties.changed_controls&.has_key?(:delete)
       apply_changed_value(:particle_properties, :delete, [idx_particle, true])
     end
     part_properties.clear_changed
@@ -230,9 +230,9 @@ class AnimationEditor
       Input.update
       batch_editor.update
       if batch_editor.changed?
-        break if batch_editor.values.has_key?(:close)
-        break if batch_editor.values.has_key?(:apply)
-        batch_editor.values.each_pair do |property, value|
+        break if batch_editor.changed_controls.has_key?(:close)
+        break if batch_editor.changed_controls.has_key?(:apply)
+        batch_editor.changed_controls.each_pair do |property, value|
           apply_changed_value(:command_batch_editor, property, value)
           @pop_up_bg_bitmap.visible = true
         end
@@ -246,7 +246,7 @@ class AnimationEditor
     @pop_up_bg_bitmap.visible = false
     batch_editor.visible = false
     # Apply changes
-    if batch_editor.values&.has_key?(:apply)
+    if batch_editor.changed_controls&.has_key?(:apply)
       apply_changed_value(:command_batch_editor, :apply, true)
     end
     batch_editor.clear_changed
@@ -294,7 +294,7 @@ class AnimationEditor
       break
     end
     # Set control values
-    list.values = files
+    list.options = files
     list.selected = idx
     # Create sprite preview
     bg_bitmap.bitmap.outline_rect(CONTAINER_BORDER - graphic_chooser.x + list.x + list.width + 6,
@@ -352,7 +352,7 @@ class AnimationEditor
       Input.update
       graphic_chooser.update
       if graphic_chooser.changed?
-        graphic_chooser.values.each_pair do |ctrl, value|
+        graphic_chooser.changed_controls.each_pair do |ctrl, value|
           case ctrl
           when :ok
             ret = list.value
@@ -405,7 +405,7 @@ class AnimationEditor
       break
     end
     # Set control values
-    list.values = files
+    list.options = files
     list.selected = idx
     audio_chooser.get_control(:volume).value = volume
     audio_chooser.get_control(:pitch).value = pitch
@@ -417,7 +417,7 @@ class AnimationEditor
       Input.update
       audio_chooser.update
       if audio_chooser.changed?
-        audio_chooser.values.each_pair do |ctrl, value|
+        audio_chooser.changed_controls.each_pair do |ctrl, value|
           case ctrl
           when :ok
             ret = list.value

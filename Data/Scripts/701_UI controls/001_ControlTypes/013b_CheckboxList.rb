@@ -5,40 +5,40 @@ class UIControls::CheckboxList < UIControls::List
   CHECKBOX_X = 4
   CHECKBOX_SIZE = 16
 
-  def initialize(width, height, viewport, values = [], row_height = ROW_HEIGHT)
+  def initialize(width, height, viewport, options = [], row_height = ROW_HEIGHT)
     super
-    @selected = []   # A Boolean for each value in @values
+    @selected = []   # A Boolean for each value in @options
   end
 
   #-----------------------------------------------------------------------------
 
-  # Each value in @values is an array: [id, text].
-  def values=(new_vals)
-    @values = new_vals
+  # Each value in @options is an array: [id, text].
+  def options=(new_vals)
+    @options = new_vals
     set_interactive_rects
-    @scrollbar.range = [@values.length, 1].max * @row_height
+    @scrollbar.range = [@options.length, 1].max * @row_height
     if @scrollbar.visible
       self.top_row = (@scrollbar.position.to_f / @row_height).round
     else
       self.top_row = 0
     end
-    @selected = @selected[0...@values.length]
+    @selected = @selected[0...@options.length]
     invalidate
   end
 
   # Returns an array of Booleans.
   def value
     return nil if @selected.none? { |val| val == true }
-    return @selected[0...@values.length].map { |val| !!val }
+    return @selected[0...@options.length].map { |val| !!val }
   end
 
   def select_all
-    @values.length.times { |i| @selected[i] = true }
+    @options.length.times { |i| @selected[i] = true }
     invalidate
   end
 
   def deselect_all
-    @values.length.times { |i| @selected[i] = false }
+    @options.length.times { |i| @selected[i] = false }
     invalidate
   end
 
@@ -86,7 +86,7 @@ class UIControls::CheckboxList < UIControls::List
     # Draw control outline
     self.bitmap.outline_rect(0, 0, width, height, get_color_of(:line))
     # Draw text options
-    @values.each_with_index do |val, i|
+    @options.each_with_index do |val, i|
       next if i < @top_row || i >= @top_row + @rows_count
       # Draw checkbox
       self.bitmap.outline_rect(
@@ -178,7 +178,7 @@ class UIControls::CheckboxList < UIControls::List
     if @hover_area
       wheel_v = Input.scroll_v
       scroll_dist = UIControls::Scrollbar::SCROLL_DISTANCE
-      scroll_dist /= 2 if @values.length / @rows_count > 20   # Arbitrary 20
+      scroll_dist /= 2 if @options.length / @rows_count > 20   # Arbitrary 20
       if wheel_v > 0   # Scroll up
         @scrollbar.slider_top -= scroll_dist
       elsif wheel_v < 0   # Scroll down

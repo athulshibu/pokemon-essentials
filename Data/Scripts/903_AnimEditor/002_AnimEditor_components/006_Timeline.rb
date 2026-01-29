@@ -671,21 +671,21 @@ class AnimationEditor::Timeline < UIControls::BaseContainer
     # Check for updated controls
     @controls.each_pair do |id, c|
       next if !c.changed?
-      @values ||= {}
-      @values[id] = c.value
+      @changed_controls ||= {}
+      @changed_controls[id] = c.value
       c.clear_changed
     end
     # Check for updated listed particles
     @display_particles.each_with_index do |particle, particle_index|
       next if !particle.changed?
-      particle.values.each_pair do |row, value|
+      particle.changed_controls.each_pair do |row, value|
         if value[0] == AnimationEditor::ListedParticle::LIST_ARROW
           particle.toggle_group_visibility(row)
           self.selected_row = @selected_row
           refresh_all_row_positions_and_visibilities
         else
-          @values ||= {}
-          @values[row] = [particle_index, value[1]]   # [particle_index, value]
+          @changed_controls ||= {}
+          @changed_controls[row] = [particle_index, value[1]]   # [particle_index, value]
         end
       end
       particle.clear_changed
