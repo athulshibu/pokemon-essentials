@@ -80,6 +80,7 @@ class AnimationEditor
     ctrls.get_control(:has_user).value = !@anim[:no_user]
     ctrls.get_control(:has_target).value = !@anim[:no_target]
     ctrls.get_control(:usable).value = !(@anim[:ignore] || false)
+    ctrls.get_control(:fps).value = @anim[:fps] || 20
   end
 
   def refresh_particle_property_options(idx_particle = nil)
@@ -344,7 +345,7 @@ class AnimationEditor
         @ready_to_play = false
       elsif @captured.nil? && @quit
         case message(_INTL("Do you want to save changes to the animation?"),
-                    [:yes, _INTL("Yes")], [:no, _INTL("No")], [:cancel, _INTL("Cancel")])
+                     [:yes, _INTL("Yes")], [:no, _INTL("No")], [:cancel, _INTL("Cancel")])
         when :yes
           save
         when :cancel

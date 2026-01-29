@@ -13,6 +13,7 @@ class AnimationEditor
     when :name
       edit_animation_properties
       @components[:menu_bar].anim_name = get_animation_display_name
+      @components[:play_controls].duration = @components[:timeline].duration   # In case FPS changed
       refresh_component(:timeline)
     when :settings
       edit_editor_settings

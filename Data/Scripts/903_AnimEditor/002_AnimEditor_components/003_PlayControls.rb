@@ -27,7 +27,9 @@ class AnimationEditor::PlayControls < UIControls::BaseContainer
   DURATION_VALUE_X     = SLOWDOWN_BUTTON_X - 17   # This is the right side of the label, not the left
   DURATION_VALUE_Y     = DURATION_LABEL_Y
 
-  def initialize(x, y, width, height, viewport)
+  def initialize(x, y, width, height, viewport, anim)
+    @anim = anim
+    @fps = @anim[:fps]
     @duration = 0
     @slowdown = SLOWDOWN_FACTORS[0]
     @looping  = false
@@ -141,15 +143,18 @@ class AnimationEditor::PlayControls < UIControls::BaseContainer
                    UIControls::Label.new(200, LABEL_HEIGHT, self.viewport, _INTL("Duration")))
     # Duration value
     add_control_at(:duration_value, DURATION_VALUE_X, DURATION_VALUE_Y,
-                   UIControls::Label.new(200, LABEL_HEIGHT, self.viewport,
-                                         _INTL("{1}s", @duration / AnimationPlayer::ParticleSprite::FRAMES_PER_SECOND)))
+                   UIControls::Label.new(
+                    200, LABEL_HEIGHT, self.viewport,
+                    _ISPRINTF("{1:.02f}s", @duration / @anim[:fps].to_f)
+                   ))
     @controls[:duration_value].x -= @controls[:duration_value].text_width
   end
 
   #-----------------------------------------------------------------------------
 
   def duration=(new_val)
-    return if @duration == new_val
+    return if @duration == new_val && @fps == @anim[:fps]
+    @fps = @anim[:fps]
     @duration = new_val
     if @duration == 0
       get_control(:play).disable
@@ -157,7 +162,7 @@ class AnimationEditor::PlayControls < UIControls::BaseContainer
       get_control(:play).enable
     end
     ctrl = get_control(:duration_value)
-    ctrl.text = _INTL("{1}s", @duration / AnimationPlayer::ParticleSprite::FRAMES_PER_SECOND)
+    ctrl.text = _ISPRINTF("{1:.02f}s", @duration / @anim[:fps].to_f)
     ctrl.x = DURATION_VALUE_X - ctrl.text_width
     refresh
   end

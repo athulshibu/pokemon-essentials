@@ -67,7 +67,7 @@ class AnimationEditor
     )
     # Play controls
     @components[:play_controls] = AnimationEditor::PlayControls.new(
-      PLAY_CONTROLS_X, PLAY_CONTROLS_Y, PLAY_CONTROLS_WIDTH, PLAY_CONTROLS_HEIGHT, @viewport
+      PLAY_CONTROLS_X, PLAY_CONTROLS_Y, PLAY_CONTROLS_WIDTH, PLAY_CONTROLS_HEIGHT, @viewport, @anim
     )
     # Canvas
     @components[:canvas] = AnimationEditor::Canvas.new(@canvas_viewport, @anim, @settings)
@@ -238,6 +238,9 @@ class AnimationEditor
 
     anim_properties.add_underlined_label(:completion_label, _INTL("Completion"))
     anim_properties.add_labelled_checkbox(:usable, _INTL("Can be used in battle?"), true)
+
+    anim_properties.add_underlined_label(:other_label, _INTL("Other"))
+    anim_properties.add_labelled_number_text_box(:fps, _INTL("FPS"), 1, 100, 20)
 
     anim_properties.add_fitted_button(:close, _INTL("Close"))
     anim_properties.visible = false
