@@ -263,20 +263,18 @@ class AnimationEditor
 
     part_properties.add_underlined_label(:property_override_label, _INTL("Override properties"))
     part_properties.add_labelled_number_text_box(:random_frame_max, _INTL("Random frame (max)"), 0, 99, 0)
-    part_properties.add_labelled_dropdown_list(:angle_override, _INTL("Smart angle"), {
-      :none                   => _INTL("None"),
-      :initial_angle_to_focus => _INTL("Initial angle to focus"),
-      :always_point_at_focus  => _INTL("Always point at focus")
-    }, :none)
+    angle_overrides = {}
+    # TODO: Is this okay using the in-PBS name of the override type?
+    GameData::Animation::ANGLE_OVERRIDES.each_pair { |name, key| angle_overrides[key] = name }
+    part_properties.add_labelled_dropdown_list(:angle_override, _INTL("Angle override"), angle_overrides, :none)
 
     part_properties.add_underlined_label(:emitter_label, _INTL("Emitter properties"))
-    part_properties.add_labelled_dropdown_list(:spawner, _INTL("Emitter type"), {
-      :none                        => _INTL("None"),
-      :random_direction            => _INTL("Random direction"),
-      :random_direction_gravity    => _INTL("Random dir. with gravity"),
-      :random_up_direction_gravity => _INTL("Random up dir. gravity")
-    }, :none)
-    part_properties.add_labelled_number_text_box(:spawn_quantity, _INTL("Emit amount"), 1, 99, 1)
+    emitter_types = {}
+    # TODO: Is this okay using the in-PBS name of the emitter type?
+    GameData::Animation::EMITTER_TYPES.each_pair { |name, key| emitter_types[key] = name }
+    part_properties.add_labelled_dropdown_list(:emitter_type, _INTL("Emitter type"), emitter_types, :none)
+    part_properties.add_labelled_number_text_box(:emitter_rate, _INTL("Emissions/second"), 1, 100, 20)
+    part_properties.add_labelled_number_text_box(:emitter_intensity, _INTL("Sprites/emission"), 1, 20, 1)
 
     part_properties.add_fitted_button(:duplicate, _INTL("Duplicate this particle"))
     part_properties.add_fitted_button(:delete, _INTL("Delete this particle"))

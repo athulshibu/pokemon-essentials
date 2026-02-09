@@ -127,11 +127,13 @@ class AnimationEditor
       GameData::Animation::FOCUS_TYPES_WITH_TARGET.each { |f| focus_values.delete(f) }
     end
     ctrls.get_control(:focus).options = focus_values
-    # Spawner quantity
-    if !this_particle[:spawner] || this_particle[:spawner] == :none
-      ctrls.get_control(:spawn_quantity).disable
+    # Emitter quantity
+    if !this_particle[:emitter_type] || this_particle[:emitter_type] == :none
+      ctrls.get_control(:emitter_rate).disable
+      ctrls.get_control(:emitter_intensity).disable
     else
-      ctrls.get_control(:spawn_quantity).enable
+      ctrls.get_control(:emitter_rate).enable
+      ctrls.get_control(:emitter_intensity).enable
     end
     # Angle override
     if GameData::Animation::FOCUS_TYPES_WITH_USER.include?(this_particle[:focus]) ||

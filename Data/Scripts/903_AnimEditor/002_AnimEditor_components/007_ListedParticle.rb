@@ -19,6 +19,13 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     :transformation_group => [:zoom_x, :zoom_y, :angle, :flip],
     :appearance_group     => [:visible, :opacity, :color, :tone, :frame, :blending]
   }
+  EMITTER_PROPERTY_GROUPS = {
+    :emitter_group         => [:x, :y, :emitting],
+    :emit_parameters_group => [:emit_speed, :emit_speed_range, :emit_angle, :emit_angle_range, :emit_gravity, :emit_gravity_range],
+    :position_group        => [:z],
+    :transformation_group  => [:zoom_x, :zoom_y, :angle, :flip],
+    :appearance_group      => [:visible, :opacity, :color, :tone, :frame, :blending]
+  }
 
   ROW_HEIGHT      = 24
   ROW_SPACING     = 1
@@ -53,16 +60,18 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     @list_viewport        = list_viewport
     @timeline_viewport    = timeline_viewport
     @timeline_bg_viewport = timeline_bg_viewport
-    # Key is a symbol from PROPERTY_GROUPS or :main.
+    # Key is a symbol from PROPERTY_GROUPS or EMITTER_PROPERTY_GROUPS or :main
     # Value is an array of sprites and controls
     @groups_expanded = {:main => false}
     @rows = {:main => []}
     @commands = {}
     @group_commands = {}
-    PROPERTY_GROUPS.each_pair do |key, properties|
-      @groups_expanded[key] = false
-      @rows[key] = []
-      properties.each { |prop| @rows[prop] = [] }
+    [PROPERTY_GROUPS, EMITTER_PROPERTY_GROUPS].each do |part_type|
+      part_type.each_pair do |key, properties|
+        @groups_expanded[key] = false
+        @rows[key] = []
+        properties.each { |prop| @rows[prop] = [] }
+      end
     end
     @timeline_ox = 0
     @timeline_oy = 0
@@ -170,9 +179,11 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
 
   def group_name(group)
     return {
-      :position_group       => _INTL("Position"),
-      :transformation_group => _INTL("Transformation"),
-      :appearance_group     => _INTL("Appearance")
+      :position_group        => _INTL("Position"),
+      :transformation_group  => _INTL("Transformation"),
+      :appearance_group      => _INTL("Appearance"),
+      :emitter_group         => _INTL("Emitter"),
+      :emit_parameters_group => _INTL("Emit parameters")
     }[group] || group.to_s.capitalize
   end
 
@@ -189,6 +200,10 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
   end
 
   #-----------------------------------------------------------------------------
+
+  def is_emitter?
+    return @particle[:emitter_type] && @particle[:emitter_type] != :none
+  end
 
   def duration=(value)
     return if @duration == value
@@ -229,13 +244,29 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     return this_row, this_keyframe
   end
 
+  # This method yields every possible group/row, to ensure that changing the
+  # emitter type doesn't result in certain groups/rows lingering without being
+  # hidden.
   def each_row_in_order
     yield :main, true
     groups_visible = @groups_expanded[:main]
-    PROPERTY_GROUPS.each_pair do |key, properties|
-      yield key, groups_visible if key != :main
+    to_yield = (is_emitter?) ? EMITTER_PROPERTY_GROUPS : PROPERTY_GROUPS
+    other_to_yield = (is_emitter?) ? PROPERTY_GROUPS : EMITTER_PROPERTY_GROUPS
+    yielded = []
+    to_yield.each_pair do |key, properties|
+      if key != :main
+        yield key, groups_visible
+        yielded.push(key)
+      end
       group_visible = @groups_expanded[key]
-      properties.each { |property| yield property, groups_visible && group_visible }
+      properties.each do |property|
+        yield property, groups_visible && group_visible
+        yielded.push(property)
+      end
+    end
+    other_to_yield.each_pair do |key, properties|
+      yield key, false if key != :main && !yielded.include?(key)
+      properties.each { |property| yield property, false if !yielded.include?(property) }
     end
   end
 
@@ -250,21 +281,24 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
       row_count += 1
       break if row_count > row_index
     end
-    return nil if ret == :main || PROPERTY_GROUPS.has_key?(ret)
+    return nil if ret == :main || PROPERTY_GROUPS.has_key?(ret) || EMITTER_PROPERTY_GROUPS.has_key?(ret)
     return ret
   end
 
   def row_is_property?(row)
-    return PROPERTY_GROUPS.any? { |key, properties| properties.include?(row) }
+    return PROPERTY_GROUPS.any? { |key, properties| properties.include?(row) } ||
+           EMITTER_PROPERTY_GROUPS.any? { |key, properties| properties.include?(row) }
   end
 
   # Returns the group that row sits under. This may be a key from
-  # PROPERTY_GROUPS, or :main, or nil (if row is :main).
+  # PROPERTY_GROUPS or EMITTER_PROPERTY_GROUPS, or :main, or nil (if row is
+  # :main).
   def group_for_row(row)
     return nil if row == :main
-    return :main if PROPERTY_GROUPS.has_key?(row)
+    groups = (is_emitter?) ? EMITTER_PROPERTY_GROUPS : PROPERTY_GROUPS
+    return :main if groups.has_key?(row)
     ret = nil
-    PROPERTY_GROUPS.each_pair { |key, properties| ret = key if properties.include?(row) }
+    groups.each_pair { |key, properties| ret = key if properties.include?(row) }
     return ret
   end
 
@@ -313,6 +347,9 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     @visibilities = AnimationEditor::ParticleDataHelper.get_timeline_particle_visibilities(
       @particle, @duration
     )
+    @emitter_visibilities = AnimationEditor::ParticleDataHelper.get_timeline_particle_visibilities(
+      @particle, @duration, AnimationPlayer::Emitter::PARTICLE_PROPERTIES
+    )
   end
 
   def commands_for_row(row)
@@ -340,8 +377,9 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
   def ensure_rows
     create_row_contents(:main)
     if @groups_expanded[:main]
-      PROPERTY_GROUPS.keys.each { |key| create_row_contents(key) }
-      PROPERTY_GROUPS.each_pair do |key, properties|
+      groups = (is_emitter?) ? EMITTER_PROPERTY_GROUPS : PROPERTY_GROUPS
+      groups.keys.each { |key| create_row_contents(key) }
+      groups.each_pair do |key, properties|
         next if !@groups_expanded[key]
         properties.each { |prop| create_row_contents(prop) }
       end

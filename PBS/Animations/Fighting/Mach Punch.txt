@@ -80,8 +80,13 @@ NoUser = true
 <Spark spawner>
     Graphic = Fighting/Mach Punch spark
     Focus = Target
-    Spawner = RandomDirection
-    SpawnQuantity = 12
+    Emitter = Straight
+    EmitterRate = 80
+    SetEmitSpeed = 0,300
+    SetEmitSpeedRange = 0,75
+    SetEmitAngleRange = 0,180
+    SetEmitting = 4,true
+    SetEmitting = 7,false
     SetZ = 5,4
     SetZoomX = 5,50
     SetZoomY = 5,50

@@ -155,7 +155,7 @@ class AnimationEditor::Canvas < Sprite
     return false if index < 0 || index >= @anim[:particles].length
     particle = @anim[:particles][index]
     return false if !particle || particle[:name] == "SE"
-    return false if particle[:spawner] && particle[:spawner] != :none
+    return false if (particle[:emitter_type] || :none) != :none
     return true
   end
 

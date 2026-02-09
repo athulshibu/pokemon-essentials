@@ -41,8 +41,15 @@ Name = Essentials
 <Spark spawner>
     Graphic = Normal/Tackle spark
     Focus = Target
-    Spawner = RandomDirectionGravity
-    SpawnQuantity = 7
+    Emitter = Projectile
+    EmitterRate = 80
+    SetEmitSpeed = 0,300
+    SetEmitSpeedRange = 0,75
+    SetEmitAngle = 0,90
+    SetEmitAngleRange = 0,120
+    SetEmitGravity = 0,500
+    SetEmitting = 4,true
+    SetEmitting = 6,false
     SetZ = 4,5
     SetZoomX = 4,50
     SetZoomY = 4,50

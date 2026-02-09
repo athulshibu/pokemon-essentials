@@ -45,11 +45,11 @@ module GameData
       "EaseBoth" => :ease_both
     }
     USER_AND_TARGET_SEPARATION = [200, -200, -100]   # x, y, z (from user to target)
-    SPAWNER_TYPES = {
-      "None"                     => :none,
-      "RandomDirection"          => :random_direction,
-      "RandomDirectionGravity"   => :random_direction_gravity,
-      "RandomUpDirectionGravity" => :random_up_direction_gravity
+    EMITTER_TYPES = {
+      "None"       => :none,          # Isn't an emitter
+      "NoMovement" => :no_movement,   # Doesn't move once spawned
+      "Straight"   => :straight,      # Moves in a straight line
+      "Projectile" => :projectile     # Moved under gravity
     }
     ANGLE_OVERRIDES = {
       "None"                => :none,
@@ -75,97 +75,129 @@ module GameData
       # These properties cannot be changed partway through the animation.
       # NOTE: "Name" isn't a property here, because the particle's name comes
       #       from the "Particle" property above.
-      "Graphic"        => [:graphic,          "s"],
-      "Focus"          => [:focus,            "e", FOCUS_TYPES],
-      "FoeInvertX"     => [:foe_invert_x,     "b"],
-      "FoeInvertY"     => [:foe_invert_y,     "b"],
-      "FoeFlip"        => [:foe_flip,         "b"],
-      "Spawner"        => [:spawner,          "e", SPAWNER_TYPES],
-      "SpawnQuantity"  => [:spawn_quantity,   "v"],
-      "RandomFrameMax" => [:random_frame_max, "u"],
-      "AngleOverride"  => [:angle_override,   "e", ANGLE_OVERRIDES],
+      "Graphic"              => [:graphic,            "s"],
+      "Focus"                => [:focus,              "e", FOCUS_TYPES],
+      "FoeInvertX"           => [:foe_invert_x,       "b"],
+      "FoeInvertY"           => [:foe_invert_y,       "b"],
+      "FoeFlip"              => [:foe_flip,           "b"],
+      "Emitter"              => [:emitter_type,       "e", EMITTER_TYPES],
+      "EmitterRate"          => [:emitter_rate,       "v"],   # Emissions/second
+      "EmitterIntensity"     => [:emitter_intensity,  "v"],   # Sprites/emission
+      "RandomFrameMax"       => [:random_frame_max,   "u"],
+      "AngleOverride"        => [:angle_override,     "e", ANGLE_OVERRIDES],
       # All properties below are "SetXYZ" or "MoveXYZ". "SetXYZ" has the
       # keyframe and the value, and "MoveXYZ" has the keyframe, duration and the
       # value. All have "^" in their schema. "SetXYZ" is turned into "MoveXYZ"
       # when compiling by inserting a duration (second value) of 0.
-      "SetFrame"       => [:frame,            "^uu"],   # Frame within the graphic if it's a spritesheet
-      "MoveFrame"      => [:frame,            "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
-      "SetBlending"    => [:blending,         "^uu"],   # 0, 1 or 2
-      "SetFlip"        => [:flip,             "^ub"],
-      "SetX"           => [:x,                "^ui"],
-      "MoveX"          => [:x,                "^uuiE", nil, nil, nil, INTERPOLATION_TYPES],
-      "SetY"           => [:y,                "^ui"],
-      "MoveY"          => [:y,                "^uuiE", nil, nil, nil, INTERPOLATION_TYPES],
-      "SetZ"           => [:z,                "^ui"],
-      "MoveZ"          => [:z,                "^uuiE", nil, nil, nil, INTERPOLATION_TYPES],
-      "SetZoomX"       => [:zoom_x,           "^uu"],
-      "MoveZoomX"      => [:zoom_x,           "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
-      "SetZoomY"       => [:zoom_y,           "^uu"],
-      "MoveZoomY"      => [:zoom_y,           "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
-      "SetAngle"       => [:angle,            "^ui"],
-      "MoveAngle"      => [:angle,            "^uuiE", nil, nil, nil, INTERPOLATION_TYPES],
-      "SetVisible"     => [:visible,          "^ub"],
-      "SetOpacity"     => [:opacity,          "^uu"],
-      "MoveOpacity"    => [:opacity,          "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
-      "SetColor"       => [:color,            "^us"],
-      "MoveColor"      => [:color,            "^uusE", nil, nil, nil, INTERPOLATION_TYPES],
-      "SetTone"        => [:tone,             "^us"],
-      "MoveTone"       => [:tone,             "^uusE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetFrame"             => [:frame,              "^uu"],   # Frame within the graphic if it's a spritesheet
+      "MoveFrame"            => [:frame,              "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetBlending"          => [:blending,           "^uu"],   # 0, 1 or 2
+      "SetFlip"              => [:flip,               "^ub"],
+      "SetX"                 => [:x,                  "^ui"],
+      "MoveX"                => [:x,                  "^uuiE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetY"                 => [:y,                  "^ui"],
+      "MoveY"                => [:y,                  "^uuiE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetZ"                 => [:z,                  "^ui"],
+      "MoveZ"                => [:z,                  "^uuiE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetZoomX"             => [:zoom_x,             "^uu"],
+      "MoveZoomX"            => [:zoom_x,             "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetZoomY"             => [:zoom_y,             "^uu"],
+      "MoveZoomY"            => [:zoom_y,             "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetAngle"             => [:angle,              "^ui"],
+      "MoveAngle"            => [:angle,              "^uuiE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetVisible"           => [:visible,            "^ub"],
+      "SetOpacity"           => [:opacity,            "^uu"],
+      "MoveOpacity"          => [:opacity,            "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetColor"             => [:color,              "^us"],
+      "MoveColor"            => [:color,              "^uusE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetTone"              => [:tone,               "^us"],
+      "MoveTone"             => [:tone,               "^uusE", nil, nil, nil, INTERPOLATION_TYPES],
+      # These properties are specifically for emitter particles.
+      "SetEmitting"          => [:emitting,           "^ub"],
+      "SetEmitSpeed"         => [:emit_speed,         "^uu"],
+      "MoveEmitSpeed"        => [:emit_speed,         "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetEmitSpeedRange"    => [:emit_speed_range,   "^uu"],
+      "MoveEmitSpeedRange"   => [:emit_speed_range,   "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetEmitAngle"         => [:emit_angle,         "^ui"],
+      "MoveEmitAngle"        => [:emit_angle,         "^uuiE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetEmitAngleRange"    => [:emit_angle_range,   "^uu"],
+      "MoveEmitAngleRange"   => [:emit_angle_range,   "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetEmitGravity"       => [:emit_gravity,       "^ui"],
+      "MoveEmitGravity"      => [:emit_gravity,       "^uuiE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetEmitGravityRange"  => [:emit_gravity_range, "^uu"],
+      "MoveEmitGravityRange" => [:emit_gravity_range, "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
       # These properties are specifically for the "SE" particle.
-      "Play"           => [:se,               "^usUU"],   # Filename, volume, pitch
-      "PlayUserCry"    => [:user_cry,         "^uUU"],   # Volume, pitch
-      "PlayTargetCry"  => [:target_cry,       "^uUU"]   # Volume, pitch
+      "Play"                 => [:se,                 "^usUU"],   # Filename, volume, pitch
+      "PlayUserCry"          => [:user_cry,           "^uUU"],   # Volume, pitch
+      "PlayTargetCry"        => [:target_cry,         "^uUU"]   # Volume, pitch
     }
     PARTICLE_DEFAULT_VALUES = {
-      :name             => "",
-      :graphic          => "",
-      :focus            => :foreground,
-      :foe_invert_x     => false,
-      :foe_invert_y     => false,
-      :foe_flip         => false,
-      :spawner          => :none,
-      :spawn_quantity   => 1,
-      :random_frame_max => 0,
-      :angle_override   => :none
-
+      :name              => "",
+      :graphic           => "",
+      :focus             => :foreground,
+      :foe_invert_x      => false,
+      :foe_invert_y      => false,
+      :foe_flip          => false,
+      :random_frame_max  => 0,
+      :angle_override    => :none,
+      :emitter_type      => :none,
+      :emitter_rate      => 1,
+      :emitter_intensity => 1
     }
     # NOTE: Particles are invisible until their first command, and automatically
     #       become visible then. "User" and "Target" are visible from the start,
     #       though.
     PARTICLE_KEYFRAME_DEFAULT_VALUES = {
-      :frame       => 0,
-      :blending    => 0,
-      :flip        => false,
-      :x           => 0,
-      :y           => 0,
-      :z           => 0,
-      :zoom_x      => 100,
-      :zoom_y      => 100,
-      :angle       => 0,
-      :visible     => false,
-      :opacity     => 255,
-      :color       => "00000000",
-      :tone        => "+00+00+00+00",
-      :se          => nil,
-      :user_cry    => nil,
-      :target_cry  => nil
+      :frame              => 0,
+      :blending           => 0,
+      :flip               => false,
+      :x                  => 0,
+      :y                  => 0,
+      :z                  => 0,
+      :zoom_x             => 100,
+      :zoom_y             => 100,
+      :angle              => 0,
+      :visible            => false,
+      :opacity            => 255,
+      :color              => "00000000",
+      :tone               => "+00+00+00+00",
+      # These properties are specifically for emitter particles.
+      :emitting           => false,
+      :emit_speed         => 0,
+      :emit_speed_range   => 0,
+      :emit_angle         => 0,
+      :emit_angle_range   => 0,
+      :emit_gravity       => 0,
+      :emit_gravity_range => 0,
+      # These properties are specifically for the "SE" particle.
+      :se                 => nil,
+      :user_cry           => nil,
+      :target_cry         => nil
     }
 
     def self.property_display_name(property)
       return {
-        :frame       => _INTL("Frame"),
-        :blending    => _INTL("Blending"),
-        :flip        => _INTL("Flip"),
-        :x           => _INTL("X"),
-        :y           => _INTL("Y"),
-        :z           => _INTL("Priority"),
-        :zoom_x      => _INTL("Zoom X"),
-        :zoom_y      => _INTL("Zoom Y"),
-        :angle       => _INTL("Angle"),
-        :visible     => _INTL("Visible"),
-        :opacity     => _INTL("Opacity"),
-        :color       => _INTL("Color"),
-        :tone        => _INTL("Tone")
+        :frame              => _INTL("Frame"),
+        :blending           => _INTL("Blending"),
+        :flip               => _INTL("Flip"),
+        :x                  => _INTL("X"),
+        :y                  => _INTL("Y"),
+        :z                  => _INTL("Priority"),
+        :zoom_x             => _INTL("Zoom X"),
+        :zoom_y             => _INTL("Zoom Y"),
+        :angle              => _INTL("Angle"),
+        :visible            => _INTL("Visible"),
+        :opacity            => _INTL("Opacity"),
+        :color              => _INTL("Color"),
+        :tone               => _INTL("Tone"),
+        # These properties are specifically for emitter particles
+        :emitting           => _INTL("Emitting"),
+        :emit_speed         => _INTL("Speed"),
+        :emit_speed_range   => _INTL("Speed ±"),
+        :emit_angle         => _INTL("Angle"),
+        :emit_angle_range   => _INTL("Angle ±"),
+        :emit_gravity       => _INTL("Gravity"),
+        :emit_gravity_range => _INTL("Gravity ±")
       }[property] || property.to_s.capitalize
     end
 
@@ -318,11 +350,11 @@ module GameData
         # The User and Target particles have hardcoded graphics/foci, so they
         # don't need writing to PBS
         ret = nil if ["User", "Target"].include?(@particles[index][:name])
-      when "Spawner"
-        ret = nil if ret == :none
-      when "SpawnQuantity"
-        ret = nil if @particles[index][:spawner].nil? || @particles[index][:spawner] == :none
-        ret = nil if ret && ret <= 1
+      when "Emitter"
+        ret = nil if ret == PARTICLE_DEFAULT_VALUES[SUB_SCHEMA[key][0]]
+      when "EmitterRate", "EmitterIntensity"
+        ret = nil if @particles[index][:emitter_type].nil? || @particles[index][:emitter_type] == :none
+        ret = nil if ret == PARTICLE_DEFAULT_VALUES[SUB_SCHEMA[key][0]]
       when "RandomFrameMax"
         ret = nil if ret == 0
       when "AngleOverride"
