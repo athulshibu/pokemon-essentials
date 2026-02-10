@@ -267,7 +267,7 @@ class AnimationEditor
     GameData::Animation::ANGLE_OVERRIDES.each_pair { |name, key| angle_overrides[key] = name }
     part_properties.add_labelled_dropdown_list(:angle_override, _INTL("Angle override"), angle_overrides, :none)
 
-    part_properties.add_underlined_label(:property_override_label, _INTL("Randomization of properties"))
+    part_properties.add_underlined_label(:property_randomize_label, _INTL("Randomization of properties"))
     part_properties.add_labelled_number_text_box(:random_frame_max, _INTL("Random frame (max)"), 0, 99, 0)
     part_properties.add_labelled_number_text_box(:random_angle_range, _INTL("Random angle offset"), 0, 180, 0)
     part_properties.add_labelled_checkbox(:random_invert_angle, _INTL("Randomly invert angle"), false)
