@@ -514,6 +514,12 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     new_vals = AnimationEditor::ParticleDataHelper.get_all_keyframe_particle_values(@particle, @selected_keyframe)
     @rows.each_pair do |row, objs|
       next if !objs[LIST_CONTROL] || !row_is_property?(row)
+      if row == :z
+        objs[LIST_CONTROL].min_value = AnimationEditor::PROPERTY_RANGES[:z][0]
+        if @particle[:focus] == :user_and_target
+          objs[LIST_CONTROL].min_value += GameData::Animation::USER_AND_TARGET_SEPARATION[2]
+        end
+      end
       objs[LIST_CONTROL].value = new_vals[row][0]
       objs[LIST_CONTROL].repaint if objs[LIST_CONTROL].visible
     end

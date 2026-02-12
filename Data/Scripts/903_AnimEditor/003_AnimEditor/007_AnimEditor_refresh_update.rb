@@ -176,10 +176,10 @@ class AnimationEditor
   def refresh_command_batch_editor_options
     editor = @components[:command_batch_editor]
     # Set list of particles and deselect them all
-    particle_names = @anim[:particles].map { |part| part[:name] }
-    # TODO: Ensure the SE particle is always last. Else make particle_names a
-    #       hash and make CheckboxList support a hash.
-    particle_names.delete("SE")
+    particle_names = []
+    @anim[:particles].each_with_index do |particle, i|
+      particle_names.push([i, particle[:name]]) if particle[:name] != "SE"
+    end
     editor.get_control(:particles).options = particle_names
     editor.get_control(:particles).deselect_all
     # Set keyframe range to cover entire animation
@@ -234,7 +234,7 @@ class AnimationEditor
       else
         component.get_control(:move_particle_up).enable
       end
-      if cur_index < 0 || cur_index >= @anim[:particles].length - 1 || @anim[:particles][cur_index][:name] == "SE"
+      if cur_index < 0 || cur_index >= @anim[:particles].length - 2 || @anim[:particles][cur_index][:name] == "SE"
         component.get_control(:move_particle_down).disable
       else
         component.get_control(:move_particle_down).enable

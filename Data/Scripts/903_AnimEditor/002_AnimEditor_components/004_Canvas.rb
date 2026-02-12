@@ -458,6 +458,7 @@ class AnimationEditor::Canvas < Sprite
     return spr, frame
   end
 
+  # TODO: Make a version of this method for whether the particle is an emitter.
   def refresh_sprite(index, target_idx = -1)
     particle = @anim[:particles][index]
     return if !show_particle_sprite?(index)
