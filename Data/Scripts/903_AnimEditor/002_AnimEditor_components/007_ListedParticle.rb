@@ -17,7 +17,9 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
   EMITTER_PROPERTY_GROUPS = {
     :emitter_group         => [:x, :y, :emitting],
     :emit_parameters_group => [:emit_x_range, :emit_y_range, :emit_speed, :emit_speed_range,
-                               :emit_angle, :emit_angle_range, :emit_gravity, :emit_gravity_range],
+                               :emit_angle, :emit_angle_range, :emit_gravity, :emit_gravity_range,
+                               :emit_period, :emit_period_range, :emit_radius, :emit_radius_range,
+                               :emit_radius_z, :emit_radius_z_range],
     :position_group        => [:z],
     :transformation_group  => [:zoom_x, :zoom_y, :angle, :flip],
     :appearance_group      => [:visible, :opacity, :color, :tone, :frame, :blending]
@@ -27,7 +29,11 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     :straight             => [:emit_x_range, :emit_y_range, :emit_speed, :emit_speed_range,
                               :emit_angle, :emit_angle_range],
     :projectile           => [:emit_x_range, :emit_y_range, :emit_speed, :emit_speed_range,
-                              :emit_angle, :emit_angle_range, :emit_gravity, :emit_gravity_range]
+                              :emit_angle, :emit_angle_range, :emit_gravity, :emit_gravity_range],
+    # TODO: Add clockwise/anticlockwise boolean to :helix?
+    :helix                => [:emit_x_range, :emit_y_range, :emit_speed, :emit_speed_range,
+                              :emit_angle, :emit_angle_range, :emit_period, :emit_period_range,
+                              :emit_radius, :emit_radius_range, :emit_radius_z, :emit_radius_z_range]
   }
 
   ROW_HEIGHT      = 24

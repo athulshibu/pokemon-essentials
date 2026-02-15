@@ -211,20 +211,28 @@ class AnimationPlayer::Emitter
   end
 
   def create_particle_sprite_set_movement_values(particle_sprite, target_idx = -1)
-    speed = @values[:emit_speed]
-    speed_range = @values[:emit_speed_range]
-    speed += rand(-speed_range, speed_range) if speed_range > 0
-    angle = @values[:emit_angle]
-    angle_range = @values[:emit_angle_range]
-    angle += rand(-angle_range, angle_range) if angle_range > 0
-    gravity = @values[:emit_gravity]
-    gravity_range = @values[:emit_gravity_range]
-    gravity += rand(-gravity_range, gravity_range) if gravity_range > 0
+    [
+      [:emit_speed, :speed],
+      [:emit_angle, :angle],
+      [:emit_gravity, :gravity],
+      [:emit_period, :period],
+      [:emit_radius, :radius],
+      [:emit_radius_z, :radius_z]
+    ].each do |property|
+      val = @values[property[0]]
+      val_range = @values[(property[0].to_s + "_range").to_sym]
+      val += rand(-val_range, val_range) if val_range > 0
+      particle_sprite.emitter_params[property[1]] = val
+    end
+    # Period
+    particle_sprite.emitter_params[:period] /= 100.0 if particle_sprite.emitter_params[:period] > 0
+    # X/Y speed
+    speed = particle_sprite.emitter_params[:speed]
+    angle = particle_sprite.emitter_params[:angle]
     speed_x = speed * Math.cos(angle * Math::PI / 180)
     speed_y = -speed * Math.sin(angle * Math::PI / 180)
     particle_sprite.emitter_params[:speed_x] = speed_x
     particle_sprite.emitter_params[:speed_y] = speed_y
-    particle_sprite.emitter_params[:gravity] = gravity
   end
 
   def create_particle_sprite_set_base_property_offsets(particle_sprite, target_idx = -1)

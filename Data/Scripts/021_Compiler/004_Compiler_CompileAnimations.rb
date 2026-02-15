@@ -184,7 +184,10 @@ module Compiler
                     :emit_x_range, :emit_y_range,
                     :emit_speed, :emit_speed_range,
                     :emit_angle, :emit_angle_range,
-                    :emit_gravity, :emit_gravity_range].include?(property)
+                    :emit_gravity, :emit_gravity_range,
+                    :emit_period, :emit_period_range,
+                    :emit_radius, :emit_radius_range,
+                    :emit_radius_z, :emit_radius_z_range].include?(property)
           raise _INTL("Particle \"{1}\" isn't an emitter but has an \"Emit\"-type command.",
                       particle[:name]) + "\n" + FileLineData.linereport
         end

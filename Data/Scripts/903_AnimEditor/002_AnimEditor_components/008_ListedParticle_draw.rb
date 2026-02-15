@@ -146,7 +146,9 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
       return
     when :x, :y, :z, :zoom_x, :zoom_y, :angle, :opacity, :frame,
          :emit_x_range, :emit_y_range, :emit_speed, :emit_speed_range,
-         :emit_angle, :emit_angle_range, :emit_gravity, :emit_gravity_range
+         :emit_angle, :emit_angle_range, :emit_gravity, :emit_gravity_range,
+         :emit_period, :emit_period_range, :emit_radius, :emit_radius_range,
+         :emit_radius_z, :emit_radius_z_range
       vals = AnimationEditor::PROPERTY_RANGES[row] || [0, 0]
       default = GameData::Animation::PARTICLE_KEYFRAME_DEFAULT_VALUES[row] || 0
       ctrl = UIControls::NumberTextBox.new(ctrl_width, ctrl_height, @list_viewport, *vals, default)

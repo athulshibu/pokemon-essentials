@@ -142,11 +142,12 @@ class AnimationPlayer::ParticleSprite
 
   # Usually only :x and :y.
   def update_emitter_type_properties(elapsed_time, changed_properties)
-    case @emitter_params[:type] || :none
+    return if (@emitter_params[:type] || :none) == :none
+    delta_t = (elapsed_time - @emitter_params[:start_time]) / @slowdown.to_f
+    case (@emitter_params[:type] || :none)
     when :no_movement
       # NOTE: This doesn't change any properties.
     when :straight
-      delta_t = (elapsed_time - @emitter_params[:start_time]) / @slowdown.to_f
       new_x = (@emitter_params[:speed_x] * delta_t).round
       @values[:x] = new_x
       changed_properties.push(:x)
@@ -154,13 +155,23 @@ class AnimationPlayer::ParticleSprite
       @values[:y] = new_y
       changed_properties.push(:y)
     when :projectile
-      delta_t = (elapsed_time - @emitter_params[:start_time]) / @slowdown.to_f
       new_x = (@emitter_params[:speed_x] * delta_t).round
       @values[:x] = new_x
       changed_properties.push(:x)
       new_y = ((@emitter_params[:speed_y] * delta_t) + (@emitter_params[:gravity] * delta_t * delta_t / 2)).round   # s = ut + 1/2 at^2
       @values[:y] = new_y
       changed_properties.push(:y)
+    when :helix
+      new_angle = @emitter_params[:angle] + (360 * delta_t / @emitter_params[:period])
+      new_x = @emitter_params[:radius] * Math.sin(new_angle * Math::PI / 180)
+      @values[:x] = new_x
+      changed_properties.push(:x)
+      new_y = (@emitter_params[:speed] * delta_t).round
+      @values[:y] = new_y
+      changed_properties.push(:y)
+      new_z = @emitter_params[:radius_z] * Math.cos(new_angle * Math::PI / 180)
+      @values[:z] = new_z
+      changed_properties.push(:z)
     end
   end
 
