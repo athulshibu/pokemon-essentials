@@ -1312,7 +1312,7 @@ class Battle::Move::CategoryDependsOnHigherDamageIgnoreTargetAbility < Battle::M
   def pbOnStartUse(user, targets)
     real_attack         = user.stat_with_stages(:ATTACK)
     real_special_attack = user.stat_with_stages(:SPECIAL_ATTACK)
-    @calcCategory = (realAtk > realSpAtk) ? 0 : 1
+    @calcCategory = (real_attack > real_special_attack) ? 0 : 1
   end
 end
 
