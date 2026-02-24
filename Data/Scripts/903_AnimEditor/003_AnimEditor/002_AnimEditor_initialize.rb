@@ -176,6 +176,7 @@ class AnimationEditor
     help_window.add_underlined_label(:section_keyboard, _INTL("Keyboard controls"))
     help_window.add_label(:text_esc, _INTL("Esc - Close any pop-up window (such as this one)."))
     help_window.add_label(:text_space, _INTL("Space - Play the animation, or stop it if it is playing."))
+    help_window.add_label(:text_wasd, _INTL("W/A/S/D - Change which keyframe and row is selected."))
     help_window.add_label(:text_arrows, _INTL("Up/Down/Left/Right - Move the selected particle in the canvas."))
     help_window.add_label(:text_shift_arrows, _INTL("Shift + Up/Down/Left/Right - Move the selected particle in the canvas faster."))
     help_window.add_label(:text_delete, _INTL("Delete - Remove the command selected in the timeline."))

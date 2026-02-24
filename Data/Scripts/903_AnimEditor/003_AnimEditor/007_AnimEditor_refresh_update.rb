@@ -298,9 +298,9 @@ class AnimationEditor
         refresh
       end
     elsif Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
-      if Input.triggerex?(:Z)
+      if Input.triggerex?(:Z) || Input.repeatex?(:Z)
         undo_change
-      elsif Input.triggerex?(:Y)
+      elsif Input.triggerex?(:Y) || Input.repeatex?(:Y)
         redo_change
       end
     end

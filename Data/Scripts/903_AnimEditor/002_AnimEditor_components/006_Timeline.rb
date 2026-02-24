@@ -5,7 +5,7 @@
 #===============================================================================
 class AnimationEditor::Timeline < UIControls::BaseContainer
   attr_reader :duration
-  attr_reader :selected_keyframe
+  attr_reader :selected_keyframe, :selected_row
 
   VIEWPORT_SPACING = 1
 
@@ -694,8 +694,24 @@ class AnimationEditor::Timeline < UIControls::BaseContainer
   end
 
   def update_input
+    update_input_navigation
     update_input_left_click
     update_input_scroll_wheel
+  end
+
+  def update_input_navigation
+    # A/D to change selected keyframe
+    if Input.triggerex?(:A) || Input.repeatex?(:A)
+      self.selected_keyframe -= 1
+    elsif Input.triggerex?(:D) || Input.repeatex?(:D)
+      self.selected_keyframe += 1
+    end
+    # W/S to change selected row
+    if Input.triggerex?(:W) || Input.repeatex?(:W)
+      self.selected_row -= 1
+    elsif Input.triggerex?(:S) || Input.repeatex?(:S)
+      self.selected_row += 1
+    end
   end
 
   # Change selected keyframe/row if clicked on.
