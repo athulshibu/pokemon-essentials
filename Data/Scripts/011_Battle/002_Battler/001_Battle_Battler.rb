@@ -250,7 +250,7 @@ class Battle::Battler
     elsif !pbOwnedByPlayer?
       return lowerCase ? _INTL("the ally {1}'s", name) : _INTL("The ally {1}'s", name)
     end
-    return name
+    return _INTL("{1}'s", name)
   end
 
   def pbTeam(lowerCase = false)

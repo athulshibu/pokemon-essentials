@@ -606,7 +606,7 @@ class Battle::Move::RaiseUserAtkSpd1RemoveEntryHazardsAndSubstitutes < Battle::M
     if user.pbOpposingSide.effects[PBEffects::Spikes] > 0
       user.pbOpposingSide.effects[PBEffects::Spikes] = 0
       something_tidied = true
-      @battle.pbDisplay(_INTL("The spikes disappeared from the ground around {1}!", user.pbpbOpposingSideTeam(true)))
+      @battle.pbDisplay(_INTL("The spikes disappeared from the ground around {1}!", user.pbOpposingTeam(true)))
     end
     if user.pbOwnSide.effects[PBEffects::ToxicSpikes] > 0
       user.pbOwnSide.effects[PBEffects::ToxicSpikes] = 0
@@ -616,7 +616,7 @@ class Battle::Move::RaiseUserAtkSpd1RemoveEntryHazardsAndSubstitutes < Battle::M
     if user.pbOpposingSide.effects[PBEffects::ToxicSpikes] > 0
       user.pbOpposingSide.effects[PBEffects::ToxicSpikes] = 0
       something_tidied = true
-      @battle.pbDisplay(_INTL("The poison spikes disappeared from the ground around {1}!", user.pbpbOpposingSideTeam(true)))
+      @battle.pbDisplay(_INTL("The poison spikes disappeared from the ground around {1}!", user.pbOpposingTeam(true)))
     end
     if user.pbOwnSide.effects[PBEffects::StickyWeb]
       user.pbOwnSide.effects[PBEffects::StickyWeb] = false
@@ -626,7 +626,7 @@ class Battle::Move::RaiseUserAtkSpd1RemoveEntryHazardsAndSubstitutes < Battle::M
     if user.pbOpposingSide.effects[PBEffects::StickyWeb]
       user.pbOpposingSide.effects[PBEffects::StickyWeb] = false
       something_tidied = true
-      @battle.pbDisplay(_INTL("The sticky webs disappeared from the ground around {1}!", user.pbpbOpposingSideTeam(true)))
+      @battle.pbDisplay(_INTL("The sticky webs disappeared from the ground around {1}!", user.pbOpposingTeam(true)))
     end
     @battle.pbDisplay(_INTL("Tidying up complete!")) if something_tidied
     super

@@ -628,6 +628,7 @@ class Battle::Scene
       old_battler_coords[user.index] = [sprite.x, sprite.y]
     end
     if targets
+      targets = [targets] if !targets.is_a?(Array)
       targets.each do |target|
         sprite = @sprites["pokemon_#{target.index}"]
         old_battler_coords[target.index] = [sprite.x, sprite.y]

@@ -2386,7 +2386,7 @@ Battle::AbilityEffects::OnDealingHit.add(:POISONTOUCH,
     next if !move.pbContactMove?(user)
     next if !target.affectedByAdditionalEffects?
     next if !target.pbCanPoison?(user, false)
-    next if target.hasActiveAbility?(:SHIELDDUST) && !target.being_mold_broken?
+    next if target.hasActiveAbility?(:SHIELDDUST) && !target.beingMoldBroken?
     next if battle.pbRandom(100) >= 30
     battle.pbShowAbilitySplash(user)
     msg = nil
@@ -2402,7 +2402,7 @@ Battle::AbilityEffects::OnDealingHit.add(:TOXICCHAIN,
   proc { |ability, user, target, move, battle|
     next if !target.affectedByAdditionalEffects?
     next if !target.pbCanPoison?(user, false)
-    next if target.hasActiveAbility?(:SHIELDDUST) && !target.being_mold_broken?
+    next if target.hasActiveAbility?(:SHIELDDUST) && !target.beingMoldBroken?
     next if battle.pbRandom(100) >= 30
     battle.pbShowAbilitySplash(user)
     msg = nil
@@ -3216,8 +3216,14 @@ Battle::AbilityEffects::OnSwitchIn.add(:GRASSYSURGE,
 
 Battle::AbilityEffects::OnSwitchIn.add(:HADRONENGINE,
   proc { |ability, battler, battle, switch_in|
-    battle.pbStartTerrainAbility(:Electric, battler,
-       _INTL("{1} turned the ground into Electric Terrain, energizing its futuristic engine!", battler.pbThis))
+    if battle.field.terrain == :Electric
+      battle.pbShowAbilitySplash(battler)
+      battle.pbDisplay(_INTL("{1} used the Electric Terrain to energize its futuristic engine!", battler.pbThis))
+      battle.pbHideAbilitySplash(battler)
+    elsif battle.pbCanStartTerrain?(:Electric)
+      battle.pbStartTerrainAbility(:Electric, battler,
+         _INTL("{1} turned the ground into Electric Terrain, energizing its futuristic engine!", battler.pbThis))
+    end
   }
 )
 
@@ -3350,9 +3356,14 @@ Battle::AbilityEffects::OnSwitchIn.add(:NEUTRALIZINGGAS,
 
 Battle::AbilityEffects::OnSwitchIn.add(:ORICHALCUMPULSE,
   proc { |ability, battler, battle, switch_in|
-    next if !battle.pbCanStartWeather?(:Sun)
-    battle.pbStartWeatherAbility(:Sun, battler, false,
-       _INTL("{1} turned the sunlight harsh, sending its ancient pulse into a frenzy!", battler.pbThis))
+    if [:Sun, :HarshSun].include?(battle.field.weather)
+      battle.pbShowAbilitySplash(battler)
+      battle.pbDisplay(_INTL("{1} basked in the sunlight, sending its ancient pulse into a frenzy!", battler.pbThis))
+      battle.pbHideAbilitySplash(battler)
+    elsif battle.pbCanStartWeather?(:Sun)
+      battle.pbStartWeatherAbility(:Sun, battler, false,
+         _INTL("{1} turned the sunlight harsh, sending its ancient pulse into a frenzy!", battler.pbThis))
+    end
   }
 )
 
