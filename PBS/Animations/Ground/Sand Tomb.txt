@@ -28,7 +28,7 @@ Credit = Maruno
     MoveColor = 38,8,908020C0
     MoveColor = 47,6,00000000
 <Dust emitter 1>
-    Graphic = Ground/Sand Tomb cloud
+    Graphic = smog 1
     Focus = TargetPosition
     Emitter = Helix
     EmitterRate = 20
@@ -50,7 +50,7 @@ Credit = Maruno
     SetVisible = 26,false
     SetEmitting = 38,false
 <Dust emitter 2>
-    Graphic = Ground/Sand Tomb cloud
+    Graphic = smog 1
     Focus = TargetPosition
     Emitter = Helix
     EmitterRate = 10
@@ -73,7 +73,7 @@ Credit = Maruno
     SetVisible = 30,false
     SetEmitting = 38,false
 <Dust emitter 3>
-    Graphic = Ground/Sand Tomb cloud
+    Graphic = smog 1
     Focus = TargetPosition
     Emitter = Helix
     EmitterRate = 10
@@ -97,7 +97,7 @@ Credit = Maruno
     MoveOpacity = 28,6,0
     SetVisible = 34,false
 <Grit emitter>
-    Graphic = Ground/Sand Tomb grit
+    Graphic = grit
     Focus = TargetPosition
     Emitter = Helix
     EmitterRate = 3

@@ -12,7 +12,7 @@ Credit = Maruno
     MoveX = 5,2,2
     MoveX = 7,1,0
 <Hit>
-    Graphic = Normal/Pound hit
+    Graphic = hit
     Focus = Target
     SetZ = 0,10
     SetZoomX = 0,50
@@ -24,7 +24,7 @@ Credit = Maruno
     MoveOpacity = 1,4,0
     SetVisible = 5,false
 <Spark spawner>
-    Graphic = Normal/Pound spark
+    Graphic = spark
     Focus = Target
     Emitter = Projectile
     EmitterRate = 80

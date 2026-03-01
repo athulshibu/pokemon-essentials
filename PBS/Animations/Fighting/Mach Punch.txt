@@ -12,7 +12,7 @@ Credit = Maruno
     MoveX = 19,2,2
     MoveX = 21,1,0
 <Fist>
-    Graphic = Fighting/Mach Punch fist
+    Graphic = fist
     Focus = Target
     SetZ = 0,30
     SetZoomX = 0,600
@@ -22,7 +22,7 @@ Credit = Maruno
     MoveAngle = 0,4,30
     SetVisible = 4,false
 <Fist afterimage 1>
-    Graphic = Fighting/Mach Punch fist
+    Graphic = fist
     Focus = Target
     SetZ = 0,15
     SetZoomX = 0,600
@@ -34,7 +34,7 @@ Credit = Maruno
     MoveColor = 0,5,00000080
     SetVisible = 5,false
 <Fist afterimage 2>
-    Graphic = Fighting/Mach Punch fist
+    Graphic = fist
     Focus = Target
     SetZ = 0,20
     SetZoomX = 0,450
@@ -46,7 +46,7 @@ Credit = Maruno
     MoveColor = 1,6,00000080
     SetVisible = 7,false
 <Fist afterimage 3>
-    Graphic = Fighting/Mach Punch fist
+    Graphic = fist
     Focus = Target
     SetZ = 0,25
     SetZoomX = 0,300
@@ -58,8 +58,9 @@ Credit = Maruno
     MoveColor = 2,6,00000080
     SetVisible = 8,false
 <Hit flash blue>
-    Graphic = Fighting/Mach Punch hit
+    Graphic = hit
     Focus = Target
+    SetFrame = 4,1
     SetZ = 4,5
     SetZoomX = 4,60
     SetZoomY = 4,60
@@ -69,8 +70,9 @@ Credit = Maruno
     MoveOpacity = 6,2,0
     SetVisible = 8,false
 <Hit flash white>
-    Graphic = Fighting/Mach Punch hit
+    Graphic = hit
     Focus = Target
+    SetFrame = 4,1
     SetZ = 4,10
     SetZoomX = 4,50
     SetZoomY = 4,50
@@ -79,7 +81,7 @@ Credit = Maruno
     MoveOpacity = 6,2,0
     SetVisible = 8,false
 <Spark spawner>
-    Graphic = Fighting/Mach Punch spark
+    Graphic = Special/Mach Punch spark
     Focus = Target
     Emitter = Straight
     EmitterRate = 80

@@ -416,14 +416,14 @@ module AnimationConverter
     if bg_particle.keys.length > 2
       if !bg_particle[:graphic]
         particle[:graphic] ||= []
-        particle[:graphic].push([first_bg_frame, 0, "black_screen"])
+        particle[:graphic].push([first_bg_frame, 0, "Screens/black"])
       end
       new_anim[:particles].push(bg_particle)
     end
     if fg_particle.keys.length > 2
       if !fg_particle[:graphic]
         particle[:graphic] ||= []
-        particle[:graphic].push([first_fg_frame, 0, "black_screen"])
+        particle[:graphic].push([first_fg_frame, 0, "Screens/black"])
       end
       new_anim[:particles].push(fg_particle)
     end

@@ -20,7 +20,7 @@ Credit = Maruno
     MoveY = 26,2,2
     MoveY = 28,1,0
 <Falling rock>
-    Graphic = Rock/Rock Throw rock
+    Graphic = rock
     Focus = TargetPosition
     SetY = 0,-192
     SetZ = 0,10
@@ -32,7 +32,7 @@ Credit = Maruno
     MoveAngle = 0,5,180
     SetVisible = 5,false
 <Bouncing rock>
-    Graphic = Rock/Rock Throw rock
+    Graphic = rock
     Focus = TargetPosition
     Emitter = Projectile
     SetZ = 5,10
@@ -50,7 +50,7 @@ Credit = Maruno
     MoveOpacity = 11,5,0
     SetVisible = 16,false
 <Rubble spawner>
-    Graphic = Rock/Rock Throw rock
+    Graphic = rock
     Focus = TargetPosition
     Emitter = Projectile
     EmitterRate = 80

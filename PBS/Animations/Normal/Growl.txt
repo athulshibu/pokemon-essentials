@@ -12,7 +12,7 @@ Credit = Maruno
     MoveX = 33,2,2
     MoveX = 35,1,0
 <Ring 1>
-    Graphic = Normal/Growl ring
+    Graphic = circle
     Focus = User
     SetZ = 0,10
     SetZoomX = 0,0
@@ -25,7 +25,7 @@ Credit = Maruno
     MoveOpacity = 9,9,0
     SetVisible = 18,false
 <Ring 2>
-    Graphic = Normal/Growl ring
+    Graphic = circle
     Focus = User
     SetZ = 0,10
     SetZoomX = 0,0
@@ -38,7 +38,7 @@ Credit = Maruno
     MoveOpacity = 9,9,0
     SetVisible = 18,false
 <Ring 3>
-    Graphic = Normal/Growl ring
+    Graphic = circle
     Focus = User
     SetZ = 0,10
     SetZoomX = 0,0
@@ -51,7 +51,7 @@ Credit = Maruno
     MoveOpacity = 9,9,0
     SetVisible = 18,false
 <Zap 1a>
-    Graphic = Normal/Growl zap
+    Graphic = zap
     Focus = User
     SetY = 0,-8
     SetZ = 0,19
@@ -66,7 +66,7 @@ Credit = Maruno
     MoveOpacity = 8,4,0
     SetVisible = 12,false
 <Zap 1b>
-    Graphic = Normal/Growl zap
+    Graphic = zap
     Focus = User
     SetY = 8,-52
     SetZ = 8,20
@@ -81,7 +81,7 @@ Credit = Maruno
     MoveOpacity = 12,6,0
     SetVisible = 18,false
 <Zap 2a>
-    Graphic = Normal/Growl zap
+    Graphic = zap
     Focus = User
     SetX = 0,-3
     SetY = 0,-4
@@ -99,7 +99,7 @@ Credit = Maruno
     MoveOpacity = 8,4,0
     SetVisible = 12,false
 <Zap 2b>
-    Graphic = Normal/Growl zap
+    Graphic = zap
     Focus = User
     SetX = 8,-39
     SetY = 8,-26
@@ -117,7 +117,7 @@ Credit = Maruno
     MoveOpacity = 12,6,0
     SetVisible = 18,false
 <Zap 3a>
-    Graphic = Normal/Growl zap
+    Graphic = zap
     Focus = User
     SetX = 0,-3
     SetY = 0,4
@@ -135,7 +135,7 @@ Credit = Maruno
     MoveOpacity = 8,4,0
     SetVisible = 12,false
 <Zap 3b>
-    Graphic = Normal/Growl zap
+    Graphic = zap
     Focus = User
     SetX = 8,-39
     SetY = 8,26
@@ -153,7 +153,7 @@ Credit = Maruno
     MoveOpacity = 12,6,0
     SetVisible = 18,false
 <Zap 4a>
-    Graphic = Normal/Growl zap
+    Graphic = zap
     Focus = User
     SetY = 0,8
     SetZ = 0,20
@@ -168,7 +168,7 @@ Credit = Maruno
     MoveOpacity = 8,4,0
     SetVisible = 12,false
 <Zap 4b>
-    Graphic = Normal/Growl zap
+    Graphic = zap
     Focus = User
     SetY = 8,50
     SetZ = 8,20
@@ -184,7 +184,7 @@ Credit = Maruno
     MoveOpacity = 12,6,0
     SetVisible = 18,false
 <Zap 5a>
-    Graphic = Normal/Growl zap
+    Graphic = zap
     Focus = User
     SetX = 0,3
     SetY = 0,4
@@ -202,7 +202,7 @@ Credit = Maruno
     MoveOpacity = 8,4,0
     SetVisible = 12,false
 <Zap 5b>
-    Graphic = Normal/Growl zap
+    Graphic = zap
     Focus = User
     SetX = 8,39
     SetY = 8,26
@@ -220,7 +220,7 @@ Credit = Maruno
     MoveOpacity = 12,6,0
     SetVisible = 18,false
 <Zap 6a>
-    Graphic = Normal/Growl zap
+    Graphic = zap
     Focus = User
     SetX = 0,3
     SetY = 0,-4
@@ -238,7 +238,7 @@ Credit = Maruno
     MoveOpacity = 8,4,0
     SetVisible = 12,false
 <Zap 6b>
-    Graphic = Normal/Growl zap
+    Graphic = zap
     Focus = User
     SetX = 8,39
     SetY = 8,-26

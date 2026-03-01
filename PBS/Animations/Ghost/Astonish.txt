@@ -13,7 +13,7 @@ Credit = Maruno
     MoveZoomY = 4,3,125
     MoveZoomY = 8,3,100
 <Hit>
-    Graphic = Ghost/Astonish hit
+    Graphic = hit half
     Focus = Target
     SetY = 7,-32
     SetZ = 7,10
@@ -28,7 +28,7 @@ Credit = Maruno
     MoveOpacity = 10,2,0
     SetVisible = 12,false
 <Spark 1>
-    Graphic = Ghost/Astonish spark
+    Graphic = bubble 1
     Focus = Target
     SetX = 7,-28
     SetY = 7,-36
@@ -44,7 +44,7 @@ Credit = Maruno
     MoveY = 13,3,-54,EaseIn
     MoveOpacity = 13,3,0
 <Spark 2>
-    Graphic = Ghost/Astonish spark
+    Graphic = bubble 1
     Focus = Target
     SetX = 7,-12
     SetY = 7,-29
@@ -60,7 +60,7 @@ Credit = Maruno
     MoveY = 13,3,-101,EaseIn
     MoveOpacity = 13,3,0
 <Spark 3>
-    Graphic = Ghost/Astonish spark
+    Graphic = bubble 1
     Focus = Target
     SetX = 7,-5
     SetY = 7,-31
@@ -76,7 +76,7 @@ Credit = Maruno
     MoveY = 13,3,-90,EaseIn
     MoveOpacity = 13,3,0
 <Spark 4>
-    Graphic = Ghost/Astonish spark
+    Graphic = bubble 1
     Focus = Target
     SetX = 7,-5
     SetY = 7,-31
@@ -92,7 +92,7 @@ Credit = Maruno
     MoveY = 14,3,-85,EaseIn
     MoveOpacity = 14,3,0
 <Spark 5>
-    Graphic = Ghost/Astonish spark
+    Graphic = bubble 1
     Focus = Target
     SetX = 7,-5
     SetY = 7,-31
@@ -108,7 +108,7 @@ Credit = Maruno
     MoveY = 14,3,-122,EaseIn
     MoveOpacity = 14,3,0
 <Spark 6>
-    Graphic = Ghost/Astonish spark
+    Graphic = bubble 1
     Focus = Target
     SetX = 7,-4
     SetY = 7,-24
@@ -124,7 +124,7 @@ Credit = Maruno
     MoveY = 13,3,-104,EaseIn
     MoveOpacity = 13,3,0
 <Spark 7>
-    Graphic = Ghost/Astonish spark
+    Graphic = bubble 1
     Focus = Target
     SetX = 7,-5
     SetY = 7,-31
@@ -140,7 +140,7 @@ Credit = Maruno
     MoveY = 13,4,-79,EaseIn
     MoveOpacity = 14,3,0
 <Spark 8>
-    Graphic = Ghost/Astonish spark
+    Graphic = bubble 1
     Focus = Target
     SetX = 7,3
     SetY = 7,-33

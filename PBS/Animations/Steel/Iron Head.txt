@@ -18,8 +18,9 @@ Credit = Maruno
     MoveX = 14,2,4
     MoveX = 16,1,0
 <Hit>
-    Graphic = Steel/Iron Head hit
+    Graphic = hit
     Focus = Target
+    SetFrame = 4,1
     SetZ = 4,10
     SetZoomX = 4,200
     SetZoomY = 4,200
@@ -32,7 +33,7 @@ Credit = Maruno
     MoveOpacity = 10,4,0
     SetVisible = 14,false
 <Debris emitter 1>
-    Graphic = Steel/Iron Head rock
+    Graphic = rock
     Focus = Target
     Emitter = Projectile
     EmitterRate = 160
@@ -58,7 +59,7 @@ Credit = Maruno
     MoveColor = 14,6,00000000
     SetVisible = 20,false
 <Debris emitter 2>
-    Graphic = Steel/Iron Head rock
+    Graphic = rock
     Focus = Target
     Emitter = Projectile
     EmitterRate = 160
