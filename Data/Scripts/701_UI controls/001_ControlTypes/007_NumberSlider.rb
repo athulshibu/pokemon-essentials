@@ -104,9 +104,10 @@ class UIControls::NumberSlider < UIControls::BaseControl
     super
   end
 
-  def update
+  def update(ignore_mouse = false)
     return if !self.visible
     super
+    return if ignore_mouse
     case @captured_area
     when :minus
       # Constant decrement of value while pressing the minus button

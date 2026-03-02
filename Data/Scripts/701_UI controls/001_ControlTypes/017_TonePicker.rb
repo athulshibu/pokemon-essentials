@@ -372,7 +372,7 @@ class UIControls::TonePicker < UIControls::BaseControl
     @picker_captured.set_changed
   end
 
-  def update
+  def update(ignore_mouse = false)
     # Update picker controls
     if @picker_captured
       @picker_captured.update

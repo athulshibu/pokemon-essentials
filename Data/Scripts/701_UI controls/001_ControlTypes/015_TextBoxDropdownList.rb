@@ -200,7 +200,7 @@ class UIControls::TextBoxDropdownList < UIControls::TextBox
     invalidate
   end
 
-  def update
+  def update(ignore_mouse = false)
     @dropdown_menu&.update
     @dropdown_menu&.repaint
     super

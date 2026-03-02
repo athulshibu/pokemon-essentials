@@ -222,9 +222,14 @@ class UIControls::List < UIControls::BaseControl
     super
   end
 
-  def update_hover_highlight
+  def update_hover_highlight(ignore_mouse = false)
     # Remove the hover highlight if there are no interactions for this control
     # or if the mouse is off-screen
+    if ignore_mouse
+      invalidate if @hover_area
+      @hover_area = nil
+      return
+    end
     mouse_x, mouse_y = mouse_pos
     if !@interactions || @interactions.empty? || !mouse_x || !mouse_y
       invalidate if @hover_area
@@ -255,13 +260,14 @@ class UIControls::List < UIControls::BaseControl
     end
   end
 
-  def update
+  def update(ignore_mouse = false)
     return if !self.visible
     @scrollbar.update
     super
     # Refresh the list's position if changed by moving the scrollbar
     self.top_row = (@scrollbar.position.to_f / @row_height).round
     # Set the selected row to the row the mouse is over, if clicked on
+    return if ignore_mouse
     if @captured_area
       @selected = @hover_area if @hover_area.is_a?(Integer)
     elsif @hover_area
@@ -275,7 +281,7 @@ class UIControls::List < UIControls::BaseControl
       end
       if wheel_v != 0
         self.top_row = (@scrollbar.position.to_f / @row_height).round
-        update_hover_highlight
+        update_hover_highlight(ignore_mouse)
       end
     end
   end

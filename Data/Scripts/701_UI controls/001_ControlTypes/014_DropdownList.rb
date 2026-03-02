@@ -164,7 +164,7 @@ class UIControls::DropdownList < UIControls::BaseControl
     end
   end
 
-  def update
+  def update(ignore_mouse = false)
     @dropdown_menu&.update
     @dropdown_menu&.repaint
     super

@@ -72,7 +72,7 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
                                 1, upper_seg_height, line_color)
       end
       # Top level bottom half of vertical line
-      if row != groups.keys.last
+      if row != groups.keys.last && (group || @groups_expanded[:main])
         sprite.bitmap.fill_rect(top_level_x, upper_seg_height,
                                 1, lower_seg_height, line_color)
       end

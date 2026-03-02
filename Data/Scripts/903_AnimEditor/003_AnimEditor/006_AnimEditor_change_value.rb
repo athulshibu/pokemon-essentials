@@ -161,7 +161,14 @@ class AnimationEditor
     case property
     when :add_particle
       new_idx = particle_index + 1
+      new_idx -= 1 if new_idx >= @anim[:particles].length   # Ensure it's before SE particle
       AnimationEditor::ParticleDataHelper.add_particle(@anim[:particles], new_idx)
+      new_cmds = AnimationEditor::ParticleDataHelper.add_command(@anim[:particles][new_idx], :visible, keyframe, true)
+      if new_cmds
+        @anim[:particles][new_idx][:visible] = new_cmds
+      else
+        @anim[:particles][new_idx].delete(:visible)
+      end
       add_to_change_history
       @components[:timeline].add_particle(new_idx)
       @components[:timeline].particle_index = new_idx
