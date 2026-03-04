@@ -352,7 +352,7 @@ class AnimationPlayer
     @particle_sprites.each { |particle| particle.update(elapsed_time) }
     @emitters.each { |emitter| emitter.update(elapsed_time) }
     # Finish or loop the animation
-    if elapsed_time >= @duration #* @slowdown
+    if elapsed_time >= @duration
       if looping
         @need_reset = true
       else
