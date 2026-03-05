@@ -702,17 +702,18 @@ class AnimationEditor::Timeline < UIControls::BaseContainer
   end
 
   def update_input_navigation
+    increment = (Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)) ? 5 : 1
     # A/D to change selected keyframe
     if Input.triggerex?(:LEFT) || Input.repeatex?(:LEFT)
-      self.selected_keyframe -= 1
+      self.selected_keyframe -= increment
     elsif Input.triggerex?(:RIGHT) || Input.repeatex?(:RIGHT)
-      self.selected_keyframe += 1
+      self.selected_keyframe += increment
     end
     # W/S to change selected row
     if Input.triggerex?(:UP) || Input.repeatex?(:UP)
-      self.selected_row -= 1
+      self.selected_row -= increment
     elsif Input.triggerex?(:DOWN) || Input.repeatex?(:DOWN)
-      self.selected_row += 1
+      self.selected_row += increment
     end
   end
 

@@ -140,10 +140,9 @@ class UIControls::NumberTextBox < UIControls::TextBox
     return ret
   end
 
-  def update(ignore_mouse = false)
+  def update
     return if !self.visible
     super
-    return if ignore_mouse
     case @captured_area
     when :minus
       # Constant decrement of value while pressing the minus button

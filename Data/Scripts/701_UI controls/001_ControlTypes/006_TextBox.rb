@@ -294,7 +294,7 @@ class UIControls::TextBox < UIControls::BaseControl
     return ret
   end
 
-  def update(ignore_mouse = false)
+  def update
     return if !self.visible
     super
     # Make the cursor flash

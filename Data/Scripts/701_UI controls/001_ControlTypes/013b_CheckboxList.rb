@@ -160,12 +160,11 @@ class UIControls::CheckboxList < UIControls::List
   end
 
   # This is copied straight from UIControls::BaseControl#update.
-  def base_update(ignore_mouse)
+  def base_update
     return if !self.visible
     return if disabled? && !busy?   # This control still works if it becomes disabled while using it
-    update_hover_highlight(ignore_mouse)
+    update_hover_highlight
     # Detect a mouse press/release
-    return if ignore_mouse
     if @interactions && !@interactions.empty?
       if Input.trigger?(Input::MOUSELEFT)
         on_mouse_press
@@ -175,14 +174,13 @@ class UIControls::CheckboxList < UIControls::List
     end
   end
 
-  def update(ignore_mouse = false)
+  def update
     return if !self.visible
     @scrollbar.update
-    base_update(ignore_mouse)
+    base_update
     # Refresh the list's position if changed by moving the scrollbar
     self.top_row = (@scrollbar.position.to_f / @row_height).round
     # Scroll via the mouse scroll wheel
-    return if ignore_mouse
     if @hover_area
       wheel_v = Input.scroll_v
       scroll_dist = UIControls::Scrollbar::SCROLL_DISTANCE
@@ -194,7 +192,7 @@ class UIControls::CheckboxList < UIControls::List
       end
       if wheel_v != 0
         self.top_row = (@scrollbar.position.to_f / @row_height).round
-        update_hover_highlight(ignore_mouse)
+        update_hover_highlight
       end
     end
   end

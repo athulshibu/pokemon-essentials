@@ -706,7 +706,7 @@ class AnimationEditor::Canvas < Sprite
   end
 
   def update_input
-    increment = (Input.pressex?(:LSHIFT) || Input.pressex?(:RSHIFT)) ? 10 : 1
+    increment = (Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)) ? 10 : 1
     # Move selected particle left/right
     x_move = 0
     if Input.triggerex?(:A) || Input.repeatex?(:A)

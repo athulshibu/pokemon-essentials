@@ -126,7 +126,7 @@ class UIControls::Scrollbar < UIControls::BaseControl
     super if @captured_area
   end
 
-  def update(ignore_mouse = false)
+  def update
     return if !self.visible
     super
     if @captured_area == :slider
@@ -146,7 +146,6 @@ class UIControls::Scrollbar < UIControls::BaseControl
         end
       end
     elsif !disabled?
-      return if ignore_mouse
       mouse_x, mouse_y = mouse_pos
       if mouse_x && mouse_y && @interactions[:slider_tray].contains?(mouse_x, mouse_y)
         wheel_v = Input.scroll_v

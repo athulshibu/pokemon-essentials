@@ -62,12 +62,11 @@ class UIControls::ClickableArea < UIControls::BaseControl
   end
 
   # Updates the logic on the control, invalidating it if necessary.
-  def update(ignore_mouse = false)
+  def update
     return if !self.visible
     return if disabled? && !busy?   # This control still works if it becomes disabled while using it
-    update_hover_highlight(ignore_mouse)
+    update_hover_highlight
     # Detect a mouse press/release
-    return if ignore_mouse
     if @interactions && !@interactions.empty?
       if Input.trigger?(Input::MOUSELEFT)
         @input = Input::MOUSELEFT

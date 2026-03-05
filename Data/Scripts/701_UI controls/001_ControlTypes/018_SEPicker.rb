@@ -205,7 +205,7 @@ class UIControls::SEPicker < UIControls::BaseControl
     super
   end
 
-  def update(ignore_mouse = false)
+  def update
     # Update picker controls
     if @picker_captured
       @picker_captured.update

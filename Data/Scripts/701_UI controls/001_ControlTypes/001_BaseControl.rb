@@ -39,6 +39,7 @@ class UIControls::BaseControl < BitmapSprite
   def mouse_pos
     mouse_coords = Mouse.getMousePos
     return nil, nil if !mouse_coords
+    return nil, nil if !self.viewport.rect.contains?(*mouse_coords)
     ret_x = mouse_coords[0] - self.viewport.rect.x + self.viewport.ox - self.x
     ret_y = mouse_coords[1] - self.viewport.rect.y + self.viewport.oy - self.y
     return ret_x, ret_y
@@ -167,14 +168,9 @@ class UIControls::BaseControl < BitmapSprite
     invalidate
   end
 
-  def update_hover_highlight(ignore_mouse = false)
+  def update_hover_highlight
     # Remove the hover highlight if there are no interactions for this control
     # or if the mouse is off-screen
-    if ignore_mouse
-      invalidate if @hover_area
-      @hover_area = nil
-      return
-    end
     mouse_x, mouse_y = mouse_pos
     if !@interactions || @interactions.empty? || !mouse_x || !mouse_y
       invalidate if @hover_area
@@ -198,12 +194,11 @@ class UIControls::BaseControl < BitmapSprite
   end
 
   # Updates the logic on the control, invalidating it if necessary.
-  def update(ignore_mouse = false)
+  def update
     return if !self.visible
     return if disabled? && !busy?   # This control still works if it becomes disabled while using it
-    update_hover_highlight(ignore_mouse)
+    update_hover_highlight
     # Detect a mouse press/release
-    return if ignore_mouse
     if @interactions && !@interactions.empty?
       if Input.trigger?(Input::MOUSELEFT)
         on_mouse_press
