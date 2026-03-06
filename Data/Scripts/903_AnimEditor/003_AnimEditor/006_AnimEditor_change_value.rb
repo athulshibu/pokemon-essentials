@@ -284,6 +284,7 @@ class AnimationEditor
         @components[:timeline].change_particle_commands(part_idx)
         refresh_component(:canvas)
       else
+        # Change property value
         # NOTE: value is actually [particle_index, value].
         particle = @anim[:particles][value[0]]
         before_all = particle[property] && particle[property].none? { |cmd| cmd[0] <= keyframe }

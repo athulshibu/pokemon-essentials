@@ -478,25 +478,27 @@ module AnimationEditor::ParticleDataHelper
     return (ret.empty?) ? nil : ret
   end
 
-  # SetXYZ at frame
+  # If SetXYZ at frame:
   #   - none: Do nothing.
   #   - interp: Add MoveXYZ (calc duration/value at end).
-  # MoveXYZ at frame
+  # If MoveXYZ at frame:
   #   - none: Turn into two SetXYZ (MoveXYZ's value for end point, calc value
   #           for start point).
   #   - interp: Change type.
-  # SetXYZ and MoveXYZ at frame
+  # If SetXYZ and MoveXYZ at frame:
   #   - none: Turn MoveXYZ into SetXYZ at the end point.
   #   - interp: Change MoveXYZ's type.
-  # End of earlier MoveXYZ (or nothing) at frame
+  # If end of earlier MoveXYZ (or nothing) at frame:
   #   - none: Do nothing.
   #   - interp: Add MoveXYZ (calc duration/value at end).
   def set_interpolation(particle, property, frame, type)
-    # Ensure frame has a command to interpolate
+    # Ensure frame has a command (or the end of a MoveXYZ command) to
+    # interpolate from
     orig_frame = frame
     particle[property].each do |cmd|
       break if cmd[0] > orig_frame
       frame = cmd[0]
+      frame = cmd[0] + cmd[1] if cmd[0] + cmd[1] <= orig_frame
     end
     # Find relevant command
     set_now = nil
@@ -511,13 +513,17 @@ module AnimationEditor::ParticleDataHelper
       if type == :none
         old_end_point = move_starting_now[0] + move_starting_now[1]
         old_value = move_starting_now[2]
-        # Turn the MoveXYZ command into a SetXYZ (or just delete it if a SetXYZ
-        # already exists at frame)
+        # Turn the MoveXYZ command into a SetXYZ at its end point (or just
+        # delete it if a SetXYZ already exists at frame or if a MoveXYZ ends at
+        # frame)
         if set_now
           particle[property].delete(move_starting_now)
+        elsif particle[property].any? { |cmd| cmd[1] > 0 && cmd[0] + cmd[1] == frame }
+          particle[property].delete(move_starting_now)
         else
-          move_starting_now[1] = 0
+          # Just for the sake of keeping a command diamond at frame
           move_starting_now[2] = get_keyframe_particle_value(particle, property, frame)[0]
+          move_starting_now[1] = 0   # Intentionally after setting move_starting_now[2]
           move_starting_now[3] = nil
           move_starting_now.compact!
         end
@@ -529,13 +535,16 @@ module AnimationEditor::ParticleDataHelper
       end
     elsif type != :none
       # If no MoveXYZ command exists at frame, make one (if type isn't :none)
-      particle[property].each do |cmd|   # Assumes commands are sorted by keyframe
+      particle[property].each_with_index do |cmd, i|   # Assumes commands are sorted by keyframe
         next if cmd[0] <= frame
         val_at_end = get_keyframe_particle_value(particle, property, cmd[0])[0]
         particle[property].push([frame, cmd[0] - frame, val_at_end, type])
-        particle[property].sort! { |a, b| a[0] == b[0] ? a[1] == b[1] ? 0 : a[1] <=> b[1] : a[0] <=> b[0] }
+        break if cmd[1] > 0
+        particle[property][i] = nil
+        particle[property].compact!
         break
       end
+      particle[property].sort! { |a, b| a[0] == b[0] ? a[1] == b[1] ? 0 : a[1] <=> b[1] : a[0] <=> b[0] }
     end
     return particle[property]
   end
