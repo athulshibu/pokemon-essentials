@@ -6,8 +6,10 @@ class AnimationPlayer::Emitter
 
   # These properties are used by individual ParticleSprites spawned by this
   # emitter, and aren't used by the emitter itself so don't need updating here.
-  PARTICLE_PROPERTIES = [:frame, :blending, :flip, :x, :y, :z, :zoom_x, :zoom_y,
-                         :angle, :visible, :opacity, :color, :tone]
+  PARTICLE_PROPERTIES = [:frame, :blending, :flip,
+                         :x, :y, :z, :radius_x, :radius_y, :radius_z,
+                         :zoom_x, :zoom_y, :angle, :visible, :opacity,
+                         :color, :tone]
 
   def initialize(viewport, particle, fps)
     @viewport = viewport
@@ -219,17 +221,29 @@ class AnimationPlayer::Emitter
       [:emit_speed, :speed],
       [:emit_angle, :angle],
       [:emit_gravity, :gravity],
-      [:emit_period, :period],
-      [:emit_radius, :radius],
-      [:emit_radius_z, :radius_z]
+      [:emit_period_x, :period_x],
+      [:emit_period_y, :period_y],
+      [:emit_period_z, :period_z],
     ].each do |property|
       val = @values[property[0]]
       val_range = @values[(property[0].to_s + "_range").to_sym]
       val += rand(-val_range, val_range) if val_range > 0
       particle_sprite.emitter_params[property[1]] = val
     end
-    # Period
-    particle_sprite.emitter_params[:period] /= 100.0 if particle_sprite.emitter_params[:period] > 0
+    # Periods
+    particle_sprite.emitter_params[:period_x] /= 100.0
+    particle_sprite.emitter_params[:period_y] /= 100.0
+    particle_sprite.emitter_params[:period_z] /= 100.0
+    # Radius multipliers
+    [
+      [:emit_radius_x_range, :radius_x_mult],
+      [:emit_radius_y_range, :radius_y_mult],
+      [:emit_radius_z_range, :radius_z_mult]
+    ].each do |property|
+      val = @values[property[0]]
+      val = rand(-val, val) if val > 0
+      particle_sprite.emitter_params[property[1]] = (val + 100) / 100.0
+    end
     # X/Y speed
     speed = particle_sprite.emitter_params[:speed]
     angle = particle_sprite.emitter_params[:angle]

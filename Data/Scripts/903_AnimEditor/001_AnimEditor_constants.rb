@@ -30,12 +30,18 @@ class AnimationEditor
     :emit_angle_range    => [    0,  180],
     :emit_gravity        => [-9999, 9999],
     :emit_gravity_range  => [    0, 9999],
-    :emit_period         => [    1, 9999],
-    :emit_period_range   => [    0, 9999],
-    :emit_radius         => [    0, 9999],
-    :emit_radius_range   => [    0, 9999],
-    :emit_radius_z       => [    0,   50],
-    :emit_radius_z_range => [    0,   50]
+    :emit_period_x       => [    1, 9999],
+    :emit_period_x_range => [    0, 9999],
+    :emit_period_y       => [    1, 9999],
+    :emit_period_y_range => [    0, 9999],
+    :emit_period_z       => [    1, 9999],
+    :emit_period_z_range => [    0, 9999],
+    :emit_radius_x_range => [    0, 9999],
+    :emit_radius_y_range => [    0, 9999],
+    :emit_radius_z_range => [    0,   50],
+    :radius_x            => [    0, 9999],
+    :radius_y            => [    0, 9999],
+    :radius_z            => [    0,   50]
   }
 
   #-----------------------------------------------------------------------------

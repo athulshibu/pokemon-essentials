@@ -16,6 +16,7 @@ module Compiler
       compile_battle_animations(*text_files)
     }
   }
+  @@emitter_only_properties = []
 
   module_function
 
@@ -175,21 +176,20 @@ module Compiler
     if hash[:particles].none? { |particle| particle[:name] == "SE" }
       hash[:particles].push({:name => "SE"})
     end
+    if @@emitter_only_properties.empty?
+      AnimationEditor::ListedParticle::EMITTER_PROPERTY_GROUPS.each_pair do |group, vals|
+        vals.each do |property|
+          @@emitter_only_properties.push(property) if !AnimationEditor::ListedParticle::PROPERTY_GROUPS[group]&.include?(property)
+        end
+      end
+    end
     # Go through each particle in turn
     hash[:particles].each do |particle|
       # Ensure the emitter-exclusive commands are only on emitter particles
       if !particle[:emitter_type] || particle[:emitter_type] == :none
         particle.keys.each do |property|
-          next if ![:emitting,
-                    :emit_x, :emit_y,
-                    :emit_x_range, :emit_y_range,
-                    :emit_speed, :emit_speed_range,
-                    :emit_angle, :emit_angle_range,
-                    :emit_gravity, :emit_gravity_range,
-                    :emit_period, :emit_period_range,
-                    :emit_radius, :emit_radius_range,
-                    :emit_radius_z, :emit_radius_z_range].include?(property)
-          raise _INTL("Particle \"{1}\" isn't an emitter but has an \"Emit\"-type command.",
+          next if !@@emitter_only_properties.include?(property)
+          raise _INTL("Particle \"{1}\" isn't an emitter but has an emitter-only command.",
                       particle[:name]) + "\n" + FileLineData.linereport
         end
       end

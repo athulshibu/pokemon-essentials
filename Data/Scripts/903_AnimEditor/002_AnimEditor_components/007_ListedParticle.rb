@@ -14,28 +14,42 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     :transformation_group => [:zoom_x, :zoom_y, :angle, :flip],
     :appearance_group     => [:visible, :opacity, :color, :tone, :frame, :blending]
   }
+  # NOTE: Any property in here that is also in PROPERTY_GROUPS above should be
+  #       in the same group.
   EMITTER_PROPERTY_GROUPS = {
     :emitter_group         => [:emit_x, :emit_y, :emitting],
-    :emit_parameters_group => [:emit_x_range, :emit_y_range, :emit_speed, :emit_speed_range,
-                               :emit_angle, :emit_angle_range, :emit_gravity, :emit_gravity_range,
-                               :emit_period, :emit_period_range, :emit_radius, :emit_radius_range,
-                               :emit_radius_z, :emit_radius_z_range],
-    :position_group        => [:x, :y, :z],
+    :emit_parameters_group => [:emit_x_range, :emit_y_range,
+                               :emit_speed, :emit_speed_range,
+                               :emit_angle, :emit_angle_range,
+                               :emit_gravity, :emit_gravity_range,
+                               :emit_period_x, :emit_period_x_range,
+                               :emit_period_y, :emit_period_y_range,
+                               :emit_period_z, :emit_period_z_range,
+                               :emit_radius_x_range, :emit_radius_y_range, :emit_radius_z_range],
+    :position_group        => [:x, :y, :z, :radius_x, :radius_y, :radius_z],
     :transformation_group  => [:zoom_x, :zoom_y, :angle, :flip],
     :appearance_group      => [:visible, :opacity, :color, :tone, :frame, :blending]
   }
-  # The parameters in :emit_parameters_group (see above) that are used for each
-  # emitter type.
-  USED_EMIT_PARAMETERS = {
+  # The parameters in EMITTER_PROPERTY_GROUPS that aren't in PROPERTY_GROUPS
+  # that are used for each emitter type. Parameters in :emitter_group are all
+  # assumed to be used by all emitters.
+  USED_EMITTER_PARAMETERS = {
     :no_movement          => [:emit_x_range, :emit_y_range],
-    :straight             => [:emit_x_range, :emit_y_range, :emit_speed, :emit_speed_range,
+    :straight             => [:emit_x_range, :emit_y_range,
+                              :emit_speed, :emit_speed_range,
                               :emit_angle, :emit_angle_range],
-    :projectile           => [:emit_x_range, :emit_y_range, :emit_speed, :emit_speed_range,
-                              :emit_angle, :emit_angle_range, :emit_gravity, :emit_gravity_range],
+    :projectile           => [:emit_x_range, :emit_y_range,
+                              :emit_speed, :emit_speed_range,
+                              :emit_angle, :emit_angle_range,
+                              :emit_gravity, :emit_gravity_range],
     # TODO: Add clockwise/anticlockwise boolean to :helix?
-    :helix                => [:emit_x_range, :emit_y_range, :emit_speed, :emit_speed_range,
-                              :emit_angle, :emit_angle_range, :emit_period, :emit_period_range,
-                              :emit_radius, :emit_radius_range, :emit_radius_z, :emit_radius_z_range]
+    :helix                => [:emit_x_range, :emit_y_range,
+                              :emit_speed, :emit_speed_range,
+                              :emit_angle, :emit_angle_range,
+                              :emit_period_x, :emit_period_x_range,
+                              :emit_period_z, :emit_period_z_range,
+                              :emit_radius_x_range, :emit_radius_z_range,
+                              :radius_x, :radius_z]
   }
 
   ROW_HEIGHT      = 24
@@ -255,16 +269,23 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     return this_row, this_keyframe
   end
 
+  def emitter_only_row?(row)
+    return false if row == :main
+    group = group_for_row(row)
+    return PROPERTY_GROUPS.has_key?(row) if group == :main
+    return !PROPERTY_GROUPS[group]&.include?(row)
+  end
+
   # TODO: Hide rows for properties that are disabled? e.g. :focus if the graphic
   #       isn't a spritesheet (determined elsewhere). Also for mask if the
   #       masking graphic is defined per particle rather than per keyframe, and
   #       there isn't a masking graphic. I don't think any other properties
   #       would need this.
   def row_always_hidden?(row)
-    if (@particle[:emitter_type] || :none) != :none &&
-       EMITTER_PROPERTY_GROUPS[:emit_parameters_group].include?(row) &&
-       USED_EMIT_PARAMETERS[@particle[:emitter_type]] &&
-       !USED_EMIT_PARAMETERS[@particle[:emitter_type]].include?(row)
+    if is_emitter? && emitter_only_row?(row) &&
+       group_for_row(row) != :emitter_group &&
+       USED_EMITTER_PARAMETERS[@particle[:emitter_type]] &&
+       !USED_EMITTER_PARAMETERS[@particle[:emitter_type]].include?(row)
       return true
     end
     return false

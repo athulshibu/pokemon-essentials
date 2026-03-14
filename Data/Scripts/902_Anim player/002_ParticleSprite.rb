@@ -162,14 +162,15 @@ class AnimationPlayer::ParticleSprite
       @values[:base_y] = new_y
       changed_properties.push(:y)
     when :helix
-      new_angle = @emitter_params[:angle] + (360 * delta_t / @emitter_params[:period])
-      new_x = @emitter_params[:radius] * Math.sin(new_angle * Math::PI / 180)
+      new_angle = @emitter_params[:angle] + (360 * delta_t / @emitter_params[:period_x])
+      new_x = @values[:radius_x] * @emitter_params[:radius_x_mult] * Math.sin(new_angle * Math::PI / 180)
       @values[:base_x] = new_x
       changed_properties.push(:x)
       new_y = (@emitter_params[:speed] * delta_t).round
       @values[:base_y] = new_y
       changed_properties.push(:y)
-      new_z = @emitter_params[:radius_z] * Math.cos(new_angle * Math::PI / 180)
+      new_angle = @emitter_params[:angle] + (360 * delta_t / @emitter_params[:period_z])
+      new_z = @values[:radius_z] * @emitter_params[:radius_z_mult] * Math.cos(new_angle * Math::PI / 180)
       @values[:z] = new_z
       changed_properties.push(:z)
     end

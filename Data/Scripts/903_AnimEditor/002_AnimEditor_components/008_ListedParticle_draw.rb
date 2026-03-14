@@ -147,9 +147,14 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
       return
     when :x, :y, :z, :zoom_x, :zoom_y, :angle, :opacity, :frame,
          :emit_x, :emit_y, :emit_x_range, :emit_y_range,
-         :emit_speed, :emit_speed_range, :emit_angle, :emit_angle_range,
-         :emit_gravity, :emit_gravity_range, :emit_period, :emit_period_range,
-         :emit_radius, :emit_radius_range, :emit_radius_z, :emit_radius_z_range
+         :emit_speed, :emit_speed_range,
+         :emit_angle, :emit_angle_range,
+         :emit_gravity, :emit_gravity_range,
+         :emit_period_x, :emit_period_x_range,
+         :emit_period_y, :emit_period_y_range,
+         :emit_period_z, :emit_period_z_range,
+         :emit_radius_x_range, :emit_radius_y_range, :emit_radius_z_range,
+         :radius_x, :radius_y, :radius_z
       vals = AnimationEditor::PROPERTY_RANGES[row] || [0, 0]
       default = GameData::Animation::PARTICLE_KEYFRAME_DEFAULT_VALUES[row] || 0
       ctrl = UIControls::NumberTextBox.new(ctrl_width, ctrl_height, @list_viewport, *vals, default)
@@ -214,7 +219,7 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     end
     # Get visibilities of particle for each keyframe
     visible_cmds = @visibilities
-    visible_cmds = @emitter_visibilities if is_emitter? && AnimationPlayer::Emitter::PARTICLE_PROPERTIES.include?(row)
+    visible_cmds = @emitter_visibilities if is_emitter? && PROPERTY_GROUPS.has_key?(group_for_row(row))
     # Draw background for visible parts of the particle, one keyframe at a time
     each_visible_keyframe do |i|
       draw_x = TIMELINE_LEFT_SPACING + (i * keyframe_spacing) - @timeline_ox

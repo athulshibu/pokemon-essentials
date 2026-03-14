@@ -153,18 +153,30 @@ module GameData
       "MoveEmitGravity"      => [:emit_gravity,        "^uuiE", nil, nil, nil, INTERPOLATION_TYPES],
       "SetEmitGravityRange"  => [:emit_gravity_range,  "^uu"],
       "MoveEmitGravityRange" => [:emit_gravity_range,  "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
-      "SetPeriod"            => [:emit_period,         "^uv"],   # NOTE: Actually time for 100 periods.
-      "MovePeriod"           => [:emit_period,         "^uuvE", nil, nil, nil, INTERPOLATION_TYPES],
-      "SetPeriodRange"       => [:emit_period_range,   "^uu"],
-      "MovePeriodRange"      => [:emit_period_range,   "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
-      "SetRadius"            => [:emit_radius,         "^uu"],
-      "MoveRadius"           => [:emit_radius,         "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
-      "SetRadiusRange"       => [:emit_radius_range,   "^uu"],
-      "MoveRadiusRange"      => [:emit_radius_range,   "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
-      "SetRadiusZ"           => [:emit_radius_z,       "^uu"],
-      "MoveRadiusZ"          => [:emit_radius_z,       "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetPeriodX"           => [:emit_period_x,       "^uv"],   # NOTE: Actually time for 100 periods.
+      "MovePeriodX"          => [:emit_period_x,       "^uuvE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetPeriodXRange"      => [:emit_period_x_range, "^uu"],
+      "MovePeriodXRange"     => [:emit_period_x_range, "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetPeriodY"           => [:emit_period_y,       "^uv"],   # NOTE: Actually time for 100 periods.
+      "MovePeriodY"          => [:emit_period_y,       "^uuvE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetPeriodYRange"      => [:emit_period_y_range, "^uu"],
+      "MovePeriodYRange"     => [:emit_period_y_range, "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetPeriodZ"           => [:emit_period_z,       "^uv"],   # NOTE: Actually time for 100 periods.
+      "MovePeriodZ"          => [:emit_period_z,       "^uuvE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetPeriodZRange"      => [:emit_period_z_range, "^uu"],
+      "MovePeriodZRange"     => [:emit_period_z_range, "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetRadiusXRange"      => [:emit_radius_x_range, "^uu"],
+      "MoveRadiusXRange"     => [:emit_radius_x_range, "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetRadiusYRange"      => [:emit_radius_y_range, "^uu"],
+      "MoveRadiusYRange"     => [:emit_radius_y_range, "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
       "SetRadiusZRange"      => [:emit_radius_z_range, "^uu"],
       "MoveRadiusZRange"     => [:emit_radius_z_range, "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetRadiusX"           => [:radius_x,            "^uu"],
+      "MoveRadiusX"          => [:radius_x,            "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetRadiusY"           => [:radius_y,            "^uu"],
+      "MoveRadiusY"          => [:radius_y,            "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
+      "SetRadiusZ"           => [:radius_z,            "^uu"],
+      "MoveRadiusZ"          => [:radius_z,            "^uuuE", nil, nil, nil, INTERPOLATION_TYPES],
       # These properties are specifically for the "SE" particle.
       "Play"                 => [:se,                  "^usUU"],   # Filename, volume, pitch
       "PlayUserCry"          => [:user_cry,            "^uUU"],   # Volume, pitch
@@ -215,12 +227,18 @@ module GameData
       :emit_angle_range    => 0,
       :emit_gravity        => 0,
       :emit_gravity_range  => 0,
-      :emit_period         => 100,
-      :emit_period_range   => 0,
-      :emit_radius         => 0,
-      :emit_radius_range   => 0,
-      :emit_radius_z       => 0,
+      :emit_period_x       => 100,
+      :emit_period_x_range => 0,
+      :emit_period_y       => 100,
+      :emit_period_y_range => 0,
+      :emit_period_z       => 100,
+      :emit_period_z_range => 0,
+      :emit_radius_x_range => 0,
+      :emit_radius_y_range => 0,
       :emit_radius_z_range => 0,
+      :radius_x            => 0,
+      :radius_y            => 0,
+      :radius_z            => 0,
       # These properties are specifically for the "SE" particle.
       :se                  => nil,
       :user_cry            => nil,
@@ -254,12 +272,18 @@ module GameData
         :emit_angle_range    => _INTL("Angle ±"),
         :emit_gravity        => _INTL("Gravity"),
         :emit_gravity_range  => _INTL("Gravity ±"),
-        :emit_period         => _INTL("Period"),
-        :emit_period_range   => _INTL("Period ±"),
-        :emit_radius         => _INTL("Radius"),
-        :emit_radius_range   => _INTL("Radius ±"),
-        :emit_radius_z       => _INTL("Radius Z"),
-        :emit_radius_z_range => _INTL("Radius Z ±")
+        :emit_period_x       => _INTL("Period X"),
+        :emit_period_x_range => _INTL("Period X ±"),
+        :emit_period_y       => _INTL("Period Y"),
+        :emit_period_y_range => _INTL("Period Y ±"),
+        :emit_period_z       => _INTL("Period Z"),
+        :emit_period_z_range => _INTL("Period Z ±"),
+        :emit_radius_x_range => _INTL("Rad. X ±%"),
+        :emit_radius_y_range => _INTL("Rad. Y ±%"),
+        :emit_radius_z_range => _INTL("Rad. Z ±%"),
+        :radius_x            => _INTL("Radius X"),
+        :radius_y            => _INTL("Radius Y"),
+        :radius_z            => _INTL("Radius Z"),
       }[property] || property.to_s.capitalize
     end
 
@@ -448,6 +472,7 @@ module GameData
         @particles[index].each_pair do |key, val|
           next if !val.is_a?(Array)
           next if key.to_s[0, 4] == "emit" && (@particles[index][:emitter_type] || :none) == :none
+          next if key.to_s[0, 6] == "radius" && (@particles[index][:emitter_type] || :none) == :none
           val.each do |cmd|
             new_cmd = cmd.clone
             if @particles[index][:name] != "SE" && new_cmd[1] > 0
