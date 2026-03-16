@@ -722,7 +722,6 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
       @captured.update
       @captured = nil if !@captured.busy?
     else
-      mouse_x, mouse_y = Mouse.getMousePos
       @rows.each_value do |objs|
         [LIST_ARROW, LIST_CONTROL].each do |obj|
           objs[obj]&.update

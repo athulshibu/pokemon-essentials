@@ -762,7 +762,7 @@ class AnimationEditor::Timeline < UIControls::BaseContainer
     return if disposed? || !@visible
     update_controls_and_particles
     changed = update_changed_controls_and_particles
-    if !changed &&
+    if !changed && !@captured &&
        (!@display_particles || @display_particles.none? { |ctrl| ctrl.choosing_interpolation? })
       update_input
     end
