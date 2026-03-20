@@ -220,10 +220,15 @@ terminal:
       - '#3e999f'
       - '#ffffff'
   customColorSchemes: []
+  font: Ubuntu Mono
+  linePadding: 2
+  fallbackFont: DejaVu Sans Mono
+  fontSize: 16
 ssh: {}
 clickableLinks: {}
 accessibility: {}
-appearance: {}
+appearance:
+  css: ''
 hacks: {}
 providerBlacklist: []
 commandBlacklist: []

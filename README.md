@@ -54,3 +54,9 @@ A. Download from [Git](https://git-scm.com/install/windows) website.
 A. Download from x64 exe from [Tabby repo](https://github.com/Eugeny/tabby/releases/tag/v1.0.230).
 B. To customize Tabby to your preferences, paste the `Customization\config.yaml` file to `%APPDATA%\tabby`.
 C. To customize Clink to your preferences, paste the `Customizations\.inputrc` file to ` %LOCALAPPDATA%\clink`. If that does not contain clink, you can find the right state location using `clink info`.
+D. You might also further want the following settings for Clink if it isn't already set.
+```
+clink set autosuggest.strategy completion
+clink set autosuggest.enable true
+```
+E. Just FYI, you'd have to close and re-open Tabby for these changes to be reflected.
