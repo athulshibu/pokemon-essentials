@@ -1,0 +1,63 @@
+# Save files (generated during playtesting)
+Save*.rxdata
+
+# Encrypted builds / archives
+*.rgssad
+*.rgss2a
+*.rgss3a
+
+# Optional local config overrides
+Game.ini.local
+
+# Build / export folders
+Build/
+build/
+Exports/
+exports/
+Dist/
+dist/
+
+# Cache / misc tooling
+.cache/
+tmp/
+pycache/
+*.pyc
+node_modules/
+
+# Archives
+*.zip
+*.rar
+*.7z
+
+# Data folder, but not Data/Scripts folder
+Data/*
+!Data/Scripts.rxdata
+!Data/Scripts/
+
+# Files in the main project folder
+Game.ini
+Game.rxproj
+RGSS*.dll
+
+# Common code editor folders & files
+.vscode/
+*.code-workspace
+.idea/
+*.mkproj
+*.swp
+*.swo
+
+# Operating system generated files & folders
+.DS_Store
+.DS_Store?
+ehthumbs.db
+Thumbs.db
+[Dd]esktop.ini
+desktop.ini
+
+# Logs / temp / backups
+*.log
+*.tmp
+*.bak
+*.old
+~*
