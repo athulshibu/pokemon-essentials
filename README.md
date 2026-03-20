@@ -52,8 +52,9 @@ A. Download from [VS Code](https://code.visualstudio.com/download) website.
 A. Download from [Git](https://git-scm.com/install/windows) website.
 ### 4. Download Tabby
 A. Download from x64 exe from [Tabby repo](https://github.com/Eugeny/tabby/releases/tag/v1.0.230).
+B. Install all the `Customizations\*.ttf` to install fonts.
 B. To customize Tabby to your preferences, paste the `Customization\config.yaml` file to `%APPDATA%\tabby`.
-C. To customize Clink to your preferences, paste the `Customizations\.inputrc` file to ` %LOCALAPPDATA%\clink`. If that does not contain clink, you can find the right state location using `clink info`.
+C. To customize Clink to your preferences, paste the `Customizations\.inputrc` file to `%LOCALAPPDATA%\clink`. If that does not contain clink, you can find the right state location using `clink info`.
 D. You might also further want the following settings for Clink if it isn't already set.
 ```
 clink set autosuggest.strategy completion

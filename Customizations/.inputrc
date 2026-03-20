@@ -1,3 +1,6 @@
+# Goes inside %LOCALAPPDATA%\clink
+# Check `state`` in `clink info` command for confirmation
+
 "\t": clink-insert-suggested-line
 "\eOQ": clink-select-complete
-"\e[C": clink-forward-char
+"\e[C": forward-char
