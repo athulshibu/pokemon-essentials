@@ -39,3 +39,18 @@ The .gitignore file lists the files that will not be included in this repo. Thes
   * Scripts.rxdata (a special version that just loads the individual script files).
 * A few files in the main project folder (two of the Game.xxx files, and the RGSS dll file).
 * Temporary files.
+
+
+
+# Your requirements when starting from a remote PC
+### 1. Download Steam 
+A. Go to [Steam website](https://store.steampowered.com/about/) and download the client.
+B. Download RPG Maker XP
+### 2. Download VS Code
+A. Download from [VS Code](https://code.visualstudio.com/download) website.
+### 3. Download Git
+A. Download from [Git](https://git-scm.com/install/windows) website.
+### 4. Download Tabby
+A. Download from x64 exe from [Tabby repo](https://github.com/Eugeny/tabby/releases/tag/v1.0.230).
+B. To customize Tabby to your preferences, paste the `Customization\config.yaml` file to `%APPDATA%\tabby`.
+C. To customize Clink to your preferences, paste the `Customizations\.inputrc` file to ` %LOCALAPPDATA%\clink`. If that does not contain clink, you can find the right state location using `clink info`.

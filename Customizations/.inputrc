@@ -1,0 +1,3 @@
+"\t": clink-insert-suggested-line
+"\eOQ": clink-select-complete
+"\e[C": clink-forward-char
