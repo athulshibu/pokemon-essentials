@@ -35,8 +35,6 @@ node_modules/
 !Data/Scripts/
 
 # Files in the main project folder
-Game.ini
-Game.rxproj
 RGSS*.dll
 
 # Common code editor folders & files
