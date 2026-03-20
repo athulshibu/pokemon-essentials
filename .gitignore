@@ -30,7 +30,7 @@ node_modules/
 *.7z
 
 # Data folder, but not Data/Scripts folder
-Data/*
+!Data/*
 !Data/Scripts.rxdata
 !Data/Scripts/
 
