@@ -63,5 +63,8 @@ E. You might also further want the following settings for Clink if it isn't alre
 ```
 clink set autosuggest.strategy completion
 clink set autosuggest.enable true
+clink set autosuggest.hint false
 ```
 F. Just FYI, you'd have to close and re-open Tabby for these changes to be reflected.
+
+G. Download and install [GIMP](https://www.gimp.org/downloads/).
