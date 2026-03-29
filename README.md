@@ -55,7 +55,7 @@ A. Download from x64 exe from [Tabby repo](https://github.com/Eugeny/tabby/relea
 
 B. Install all the `Customizations\*.ttf` to install fonts.
 
-C. To customize Tabby to your preferences, paste the `Customization\config.yaml` file to `%APPDATA%\tabby`.
+C. To customize Tabby to your preferences, paste the `Customizations\config.yaml` file to `%APPDATA%\tabby`.
 
 D. To customize Clink to your preferences, paste the `Customizations\.inputrc` file to `%LOCALAPPDATA%\clink`. If that does not contain clink, you can find the right state location using `clink info`.
 
@@ -68,5 +68,5 @@ clink set autosuggest.hint false
 This needs to be set every new time you run Tabby
 
 F. Just FYI, you'd have to close and re-open Tabby for these changes to be reflected.
-
-G. Download and install [GIMP](https://www.gimp.org/downloads/).
+### 4. Download GIMP
+A. Download and install [GIMP](https://www.gimp.org/downloads/).
