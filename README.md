@@ -43,13 +43,17 @@ The .gitignore file lists the files that will not be included in this repo. Thes
 
 
 # Your requirements when starting from a remote PC
+
 ### 1. Download Steam 
 A. Go to [Steam website](https://store.steampowered.com/about/) and download the client.
 B. Download RPG Maker XP
+
 ### 2. Download VS Code
 A. Download from [VS Code](https://code.visualstudio.com/download) website.
+
 ### 3. Download Git
 A. Download from [Git](https://git-scm.com/install/windows) website.
+
 ### 4. Download Tabby
 A. Download from x64 exe from [Tabby repo](https://github.com/Eugeny/tabby/releases/tag/v1.0.230).
 
@@ -68,5 +72,20 @@ clink set autosuggest.hint false
 This needs to be set every new time you run Tabby
 
 F. Just FYI, you'd have to close and re-open Tabby for these changes to be reflected.
+
 ### 4. Download GIMP
 A. Download and install [GIMP](https://www.gimp.org/downloads/).
+
+### 5. Clone this repo
+```
+git clone https://github.com/athulshibu/pokemon-essentials.git
+cd pokemon_essentials
+git checkout game/pokemon_school
+
+copy Customizations\config.yaml %APPDATA%\tabby
+copy Customizations\.inputrc %LOCALAPPDATA%\clink
+
+clink set autosuggest.strategy completion
+clink set autosuggest.enable true
+clink set autosuggest.hint false
+```
