@@ -92,3 +92,6 @@ clink set autosuggest.hint false
 git config --global user.email "athulshibu@gmail.com"
 git config --global user.name "athul"
 ```
+
+### 6. Sources for Graphics
+A. [Tilesets](https://docs.google.com/document/d/1oljKeOK1LBnkr3RYBmH1o4wSRY9gALgyDbHpqQSu0vU/edit?pli=1&tab=t.0)
