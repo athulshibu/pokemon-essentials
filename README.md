@@ -88,4 +88,7 @@ copy Customizations\.inputrc %LOCALAPPDATA%\clink
 clink set autosuggest.strategy completion
 clink set autosuggest.enable true
 clink set autosuggest.hint false
+
+git config --global user.email "athulshibu@gmail.com"
+git config --global user.name "athul"
 ```
