@@ -79,18 +79,18 @@ A. Download and install [GIMP](https://www.gimp.org/downloads/).
 ### 5. Clone this repo
 ```
 git clone https://github.com/athulshibu/pokemon-essentials.git
-cd pokemon_essentials
+cd pokemon-essentials
 git checkout game/pokemon_school
 
-copy Customizations\config.yaml %APPDATA%\tabby
+git config --global user.email "athulshibu@gmail.com"
+git config --global user.name "athul"
+
 copy Customizations\.inputrc %LOCALAPPDATA%\clink
+copy Customizations\config.yaml %APPDATA%\tabby
 
 clink set autosuggest.strategy completion
 clink set autosuggest.enable true
 clink set autosuggest.hint false
-
-git config --global user.email "athulshibu@gmail.com"
-git config --global user.name "athul"
 ```
 
 ### 6. Sources for Graphics
